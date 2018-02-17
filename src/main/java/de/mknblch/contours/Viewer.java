@@ -5,6 +5,8 @@ import com.sun.tools.doclint.Entity;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 
 /**
@@ -47,4 +49,37 @@ public class Viewer extends JPanel {
             g.drawImage(image, 0, 0, this);
         }
     }
+
+    public static void start(Pipeline pipe) {
+
+        javax.swing.SwingUtilities.invokeLater(() -> {
+
+            final Viewer comp = new Viewer(pipe);
+            final JFrame frame = new JFrame("Viewer");
+            frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+            frame.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent e) {
+                    try {
+                        comp.stop();
+                        pipe.close();
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                    }
+                    frame.dispose();
+                    System.exit(0);
+                }
+            });
+            frame.getContentPane().add(comp);
+            frame.getContentPane().setBackground(Color.BLACK);
+            frame.setPreferredSize(new java.awt.Dimension(640, 480));
+            frame.setLocation(300, 200);
+            frame.pack();
+            frame.setVisible(true);
+            comp.start();
+
+        });
+
+    }
+
 }

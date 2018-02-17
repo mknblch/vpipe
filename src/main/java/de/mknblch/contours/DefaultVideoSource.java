@@ -2,7 +2,6 @@ package de.mknblch.contours;
 
 import com.github.sarxos.webcam.Webcam;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.DataBufferByte;
 
@@ -45,10 +44,10 @@ public class DefaultVideoSource implements VideoSource {
 
     private final class ImageImpl implements Image {
 
-        private int[] data;
+        private byte[] data;
 
         @Override
-        public int[] data() {
+        public byte[] data() {
             return data;
         }
 
@@ -60,6 +59,11 @@ public class DefaultVideoSource implements VideoSource {
         @Override
         public int height() {
             return 480;
+        }
+
+        @Override
+        public Channels channels() {
+            return Channels.COLOR;
         }
     }
 }

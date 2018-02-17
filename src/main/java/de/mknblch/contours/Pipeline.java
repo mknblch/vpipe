@@ -31,9 +31,6 @@ public class Pipeline implements AutoCloseable, VideoSource {
 
     @Override
     public void close() throws Exception {
-        for (Processor processor : processors) {
-            processor.close();
-        }
         videoSource.close();
     }
 
