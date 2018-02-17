@@ -11,7 +11,7 @@ import java.awt.image.DataBufferByte;
 public class DefaultVideoSource implements VideoSource {
 
     private final Webcam webcam;
-    private final ImageImpl image;
+    private final Image image;
 
     public DefaultVideoSource() {
         webcam = Webcam.getDefault();
@@ -19,7 +19,7 @@ public class DefaultVideoSource implements VideoSource {
         if (!webcam.open()) {
             throw new IllegalStateException("Cannot open Webcam");
         }
-        image = new ImageImpl();
+        image = new Image(640, 480, Image.Type.COLOR);
     }
 
     @Override
@@ -33,7 +33,7 @@ public class DefaultVideoSource implements VideoSource {
                 .getImage()
                 .getRaster()
                 .getDataBuffer();
-        image.data = buffer.getData();
+        System.arraycopy(buffer.getData(), 0, image.data, 0, image.data.length);
         return image;
     }
 
@@ -42,28 +42,4 @@ public class DefaultVideoSource implements VideoSource {
         webcam.close();
     }
 
-    private final class ImageImpl implements Image {
-
-        private byte[] data;
-
-        @Override
-        public byte[] data() {
-            return data;
-        }
-
-        @Override
-        public int width() {
-            return 640;
-        }
-
-        @Override
-        public int height() {
-            return 480;
-        }
-
-        @Override
-        public Channels channels() {
-            return Channels.COLOR;
-        }
-    }
 }

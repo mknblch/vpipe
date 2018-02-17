@@ -51,7 +51,7 @@ public class Pipeline implements AutoCloseable, VideoSource {
             processors = new ArrayList<>();
         }
 
-        public Builder addProcessor(Processor processor) {
+        public Builder add(Processor processor) {
             processors.add(processor);
             return this;
         }

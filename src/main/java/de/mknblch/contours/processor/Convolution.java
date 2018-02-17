@@ -38,31 +38,24 @@ public class Convolution implements Processor {
                         if (kx > width || kx < 0) {
                             continue x;
                         }
-                        t += image.getValue(x, y) * kernel.value(tx, ty);
+                        t += (image.getValue(x, y) & 0xFF) * kernel.value(tx, ty);
                     }
                 }
-                result[y * width + x] = clip(t * kernel.multiplier);
+                result[y * width + x] = Image.clip(t * kernel.multiplier);
             }
         }
-
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 image.setValue(x, y, result[y * width + x]);
             }
         }
-
-
         return image;
-    }
-
-    private static byte clip(double v) {
-        return v > 255 ? (byte) 255 : (v < 0 ? 0 : (byte) v);
     }
 
     public static class Kernel {
 
         public final double[] H;
-        private final double multiplier;
+        public final double multiplier;
         public final int width;
         public final int height;
 
@@ -86,12 +79,43 @@ public class Convolution implements Processor {
         }
     }
 
-
     public static final Kernel SMOOTH_3x3 = new Kernel(
             new double[]{
                     1. / 9, 1. / 9, 1. / 9,
                     1. / 9, 1. / 9, 1. / 9,
                     1. / 9, 1. / 9, 1. / 9
+            }, 1.
+    );
+
+    public static final Kernel STAR_3x3 = new Kernel(
+            new double[] {
+                    -1, 1, -1,
+                    1, 3, 1,
+                    -1, 1, -1
+            }, 1. / 3
+    );
+
+
+    public static final Kernel SMOOTH_5x5 = new Kernel(
+            new double[]{
+                    1. / 25, 1. / 25, 1. / 25, 1. / 25, 1. / 25,
+                    1. / 25, 1. / 25, 1. / 25, 1. / 25, 1. / 25,
+                    1. / 25, 1. / 25, 1. / 25, 1. / 25, 1. / 25,
+                    1. / 25, 1. / 25, 1. / 25, 1. / 25, 1. / 25,
+                    1. / 25, 1. / 25, 1. / 25, 1. / 25, 1. / 25,
+            }, 1.
+    );
+
+
+    public static final Kernel SMOOTH_7x7 = new Kernel(
+            new double[]{
+                    1. / 49, 1. / 49, 1. / 49, 1. / 49, 1. / 49, 1. / 49, 1. / 49,
+                    1. / 49, 1. / 49, 1. / 49, 1. / 49, 1. / 49, 1. / 49, 1. / 49,
+                    1. / 49, 1. / 49, 1. / 49, 1. / 49, 1. / 49, 1. / 49, 1. / 49,
+                    1. / 49, 1. / 49, 1. / 49, 1. / 49, 1. / 49, 1. / 49, 1. / 49,
+                    1. / 49, 1. / 49, 1. / 49, 1. / 49, 1. / 49, 1. / 49, 1. / 49,
+                    1. / 49, 1. / 49, 1. / 49, 1. / 49, 1. / 49, 1. / 49, 1. / 49,
+                    1. / 49, 1. / 49, 1. / 49, 1. / 49, 1. / 49, 1. / 49, 1. / 49,
             }, 1.
     );
 

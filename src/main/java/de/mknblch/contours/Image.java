@@ -3,60 +3,85 @@ package de.mknblch.contours;
 /**
  * @author mknblch
  */
-public interface Image {
+public class Image {
 
-    enum Component {
-
+    public enum Component {
         RED(0), GREEN(1),BLUE(2);
-
         public final int value;
-
         Component(int value) {
             this.value = value;
         }
     }
 
-    enum Channels {
-
+    public enum Type {
         COLOR(3), MONOCHROM(1);
-
         public final int channels;
-
-        Channels(int channels) {
+        Type(int channels) {
             this.channels = channels;
         }
     }
 
-    byte[] data();
+    public final byte[] data;
+    public final int width;
+    public final int height;
+    public final Type type;
 
-    int width();
-
-    int height();
-
-    Channels channels();
-
-    default byte getValue(int x, int y) {
-        final Channels channels = channels();
-        return data()[y * width() * channels.channels + x * channels.channels];
+    public Image(byte[] data, int width, int height, Type type) {
+        this.data = data;
+        this.width = width;
+        this.height = height;
+        this.type = type;
     }
 
-    default byte getValue(int x, int y, Component colorComponent) {
-        final Channels channels = channels();
-        return data()[y * width() * channels.channels + x * channels.channels + colorComponent.value];
+    public Image(int width, int height, Type type) {
+        this(new byte[width * height * type.channels], width, height, type);
     }
 
-    default void setValue(int x, int y, byte value) {
-        final Channels channels = channels();
-        final byte[] data = data();
-        data[y * width() * channels.channels + x * channels.channels] = value;
-        data[y * width() * channels.channels + x * channels.channels+1] = value;
-        data[y * width() * channels.channels + x * channels.channels+2] = value;
+    public byte[] data() {
+        return data;
     }
 
-    default void setValue(int offset, byte value) {
-        final byte[] data = data();
-        data[offset] = value;
-        data[offset + 1] = value;
-        data[offset + 2] = value;
+    public int width() {
+        return width;
+    }
+
+    public int height() {
+        return height;
+    }
+
+    public Type type() {
+        return type;
+    }
+
+    public byte getValue(int x, int y) {
+        return data()[y * width() * type.channels + x * type.channels];
+    }
+
+    public byte getValue(int x, int y, Component colorComponent) {
+        return data()[y * width() * type.channels + x * type.channels + colorComponent.value];
+    }
+
+    public void setValue(int x, int y, byte value) {
+        if (type == Type.COLOR) {
+            data[y * width() * type.channels + x * type.channels] = value;
+            data[y * width() * type.channels + x * type.channels + 1] = value;
+            data[y * width() * type.channels + x * type.channels + 2] = value;
+        } else {
+            data[y * width() * type.channels + x * type.channels] = value;
+        }
+    }
+
+    public void setValue(int offset, byte value) {
+        if (type == Type.COLOR) {
+            data[offset] = value;
+            data[offset + 1] = value;
+            data[offset + 2] = value;
+        } else {
+            data[offset] = value;
+        }
+    }
+
+    public static byte clip(double v) {
+        return v > 255 ? (byte) 255 : (v < 0 ? 0 : (byte) v);
     }
 }

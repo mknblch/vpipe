@@ -25,10 +25,39 @@ public class BufferedImageRenderer {
                 height,
                 3,
                 width * 3,
-                new int[]{0, 1, 2});
+                new int[]{Image.Component.RED.value,
+                        Image.Component.GREEN.value,
+                        Image.Component.BLUE.value});
         final ComponentColorModel cmodel = new ComponentColorModel(
                 ColorSpace.getInstance(ColorSpace.CS_sRGB),
                 new int[]{8, 8, 8},
+                false,
+                false,
+                Transparency.OPAQUE,
+                DataBuffer.TYPE_BYTE);
+        final WritableRaster raster = Raster.createWritableRaster(
+                smodel,
+                dataBuffer,
+                null);
+
+        return new BufferedImage(cmodel, raster, false, null);
+    }
+
+
+    private static BufferedImage createMono2Image(int width, int height) {
+
+        final byte[] pixels = new byte[width * height * 3];
+        final DataBuffer dataBuffer = new DataBufferByte(pixels, width*height, 0);
+        final ComponentSampleModel smodel = new ComponentSampleModel(
+                DataBuffer.TYPE_BYTE,
+                width,
+                height,
+                1,
+                width * 1,
+                new int[]{Image.Component.RED.value});
+        final ComponentColorModel cmodel = new ComponentColorModel(
+                ColorSpace.getInstance(ColorSpace.CS_GRAY),
+                new int[]{8},
                 false,
                 false,
                 Transparency.OPAQUE,
@@ -46,32 +75,30 @@ public class BufferedImageRenderer {
                 image.data(),
                 image.width(),
                 image.height(),
-                image.channels());
+                image.type());
     }
 
     public BufferedImage render(byte[] data,
-                                int width, int height, Image.Channels channels) {
+                                int width, int height, Image.Type type) {
         if (null == out) {
-            out = createColorImage(width, height);
-        }
-        final byte[] imageData;
-        switch (channels) {
-            case COLOR:
-            imageData = ((DataBufferByte) out
-                        .getRaster()
-                        .getDataBuffer())
-                        .getData();
-                break;
+            switch (type) {
+                case COLOR:
+                    out = createColorImage(width, height);
+                    break;
 
-            default:
-                imageData = ((DataBufferByte) out
-                        .getRaster()
-                        .getDataBuffer())
-                        .getData();
-                break;
+                default:
+                    System.out.println("mono");
+                    out = createMono2Image(width, height);
+                    break;
+            }
         }
 
+        final byte[] imageData = ((DataBufferByte) out
+                .getRaster()
+                .getDataBuffer())
+                .getData();
         System.arraycopy(data, 0, imageData, 0, data.length);
+
         return out;
     }
 

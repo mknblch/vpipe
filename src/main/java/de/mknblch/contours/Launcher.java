@@ -10,10 +10,8 @@ public class Launcher {
     public static void main(String[] args) {
 
         final Pipeline pipe = Pipeline.builder()
-                .addProcessor(new Grayscale())
-                .addProcessor(new Erosion())
-                .addProcessor(new Convolution(Convolution.SMOOTH_3x3))
-                .addProcessor(new Convolution(Convolution.HIGHPASS))
+                .add(new Binarization(30))
+                .add(new Invert())
                 .build();
 
         Viewer.start(pipe);
