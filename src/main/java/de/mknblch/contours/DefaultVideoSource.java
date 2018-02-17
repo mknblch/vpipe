@@ -8,7 +8,7 @@ import java.awt.image.DataBufferByte;
 /**
  * @author mknblch
  */
-public class DefaultVideoSource implements VideoSource {
+public class DefaultVideoSource extends Processor<Void, Image> implements VideoSource {
 
     private final Webcam webcam;
     private final Image image;
@@ -20,11 +20,6 @@ public class DefaultVideoSource implements VideoSource {
             throw new IllegalStateException("Cannot open Webcam");
         }
         image = new Image(640, 480, Image.Type.COLOR);
-    }
-
-    @Override
-    public int fps() {
-        return 20;
     }
 
     @Override
@@ -42,4 +37,13 @@ public class DefaultVideoSource implements VideoSource {
         webcam.close();
     }
 
+    @Override
+    public Image pull() {
+        return image();
+    }
+
+    @Override
+    public Image compute(Void image) {
+        return null;
+    }
 }

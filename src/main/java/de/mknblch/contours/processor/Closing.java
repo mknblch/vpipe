@@ -6,7 +6,7 @@ import de.mknblch.contours.Processor;
 /**
  * @author mknblch
  */
-public class Closing implements Processor {
+public class Closing extends Processor<Image, Image> {
 
     @Override
     public Image compute(Image image) {

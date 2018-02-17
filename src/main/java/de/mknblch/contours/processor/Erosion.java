@@ -6,7 +6,7 @@ import de.mknblch.contours.Processor;
 /**
  * @author mknblch
  */
-public class Erosion implements Processor {
+public class Erosion extends Processor<Image, Image> {
 
     @Override
     public Image compute(Image image) {

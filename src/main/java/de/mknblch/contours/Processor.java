@@ -3,8 +3,18 @@ package de.mknblch.contours;
 /**
  * @author mknblch
  */
-public interface Processor {
+public abstract class Processor<I, O> {
 
-    Image compute(Image image);
+    private Processor<?, I> previous;
 
+    public O pull() {
+        return compute(previous.pull());
+    }
+
+    public abstract O compute(I image);
+
+    public <I> Processor<O, I> connectTo(Processor<O, I> nextProcessor) {
+        nextProcessor.previous = this;
+        return nextProcessor;
+    }
 }

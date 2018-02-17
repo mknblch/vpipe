@@ -5,8 +5,5 @@ package de.mknblch.contours;
  */
 public interface VideoSource extends AutoCloseable {
 
-    int fps();
-
     Image image();
-
 }

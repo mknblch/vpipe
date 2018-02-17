@@ -6,7 +6,7 @@ import de.mknblch.contours.Processor;
 /**
  * @author mknblch
  */
-public class Convolution implements Processor {
+public class Convolution extends Processor<Image, Image> {
 
     private final Kernel kernel;
 
@@ -84,7 +84,7 @@ public class Convolution implements Processor {
                     1. / 9, 1. / 9, 1. / 9,
                     1. / 9, 1. / 9, 1. / 9,
                     1. / 9, 1. / 9, 1. / 9
-            }, 1.
+            }, 3
     );
 
     public static final Kernel STAR_3x3 = new Kernel(

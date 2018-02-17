@@ -6,7 +6,7 @@ import de.mknblch.contours.Processor;
 /**
  * @author mknblch
  */
-public class Grayscale implements Processor {
+public class Grayscale extends Processor<Image, Image> {
 
     @Override
     public Image compute(Image image) {

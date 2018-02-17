@@ -6,7 +6,7 @@ import de.mknblch.contours.Processor;
 /**
  * @author mknblch
  */
-public class Invert implements Processor {
+public class Invert extends Processor<Image, Image> {
 
     @Override
     public Image compute(Image image) {

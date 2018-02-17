@@ -6,7 +6,7 @@ import de.mknblch.contours.Processor;
 /**
  * @author mknblch
  */
-public class Binarization implements Processor {
+public class Binarization extends Processor<Image, Image> {
 
     private final int threshold;
     private Image image = null;

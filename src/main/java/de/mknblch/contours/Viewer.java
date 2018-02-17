@@ -14,12 +14,12 @@ import java.awt.image.BufferedImage;
  */
 public class Viewer extends JPanel {
 
-    private final VideoSource source;
+    private final Processor<?, Image> source;
     private final BufferedImageRenderer bufferedImageRenderer;
 
     private volatile boolean running = false;
 
-    public Viewer(VideoSource source) {
+    public Viewer(Processor<?, Image> source) {
         this.source = source;
         bufferedImageRenderer = new BufferedImageRenderer();
     }
@@ -31,7 +31,7 @@ public class Viewer extends JPanel {
             while (running) {
                 this.repaint();
                 try {
-                    Thread.sleep((1000 / source.fps()));
+                    Thread.sleep((1000 / 20));
                 } catch (InterruptedException e) {}
             }
         }).start();
@@ -44,32 +44,19 @@ public class Viewer extends JPanel {
     @Override
     public void paint(Graphics g) {
         super.paint(g);
-        final BufferedImage image = bufferedImageRenderer.render(source.image());
+        final BufferedImage image = bufferedImageRenderer.render(source.pull());
         if (null != image) {
             g.drawImage(image, 0, 0, this);
         }
     }
 
-    public static void start(Pipeline pipe) {
+    public static void start(Processor<?, Image> imageProcessor) {
 
         javax.swing.SwingUtilities.invokeLater(() -> {
 
-            final Viewer comp = new Viewer(pipe);
+            final Viewer comp = new Viewer(imageProcessor);
             final JFrame frame = new JFrame("Viewer");
-            frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-            frame.addWindowListener(new WindowAdapter() {
-                @Override
-                public void windowClosing(WindowEvent e) {
-                    try {
-                        comp.stop();
-                        pipe.close();
-                    } catch (Exception e1) {
-                        e1.printStackTrace();
-                    }
-                    frame.dispose();
-                    System.exit(0);
-                }
-            });
+            frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
             frame.getContentPane().add(comp);
             frame.getContentPane().setBackground(Color.BLACK);
             frame.setPreferredSize(new java.awt.Dimension(640, 480));

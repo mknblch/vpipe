@@ -3,7 +3,7 @@ package de.mknblch.contours.processor;
 import de.mknblch.contours.Image;
 import de.mknblch.contours.Processor;
 
-public class Dilation implements Processor {
+public class Dilation extends Processor<Image, Image> {
 
     @Override
     public Image compute(Image image) {
