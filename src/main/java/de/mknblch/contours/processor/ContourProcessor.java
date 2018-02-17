@@ -44,19 +44,18 @@ public class ContourProcessor extends Processor<Image, Image> {
 
         for (int y = 0; y < image.height; y++) {
             boolean last = false;
-            for (int x = 0; x < image.width; x++) {
+            for (int x = 1; x < image.width; x++) {
                 final boolean t = threshold.test(image.getValue(x, y) & 0xFF);
-                if (!visited[y * image.width + x]) {
-                    if (last != t) {
+                final boolean t1 = threshold.test(image.getValue(x-1, y) & 0xFF);
+                if (!visited[y * image.width + x] && !t1 && t) {
                         //System.out.println("found at " + x + " x " + y);
                         chain4(image, last, x, y);
-                    }
                 }
                 visited[y * image.width + x] = true;
                 last = t;
             }
         }
-        return image;
+        return out;
     }
 
     boolean isPixelLocationLegal (Image i, int x, int y) {
@@ -67,33 +66,36 @@ public class ContourProcessor extends Processor<Image, Image> {
 
     private Contour chain4(Image image, boolean last, int x, int y) {
 
-        Direction direction = E;
+        Direction direction = S;
         int tx = x, ty = y+1;
         do {
             switch (direction) {
                 case E:
-                    if (tx == image.width || last != threshold.test(image.getValue(tx, ty - 1) & 0xFF)) {
+                    if (tx == image.width || !threshold.test(image.getValue(tx, ty - 1) & 0xFF)) {
                         // n
                         direction = N;
+                        visited[ty * image.width + tx] = true;
                         ty--;
-                    } else if (last != threshold.test(image.getValue(tx, ty) & 0xFF)) {
+                    } else if (ty == image.height || !threshold.test(image.getValue(tx, ty) & 0xFF)) {
                         // e
                         direction = E;
                         tx++;
                     } else {
                         // s
                         direction = S;
-                        y++;
+                        visited[ty * image.width + tx] = true;
+                        ty++;
                     }
                     break;
                 case S:
-                    if (last != threshold.test(image.getValue(tx, ty) & 0xFF)) {
+                    if (ty == image.height || !threshold.test(image.getValue(tx, ty) & 0xFF)) {
                         // e
                         direction = E;
                         tx++;
-                    } else if (last != threshold.test(image.getValue(tx - 1, ty) & 0xFF)) {
+                    } else if (tx == 0 || !threshold.test(image.getValue(tx - 1, ty) & 0xFF)) {
                         // s
                         direction = S;
+                        visited[ty * image.width + tx] = true;
                         ty++;
                     } else {
                         // w
@@ -102,28 +104,31 @@ public class ContourProcessor extends Processor<Image, Image> {
                     }
                     break;
                 case W:
-                    if (last != threshold.test(image.getValue(tx - 1, ty) & 0xFF)) {
+                    if (tx == 0 || !threshold.test(image.getValue(tx - 1, ty) & 0xFF)) {
                         // s
                         direction = S;
+                        visited[ty * image.width + tx] = true;
                         ty++;
-                    } else if (last != threshold.test(image.getValue(tx - 1, ty - 1) & 0xFF)) {
+                    } else if (ty == 0 || !threshold.test(image.getValue(tx - 1, ty - 1) & 0xFF)) {
                         // w
                         direction = W;
                         tx--;
                     } else {
                         // n
                         direction = N;
+                        visited[ty * image.width + tx] = true;
                         ty--;
                     }
                     break;
                 case N:
-                    if (last != threshold.test(image.getValue(tx - 1, ty - 1) & 0xFF)) {
+                    if (ty == 0 || !threshold.test(image.getValue(tx - 1, ty - 1) & 0xFF)) {
                         // w
                         direction = W;
                         tx--;
-                    } else if (last != threshold.test(image.getValue(tx, ty - 1) & 0xFF)) {
+                    } else if (tx == image.width || !threshold.test(image.getValue(tx, ty - 1) & 0xFF)) {
                         // n
                         direction = N;
+                        visited[ty * image.width + tx] = true;
                         ty--;
                     } else {
                         // e
@@ -133,7 +138,9 @@ public class ContourProcessor extends Processor<Image, Image> {
                     break;
             }
 
-            image.setColor(tx, ty, Image.Component.RED, (byte) 255);
+            // image.setColor(tx, ty, Image.Component.RED, (byte) 255);
+            out.setValue(tx, ty, (byte) 255);
+
         } while (x != tx || y != ty);
 
         return null; //contour;
