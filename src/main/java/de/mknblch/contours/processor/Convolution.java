@@ -67,11 +67,11 @@ public class Convolution implements Processor {
         }
 
         public Kernel(double[] h, double multiplier) {
-            H = h;
-            this.multiplier = multiplier;
-            final int sqrt = (int) Math.sqrt(h.length);
-            this.width = sqrt;
-            this.height = sqrt;
+            this(h, (int) Math.sqrt(h.length), (int) Math.sqrt(h.length), multiplier);
+        }
+
+        public Kernel(double[] h) {
+            this(h, 1.);
         }
 
         public double value(int xo, int yo) {
@@ -90,9 +90,9 @@ public class Convolution implements Processor {
     public static final Kernel STAR_3x3 = new Kernel(
             new double[] {
                     -1, 1, -1,
-                    1, 3, 1,
+                    1, 1, 1,
                     -1, 1, -1
-            }, 1. / 3
+            }
     );
 
 
@@ -103,7 +103,7 @@ public class Convolution implements Processor {
                     1. / 25, 1. / 25, 1. / 25, 1. / 25, 1. / 25,
                     1. / 25, 1. / 25, 1. / 25, 1. / 25, 1. / 25,
                     1. / 25, 1. / 25, 1. / 25, 1. / 25, 1. / 25,
-            }, 1.
+            }
     );
 
 
@@ -116,7 +116,7 @@ public class Convolution implements Processor {
                     1. / 49, 1. / 49, 1. / 49, 1. / 49, 1. / 49, 1. / 49, 1. / 49,
                     1. / 49, 1. / 49, 1. / 49, 1. / 49, 1. / 49, 1. / 49, 1. / 49,
                     1. / 49, 1. / 49, 1. / 49, 1. / 49, 1. / 49, 1. / 49, 1. / 49,
-            }, 1.
+            }
     );
 
     public static final Kernel HIGHPASS = new Kernel(
@@ -124,7 +124,7 @@ public class Convolution implements Processor {
                     -1, -1, -1,
                     -1, 8, -1,
                     -1, -1, -1
-            }, 1.
+            }
     );
 
     public static final Kernel HIGHPASS_5x5 = new Kernel(
@@ -174,7 +174,7 @@ public class Convolution implements Processor {
                     0, -1, 0,
                     -1, 4, -1,
                     0, -1, 0
-            }, 1. / 4
+            }
     );
 
 }
