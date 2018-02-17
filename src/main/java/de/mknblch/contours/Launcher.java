@@ -14,10 +14,12 @@ public class Launcher {
                 .connectTo(new Convolution(Convolution.HIGHPASS))
                 .connectTo(new Invert())
                 .connectTo(new Convolution(Convolution.STAR_3x3))
-                .connectTo(new Dilation())
                 .connectTo(new ContourProcessor());
 
-        // final Processor<Image, Image> source = new TestSource().connectTo(new ContourProcessor());
+        /*
+        final Processor<Image, Image> source = new TestSource().connectTo(new ContourProcessor());
+        */
+
         Viewer.start(source);
 
     }

@@ -45,7 +45,6 @@ public class Viewer extends JPanel {
     public void paint(Graphics g) {
         super.paint(g);
         final BufferedImage image = bufferedImageRenderer.render(source.pull());
-        System.out.println("render");
         if (null != image) {
             g.drawImage(image, 0, 0, this);
         }

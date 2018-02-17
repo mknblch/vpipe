@@ -9,22 +9,20 @@ import java.util.BitSet;
 import java.util.List;
 import java.util.function.IntPredicate;
 
+import static de.mknblch.contours.processor.ContourProcessor.Direction.*;
+
 /**
  * @author mknblch
  */
 public class ContourProcessor extends Processor<Image, Image> {
 
+    enum Direction {
+        E, S, W, N
+    }
+
     private final Image out;
 
-    private static final int NROW[] = {
-            0, -1, -1, -1, 0, 1, 1, 1
-    };
-
-    private static final int NCOL[] = {
-            1, 1, 0, -1, -1, -1, 0, 1
-    };
-
-    private IntPredicate threshold = i -> i > 120;
+    private IntPredicate threshold = i -> i > 200;
 
     private final boolean[] visited = new boolean[640 * 480];
 
@@ -47,20 +45,18 @@ public class ContourProcessor extends Processor<Image, Image> {
         for (int y = 0; y < image.height; y++) {
             boolean last = false;
             for (int x = 0; x < image.width; x++) {
-                System.out.println(x + " " + y);
-                final int value = image.getValue(x, y) & 0xFF;
-                final boolean t = threshold.test(value);
+                final boolean t = threshold.test(image.getValue(x, y) & 0xFF);
                 if (!visited[y * image.width + x]) {
-                    if (!last && t) {
+                    if (last != t) {
                         //System.out.println("found at " + x + " x " + y);
-                        chain8(image, last, x, y);
+                        chain4(image, last, x, y);
                     }
                 }
                 visited[y * image.width + x] = true;
                 last = t;
             }
         }
-        return out;
+        return image;
     }
 
     boolean isPixelLocationLegal (Image i, int x, int y) {
@@ -69,49 +65,76 @@ public class ContourProcessor extends Processor<Image, Image> {
         return true;
     }
 
-    private Contour chain8(Image image, boolean last, int x, int y) {
+    private Contour chain4(Image image, boolean last, int x, int y) {
 
-        //final Contour contour = new Contour(x, y);
-        boolean val;
-        int m, q, r, ii, d, dii;
-        int lastdir, jj;
-
-        val = threshold.test(image.getValue(x, y) & 0xFF);
-        q = x;
-        r = y;
-        lastdir = 4;
-
+        Direction direction = E;
+        int tx = x, ty = y+1;
         do {
-            m = 0;
-            dii = -1;
-            for (ii = lastdir + 1; ii < lastdir + 8; ii++) { 	/* Look for next */
-                jj = ii % 8;
-
-                int xi = NROW[jj] + q;
-                int yi = NCOL[jj] + r;
-
-                if (isPixelLocationLegal(image, xi, yi)) {
-                    if (last != threshold.test(image.getValue(xi, yi) & 0xFF)) {
-                        dii = jj;
-                        m = 1;
-                        break;
+            switch (direction) {
+                case E:
+                    if (tx == image.width || last != threshold.test(image.getValue(tx, ty - 1) & 0xFF)) {
+                        // n
+                        direction = N;
+                        ty--;
+                    } else if (last != threshold.test(image.getValue(tx, ty) & 0xFF)) {
+                        // e
+                        direction = E;
+                        tx++;
+                    } else {
+                        // s
+                        direction = S;
+                        y++;
                     }
-                }
+                    break;
+                case S:
+                    if (last != threshold.test(image.getValue(tx, ty) & 0xFF)) {
+                        // e
+                        direction = E;
+                        tx++;
+                    } else if (last != threshold.test(image.getValue(tx - 1, ty) & 0xFF)) {
+                        // s
+                        direction = S;
+                        ty++;
+                    } else {
+                        // w
+                        direction = W;
+                        tx--;
+                    }
+                    break;
+                case W:
+                    if (last != threshold.test(image.getValue(tx - 1, ty) & 0xFF)) {
+                        // s
+                        direction = S;
+                        ty++;
+                    } else if (last != threshold.test(image.getValue(tx - 1, ty - 1) & 0xFF)) {
+                        // w
+                        direction = W;
+                        tx--;
+                    } else {
+                        // n
+                        direction = N;
+                        ty--;
+                    }
+                    break;
+                case N:
+                    if (last != threshold.test(image.getValue(tx - 1, ty - 1) & 0xFF)) {
+                        // w
+                        direction = W;
+                        tx--;
+                    } else if (last != threshold.test(image.getValue(tx, ty - 1) & 0xFF)) {
+                        // n
+                        direction = N;
+                        ty--;
+                    } else {
+                        // e
+                        direction = E;
+                        tx++;
+                    }
+                    break;
             }
 
-            if (m != 0) { /* Found the next pixel ... */
-
-                out.setColor(q, r, Image.Component.BLUE, (byte) 255);
-
-                //visited[r * image.width + q] = true;
-                q += NROW[dii];
-                r += NCOL[dii];
-                lastdir = (dii + 5) % 8;
-            } else {
-                break;
-            }
-        }
-        while ((q != x) || (r != y));
+            image.setColor(tx, ty, Image.Component.RED, (byte) 255);
+        } while (x != tx || y != ty);
 
         return null; //contour;
     }
