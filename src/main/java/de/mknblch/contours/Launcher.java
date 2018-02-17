@@ -10,7 +10,7 @@ import java.util.List;
 public class Launcher {
 
     public static void main(String[] args) {
-        final Processor<Image, Image> source = new DefaultVideoSource()
+        final Processor<Image, List<ContourProcessor.Contour>> source = new DefaultVideoSource()
                 .connectTo(new Convolution(Convolution.HIGHPASS))
                 .connectTo(new Invert())
                 .connectTo(new Convolution(Convolution.STAR_3x3))
@@ -20,7 +20,7 @@ public class Launcher {
         final Processor<Image, Image> source = new TestSource().connectTo(new ContourProcessor());
         */
 
-        Viewer.start(source);
+        // Viewer.start(source);
 
     }
 }

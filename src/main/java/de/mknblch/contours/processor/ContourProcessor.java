@@ -14,23 +14,17 @@ import static de.mknblch.contours.processor.ContourProcessor.Direction.*;
 /**
  * @author mknblch
  */
-public class ContourProcessor extends Processor<Image, Image> {
+public class ContourProcessor extends Processor<Image, List<ContourProcessor.Contour>> {
 
     enum Direction {
-        E, S, W, N
+        E, S, W, N;
     }
 
-    private final Image out;
+    private static final int LIMIT = 640 * 480;
 
-    private IntPredicate threshold = i -> i > 200;
+    private IntPredicate threshold = i -> i > 128;
+    private BitSet visited = new BitSet();
 
-    private final boolean[] visited = new boolean[640 * 480];
-
-
-    public ContourProcessor() {
-
-        out = new Image(640, 480, Image.Type.COLOR);
-    }
 
     public ContourProcessor withThresholder(IntPredicate threshold) {
         this.threshold = threshold;
@@ -38,112 +32,109 @@ public class ContourProcessor extends Processor<Image, Image> {
     }
 
     @Override
-    public Image compute(Image image) {
-        Arrays.fill(visited, false);
-        out.fill((byte) 0);
-
-        for (int y = 0; y < image.height; y++) {
-            boolean last = false;
-            for (int x = 1; x < image.width; x++) {
+    public List<Contour> compute(Image image) {
+        visited.clear();
+        final ArrayList<Contour> contours = new ArrayList<>();
+        for (int y = 0; y < image.height - 1; y++) {
+            for (int x = 1; x < image.width - 1; x++) {
+                final boolean t1 = threshold.test(image.getValue(x - 1, y) & 0xFF);
                 final boolean t = threshold.test(image.getValue(x, y) & 0xFF);
-                final boolean t1 = threshold.test(image.getValue(x-1, y) & 0xFF);
-                if (!visited[y * image.width + x] && !t1 && t) {
-                        //System.out.println("found at " + x + " x " + y);
-                        chain4(image, last, x, y);
+                if (!visited.get(y * image.width + x) && !t1 && t) {
+                    contours.add(chain4(image, x, y));
                 }
-                visited[y * image.width + x] = true;
-                last = t;
             }
         }
-        return out;
+        return contours;
     }
 
-    boolean isPixelLocationLegal (Image i, int x, int y) {
-        if (x < 0 || x >= i.width)  return false;
-        if (y < 0 || y >= i.height) return false;
-        return true;
-    }
+    private Contour chain4(Image image, int x, int y) {
 
-    private Contour chain4(Image image, boolean last, int x, int y) {
-
-        Direction direction = S;
-        int tx = x, ty = y+1;
+        final Contour contour = new Contour(x, y);
+        Direction d = S;
+        int tx = x, ty = y + 1;
         do {
-            switch (direction) {
+            switch (d) {
                 case E:
-                    if (tx == image.width || !threshold.test(image.getValue(tx, ty - 1) & 0xFF)) {
+                    if (tx == image.width - 1 || !threshold.test(image.getValue(tx, ty - 1) & 0xFF)) {
                         // n
-                        direction = N;
-                        visited[ty * image.width + tx] = true;
+                        d = N;
+                        contour.add(d);
+                        visited.set(ty * image.width + tx);
                         ty--;
-                    } else if (ty == image.height || !threshold.test(image.getValue(tx, ty) & 0xFF)) {
+                    } else if (ty == image.height - 1 || !threshold.test(image.getValue(tx, ty) & 0xFF)) {
                         // e
-                        direction = E;
+                        d = E;
+                        contour.add(d);
                         tx++;
                     } else {
                         // s
-                        direction = S;
-                        visited[ty * image.width + tx] = true;
+                        d = S;
+                        contour.add(d);
+                        visited.set(ty * image.width + tx);
                         ty++;
                     }
                     break;
                 case S:
-                    if (ty == image.height || !threshold.test(image.getValue(tx, ty) & 0xFF)) {
+                    if (ty == image.height -1 || !threshold.test(image.getValue(tx, ty) & 0xFF)) {
                         // e
-                        direction = E;
+                        d = E;
+                        contour.add(d);
                         tx++;
-                    } else if (tx == 0 || !threshold.test(image.getValue(tx - 1, ty) & 0xFF)) {
+                    } else if (tx <= 0 || !threshold.test(image.getValue(tx - 1, ty) & 0xFF)) {
                         // s
-                        direction = S;
-                        visited[ty * image.width + tx] = true;
+                        d = S;
+                        contour.add(d);
+                        visited.set(ty * image.width + tx);
                         ty++;
                     } else {
                         // w
-                        direction = W;
+                        d = W;
+                        contour.add(d);
                         tx--;
                     }
                     break;
                 case W:
-                    if (tx == 0 || !threshold.test(image.getValue(tx - 1, ty) & 0xFF)) {
+                    if (tx <= 0 || !threshold.test(image.getValue(tx - 1, ty) & 0xFF)) {
                         // s
-                        direction = S;
-                        visited[ty * image.width + tx] = true;
+                        d = S;
+                        contour.add(d);
+                        visited.set(ty * image.width + tx);
                         ty++;
-                    } else if (ty == 0 || !threshold.test(image.getValue(tx - 1, ty - 1) & 0xFF)) {
+                    } else if (ty <= 0 || !threshold.test(image.getValue(tx - 1, ty - 1) & 0xFF)) {
                         // w
-                        direction = W;
+                        d = W;
+                        contour.add(d);
                         tx--;
                     } else {
                         // n
-                        direction = N;
-                        visited[ty * image.width + tx] = true;
+                        d = N;
+                        contour.add(d);
+                        visited.set(ty * image.width + tx);
                         ty--;
                     }
                     break;
                 case N:
-                    if (ty == 0 || !threshold.test(image.getValue(tx - 1, ty - 1) & 0xFF)) {
+                    if (ty <= 0 || !threshold.test(image.getValue(tx - 1, ty - 1) & 0xFF)) {
                         // w
-                        direction = W;
+                        d = W;
+                        contour.add(d);
                         tx--;
-                    } else if (tx == image.width || !threshold.test(image.getValue(tx, ty - 1) & 0xFF)) {
+                    } else if (tx == image.width - 1 || !threshold.test(image.getValue(tx, ty - 1) & 0xFF)) {
                         // n
-                        direction = N;
-                        visited[ty * image.width + tx] = true;
+                        d = N;
+                        contour.add(d);
+                        visited.set(ty * image.width + tx);
                         ty--;
                     } else {
                         // e
-                        direction = E;
+                        d = E;
+                        contour.add(d);
                         tx++;
                     }
                     break;
             }
-
-            // image.setColor(tx, ty, Image.Component.RED, (byte) 255);
-            out.setValue(tx, ty, (byte) 255);
-
         } while (x != tx || y != ty);
-
-        return null; //contour;
+        return contour;
     }
 
     public interface PointConsumer {
@@ -165,14 +156,29 @@ public class ContourProcessor extends Processor<Image, Image> {
             this.y = y;
         }
 
+        public void add(Direction d) {
+            switch (d) {
+                case E:
+                    add(0);
+                    break;
+                case S:
+                    add(1);
+                    break;
+                case W:
+                    add(2);
+                    break;
+                case N:
+                    add(3);
+                    break;
+            }
+        }
+
         public void add(int v) {
-            if (offset > 10000) {
-                System.out.println("exit");
+            if (offset > LIMIT) {
                 return;
             }
             if (data.length < offset + 1) {
                 data = Arrays.copyOf(data, offset + offset / 2);
-                //System.out.println(offset);
             }
             data[offset++] = (byte) v;
         }
@@ -182,34 +188,22 @@ public class ContourProcessor extends Processor<Image, Image> {
         }
 
         public void forEach(PointConsumer consumer) {
-            int tx = x, ty = y;
+            int tx = x, ty = y + 1;
             for (int i = 0; i < offset; i++) {
                 switch (data[i]) {
                     case 0:
-                        ty++;
+                        tx++;
                         break;
                     case 1:
-                        tx--;
                         ty++;
                         break;
                     case 2:
                         tx--;
                         break;
                     case 3:
-                        tx--;
                         ty--;
                         break;
-                    case 4:
-                        ty--;
-                        break;
-                    case 5:
-                        tx++;
-                        ty--;
-                    case 6:
-                        tx++;
-                    case 7:
-                        tx++;
-                        ty++;
+
                     default:
 
                         break;

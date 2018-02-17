@@ -72,7 +72,15 @@ public class Image {
     }
 
     public void setColor(int x, int y, Component component, byte value) {
-        data[y * width() * type.channels + x * type.channels + component.value] = value;
+        try {
+
+            data[y * width * type.channels + x * type.channels + component.value] = value;
+        } catch (Exception e) {
+            System.out.println(x + " " + y);
+            System.out.println(y * width * type.channels + x * type.channels + component.value);
+            System.out.println(data.length);
+            throw e;
+        }
     }
 
     public void setValue(int x, int y, byte value) {
