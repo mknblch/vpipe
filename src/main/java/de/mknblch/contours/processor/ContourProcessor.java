@@ -24,7 +24,7 @@ public class ContourProcessor extends Processor<Image, Image> {
             1, 1, 0, -1, -1, -1, 0, 1
     };
 
-    private IntPredicate threshold = i -> i > (byte)40;
+    private IntPredicate threshold = i -> i > 120;
 
     private final boolean[] visited = new boolean[640 * 480];
 
@@ -44,17 +44,19 @@ public class ContourProcessor extends Processor<Image, Image> {
         Arrays.fill(visited, false);
         out.fill((byte) 0);
 
-        boolean last = false;
         for (int y = 0; y < image.height; y++) {
+            boolean last = false;
             for (int x = 0; x < image.width; x++) {
-                final byte value = image.getValue(x, y, Image.Component.BLUE);
-                final boolean t = threshold.test(value & 0xFF);
+                System.out.println(x + " " + y);
+                final int value = image.getValue(x, y) & 0xFF;
+                final boolean t = threshold.test(value);
                 if (!visited[y * image.width + x]) {
                     if (!last && t) {
-                        chain8(image, x, y);
+                        //System.out.println("found at " + x + " x " + y);
+                        chain8(image, last, x, y);
                     }
-                    //visited[y * image.width + x] = true;
                 }
+                visited[y * image.width + x] = true;
                 last = t;
             }
         }
@@ -67,7 +69,7 @@ public class ContourProcessor extends Processor<Image, Image> {
         return true;
     }
 
-    private Contour chain8(Image image, int x, int y) {
+    private Contour chain8(Image image, boolean last, int x, int y) {
 
         //final Contour contour = new Contour(x, y);
         boolean val;
@@ -89,7 +91,7 @@ public class ContourProcessor extends Processor<Image, Image> {
                 int yi = NCOL[jj] + r;
 
                 if (isPixelLocationLegal(image, xi, yi)) {
-                    if (val != threshold.test(image.getValue(xi, yi) & 0xFF)) {
+                    if (last != threshold.test(image.getValue(xi, yi) & 0xFF)) {
                         dii = jj;
                         m = 1;
                         break;
@@ -99,9 +101,9 @@ public class ContourProcessor extends Processor<Image, Image> {
 
             if (m != 0) { /* Found the next pixel ... */
 
-                out.setValue(q, r, (byte) 255);
+                out.setColor(q, r, Image.Component.BLUE, (byte) 255);
 
-                visited[r * image.width + q] = true;
+                //visited[r * image.width + q] = true;
                 q += NROW[dii];
                 r += NCOL[dii];
                 lastdir = (dii + 5) % 8;
@@ -134,6 +136,10 @@ public class ContourProcessor extends Processor<Image, Image> {
         }
 
         public void add(int v) {
+            if (offset > 10000) {
+                System.out.println("exit");
+                return;
+            }
             if (data.length < offset + 1) {
                 data = Arrays.copyOf(data, offset + offset / 2);
                 //System.out.println(offset);
