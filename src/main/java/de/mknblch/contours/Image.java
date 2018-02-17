@@ -1,5 +1,7 @@
 package de.mknblch.contours;
 
+import java.util.Arrays;
+
 /**
  * @author mknblch
  */
@@ -57,12 +59,20 @@ public class Image {
         return data.length;
     }
 
+    public void fill(byte v) {
+        Arrays.fill(data, v);
+    }
+
     public byte getValue(int x, int y) {
         return data()[y * width() * type.channels + x * type.channels];
     }
 
     public byte getValue(int x, int y, Component colorComponent) {
         return data()[y * width() * type.channels + x * type.channels + colorComponent.value];
+    }
+
+    public void setColor(int x, int y, Component component, byte value) {
+        data[y * width() * type.channels + x * type.channels + component.value] = value;
     }
 
     public void setValue(int x, int y, byte value) {

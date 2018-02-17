@@ -12,11 +12,9 @@ import java.util.function.IntPredicate;
 /**
  * @author mknblch
  */
-public class ContourProcessor extends Processor<Image, List<ContourProcessor.Contour>> {
+public class ContourProcessor extends Processor<Image, Image> {
 
-    public interface Acceptor {
-        boolean accept(byte ref, byte v);
-    }
+    private final Image out;
 
     private static final int NROW[] = {
             0, -1, -1, -1, 0, 1, 1, 1
@@ -26,15 +24,14 @@ public class ContourProcessor extends Processor<Image, List<ContourProcessor.Con
             1, 1, 0, -1, -1, -1, 0, 1
     };
 
-    private IntPredicate threshold = i -> i > 30;
+    private IntPredicate threshold = i -> i > (byte)40;
 
     private final boolean[] visited = new boolean[640 * 480];
 
 
-    private List<Contour> contourList = new ArrayList<>();
-
     public ContourProcessor() {
 
+        out = new Image(640, 480, Image.Type.COLOR);
     }
 
     public ContourProcessor withThresholder(IntPredicate threshold) {
@@ -43,23 +40,25 @@ public class ContourProcessor extends Processor<Image, List<ContourProcessor.Con
     }
 
     @Override
-    public List<Contour> compute(Image image) {
+    public Image compute(Image image) {
         Arrays.fill(visited, false);
-        contourList.clear();
+        out.fill((byte) 0);
 
         boolean last = false;
         for (int y = 0; y < image.height; y++) {
             for (int x = 0; x < image.width; x++) {
+                final byte value = image.getValue(x, y, Image.Component.BLUE);
+                final boolean t = threshold.test(value & 0xFF);
                 if (!visited[y * image.width + x]) {
-                    final boolean t = threshold.test(image.getValue(x, y));
-                    if (last != t) {
-                        contourList.add(chain8(image, x, y));
+                    if (!last && t) {
+                        chain8(image, x, y);
                     }
-                    last = t;
+                    //visited[y * image.width + x] = true;
                 }
+                last = t;
             }
         }
-        return contourList;
+        return out;
     }
 
     boolean isPixelLocationLegal (Image i, int x, int y) {
@@ -70,12 +69,12 @@ public class ContourProcessor extends Processor<Image, List<ContourProcessor.Con
 
     private Contour chain8(Image image, int x, int y) {
 
-        final Contour contour = new Contour(x, y);
+        //final Contour contour = new Contour(x, y);
         boolean val;
         int m, q, r, ii, d, dii;
         int lastdir, jj;
 
-        val = threshold.test(image.data[y * image.width + x]);
+        val = threshold.test(image.getValue(x, y) & 0xFF);
         q = x;
         r = y;
         lastdir = 4;
@@ -90,7 +89,7 @@ public class ContourProcessor extends Processor<Image, List<ContourProcessor.Con
                 int yi = NCOL[jj] + r;
 
                 if (isPixelLocationLegal(image, xi, yi)) {
-                    if (val == threshold.test(image.getValue(xi, yi))) {
+                    if (val != threshold.test(image.getValue(xi, yi) & 0xFF)) {
                         dii = jj;
                         m = 1;
                         break;
@@ -99,8 +98,9 @@ public class ContourProcessor extends Processor<Image, List<ContourProcessor.Con
             }
 
             if (m != 0) { /* Found the next pixel ... */
-                contour.add(lastdir);
-                System.out.println();
+
+                out.setValue(q, r, (byte) 255);
+
                 visited[r * image.width + q] = true;
                 q += NROW[dii];
                 r += NCOL[dii];
@@ -110,7 +110,8 @@ public class ContourProcessor extends Processor<Image, List<ContourProcessor.Con
             }
         }
         while ((q != x) || (r != y));
-        return contour;
+
+        return null; //contour;
     }
 
     public interface PointConsumer {

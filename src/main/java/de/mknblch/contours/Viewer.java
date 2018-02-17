@@ -24,8 +24,8 @@ public class Viewer extends JPanel {
         bufferedImageRenderer = new BufferedImageRenderer();
     }
 
-
     public void start() {
+        System.out.println("start");
         running = true;
         new Thread(() -> {
             while (running) {
@@ -45,6 +45,7 @@ public class Viewer extends JPanel {
     public void paint(Graphics g) {
         super.paint(g);
         final BufferedImage image = bufferedImageRenderer.render(source.pull());
+        System.out.println("render");
         if (null != image) {
             g.drawImage(image, 0, 0, this);
         }

@@ -10,16 +10,13 @@ import java.util.List;
 public class Launcher {
 
     public static void main(String[] args) {
-
-        final Processor<Image, List<ContourProcessor.Contour>> source = new DefaultVideoSource()
+        final Processor<Image, Image> source = new DefaultVideoSource()
                 .connectTo(new Convolution(Convolution.HIGHPASS))
                 .connectTo(new Invert())
                 .connectTo(new Convolution(Convolution.STAR_3x3))
+                .connectTo(new Dilation())
                 .connectTo(new ContourProcessor());
-
-        while (true) {
-            System.out.println(source.pull().size());
-        }
+        Viewer.start(source);
 
     }
 }
