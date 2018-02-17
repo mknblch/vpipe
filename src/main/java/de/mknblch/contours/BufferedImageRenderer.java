@@ -53,7 +53,7 @@ public class BufferedImageRenderer {
                 width,
                 height,
                 1,
-                width * 1,
+                width,
                 new int[]{Image.Component.RED.value});
         final ComponentColorModel cmodel = new ComponentColorModel(
                 ColorSpace.getInstance(ColorSpace.CS_GRAY),

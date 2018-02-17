@@ -10,8 +10,8 @@ public class Launcher {
     public static void main(String[] args) {
 
         final Pipeline pipe = Pipeline.builder()
-                .add(new Binarization(30))
                 .add(new Invert())
+                .add(new Convolution(Convolution.LAPLACIAN))
                 .build();
 
         Viewer.start(pipe);
