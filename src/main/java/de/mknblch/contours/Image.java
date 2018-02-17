@@ -53,6 +53,10 @@ public class Image {
         return type;
     }
 
+    public int length() {
+        return data.length;
+    }
+
     public byte getValue(int x, int y) {
         return data()[y * width() * type.channels + x * type.channels];
     }

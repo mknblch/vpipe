@@ -89,9 +89,9 @@ public class Convolution extends Processor<Image, Image> {
 
     public static final Kernel STAR_3x3 = new Kernel(
             new double[] {
-                    -1, 1, -1,
-                    1, 1, 1,
-                    -1, 1, -1
+                    -2, 1, -2,
+                    1, 4, 1,
+                    -2, 1, -2
             }
     );
 
