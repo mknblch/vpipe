@@ -13,7 +13,7 @@ public abstract class Processor<I, O> {
 
     public abstract O compute(I in);
 
-    public <I> Processor<O, I> connectTo(Processor<O, I> nextProcessor) {
+    public <O2> Processor<O, O2> connectTo(Processor<O, O2> nextProcessor) {
         nextProcessor.previous = this;
         return nextProcessor;
     }
