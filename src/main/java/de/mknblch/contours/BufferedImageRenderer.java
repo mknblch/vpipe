@@ -69,6 +69,31 @@ public class BufferedImageRenderer {
 
         return new BufferedImage(cmodel, raster, false, null);
     }
+    private static BufferedImage createMono3Image(int width, int height) {
+
+        final byte[] pixels = new byte[width * height * 3];
+        final DataBuffer dataBuffer = new DataBufferByte(pixels, width*height, 0);
+        final ComponentSampleModel smodel = new ComponentSampleModel(
+                DataBuffer.TYPE_BYTE,
+                width,
+                height,
+                1,
+                width,
+                new int[]{Image.Component.RED.value});
+        final ComponentColorModel cmodel = new ComponentColorModel(
+                ColorSpace.getInstance(ColorSpace.CS_GRAY),
+                new int[]{8},
+                false,
+                false,
+                Transparency.OPAQUE,
+                DataBuffer.TYPE_BYTE);
+        final WritableRaster raster = Raster.createWritableRaster(
+                smodel,
+                dataBuffer,
+                null);
+
+        return new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+    }
 
     public BufferedImage render(Image image) {
         return render(
@@ -88,7 +113,7 @@ public class BufferedImageRenderer {
 
                 default:
                     System.out.println("mono");
-                    out = createMono2Image(width, height);
+                    out = createMono3Image(width, height);
                     break;
             }
         }

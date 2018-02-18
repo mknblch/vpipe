@@ -9,6 +9,7 @@ import de.mknblch.contours.Processor;
 public class Convolution extends Processor<Image, Image> {
 
     private final Kernel kernel;
+    private Image out;
 
     public Convolution(Kernel kernel) {
         this.kernel = kernel;
@@ -16,8 +17,13 @@ public class Convolution extends Processor<Image, Image> {
 
     @Override
     public Image compute(Image image) {
+
+
         final int width = image.width();
         final int height = image.height();
+        if (null == out) {
+            out = new Image(width, height, Image.Type.MONOCHROM);
+        }
         final int ow = (kernel.width - 1) / 2;
         final int oh = (kernel.height - 1) / 2;
         final byte[] data = image.data();
@@ -46,10 +52,10 @@ public class Convolution extends Processor<Image, Image> {
         }
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                image.setValue(x, y, result[y * width + x]);
+                out.setValue(x, y, result[y * width + x]);
             }
         }
-        return image;
+        return out;
     }
 
     public static class Kernel {
@@ -122,7 +128,7 @@ public class Convolution extends Processor<Image, Image> {
     public static final Kernel HIGHPASS = new Kernel(
             new double[]{
                     -1, -1, -1,
-                    -1, 8, -1,
+                    -1, 7, -1,
                     -1, -1, -1
             }
     );

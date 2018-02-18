@@ -15,10 +15,12 @@ public class Launcher {
                 .connectTo(new Convolution(Convolution.HIGHPASS))
                 .connectTo(new Invert())
                 .connectTo(new Convolution(Convolution.STAR_3x3))
-                .connectTo(new ContourProcessor());*/
-        final Processor<Image,Image> source = new DefaultVideoSource()
-                .connectTo(new Grayscale())
-                .connectTo(new Convolution(Convolution.HIGHPASS));
+                .connectTo(new ContourProcessor());
+        */
+
+        final Processor<Image, Image> source = new DefaultVideoSource()
+                .connectTo(new Convolution(Convolution.SOBEL_TD));
+
         Viewer.start(source);
 
 
