@@ -22,7 +22,7 @@ public class Dilation extends Processor<Image, Image> {
         int height = img.height();
 
         //buff
-        byte buff[];
+        int buff[];
 
         //output of dilation
         final byte temp[] = new byte[width * height];
@@ -30,7 +30,7 @@ public class Dilation extends Processor<Image, Image> {
         //perform dilation
         for(int y = 0; y < height; y++){
             for(int x = 0; x < width; x++){
-                buff = new byte[9];
+                buff = new int[9];
                 int i = 0;
                 for(int ty = y - 1; ty <= y + 1; ty++){
                    for(int tx = x - 1; tx <= x + 1; tx++){
@@ -43,7 +43,7 @@ public class Dilation extends Processor<Image, Image> {
                 //sort buff
                 java.util.Arrays.sort(buff);
                 //save highest value
-                temp[x + y * width] = buff[8];
+                temp[x + y * width] = (byte) (buff[8] & 0xFF);
             }
         }
 

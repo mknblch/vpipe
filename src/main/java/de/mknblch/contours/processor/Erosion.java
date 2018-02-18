@@ -27,7 +27,7 @@ public class Erosion extends Processor<Image, Image> {
         int height = img.height();
 
         //buff
-        byte[] buff;
+        int[] buff;
 
         //output of erosion
         byte output[] = new byte[width*height];
@@ -35,16 +35,10 @@ public class Erosion extends Processor<Image, Image> {
         //perform erosion
         for(int y = 0; y < height; y++){
             for(int x = 0; x < width; x++){
-                buff = new byte[9];
+                buff = new int[9];
                 int i = 0;
                 for(int ty = y - 1; ty <= y + 1; ty++){
                     for(int tx = x - 1; tx <= x + 1; tx++){
-                        /**
-                         * 3x3 mask [kernel or structuring element]
-                         * [1, 1, 1
-                         *  1, 1, 1
-                         *  1, 1, 1]
-                         */
                         if(ty >= 0 && ty < height && tx >= 0 && tx < width){
                             //pixel under the mask
                             buff[i] = img.getValue(tx, ty);
@@ -57,7 +51,7 @@ public class Erosion extends Processor<Image, Image> {
                 java.util.Arrays.sort(buff);
 
                 //save lowest value
-                output[x+y*width] = buff[9-i];
+                output[x+y*width] = (byte) (buff[9-i] & 0xFF);
             }
         }
 

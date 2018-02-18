@@ -63,17 +63,16 @@ public class Image {
         Arrays.fill(data, v);
     }
 
-    public byte getValue(int x, int y) {
-        return data()[y * width() * type.channels + x * type.channels];
+    public int getValue(int x, int y) {
+        return data[y * width() * type.channels + x * type.channels] & 0xFF;
     }
 
-    public byte getValue(int x, int y, Component colorComponent) {
-        return data()[y * width() * type.channels + x * type.channels + colorComponent.value];
+    public int getValue(int x, int y, Component colorComponent) {
+        return data[y * width() * type.channels + x * type.channels + colorComponent.value] & 0xFF;
     }
 
     public void setColor(int x, int y, Component component, byte value) {
         try {
-
             data[y * width * type.channels + x * type.channels + component.value] = value;
         } catch (Exception e) {
             System.out.println(x + " " + y);
@@ -81,6 +80,10 @@ public class Image {
             System.out.println(data.length);
             throw e;
         }
+    }
+
+    public void setValue(int x, int y, int ivalue) {
+        setValue(x, y, Image.clip(ivalue));
     }
 
     public void setValue(int x, int y, byte value) {

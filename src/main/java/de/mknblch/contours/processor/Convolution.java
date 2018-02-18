@@ -31,35 +31,29 @@ public class Convolution extends Processor<Image, Image> {
             x:
             for (int x = 0; x < width; x++) {
                 double t = 0.;
-                for (int ty = -oh; ty < oh + 1; ty++) {
-
-                    for (int tx = -ow; tx < ow + 1; tx++) {
+                for (int ty = -oh; ty <= oh; ty++) {
+                    for (int tx = -ow; tx <= ow; tx++) {
 
                         final int ky = y + ty;
                         final int kx = x + tx;
-                        if (ky > height || ky < 0) {
+                        if (ky >= height || ky < 0) {
                             continue y;
                         }
-                        if (kx > width || kx < 0) {
+                        if (kx >= width || kx < 0) {
                             continue x;
                         }
-                        final int v = image.getValue(x, y) & 0xFF;
+                        final int v = image.getValue(kx, ky, Image.Component.RED);
                         final double h = kernel.value(tx, ty);
 
-                        System.out.println("v = " + v);
-                        System.out.println("h = " + h);
-                        System.out.println("t = " + t);
+                        // System.out.println(v + " * " + h + " = " + (v * h) + " | t = " + t);
+
                         t += v * h;
                         //System.out.println(tx + " " + ty);
                     }
                 }
 
-                //System.out.println();
-
-                //System.out.println("t = " + t);
-                final byte clip = Image.clip(t * kernel.multiplier + kernel.addend);
-                //System.out.println("clip = " + clip);
-                out.setValue(x, y, clip);
+//                System.out.println("t = " + t);
+                out.setValue(x, y, (int) (t * kernel.multiplier + kernel.addend));
             }
         }
         return out;
@@ -94,7 +88,7 @@ public class Convolution extends Processor<Image, Image> {
         }
 
         public Kernel(double[] h) {
-            this(h, 1.);
+            this(h, 1., 128);
         }
 
         public double value(int xo, int yo) {
@@ -145,9 +139,9 @@ public class Convolution extends Processor<Image, Image> {
     public static final Kernel HIGHPASS = new Kernel(
             new double[]{
                     -1, -1, -1,
-                    -1, 7, -1,
+                    -1, 8, -1,
                     -1, -1, -1
-            }
+            }, 1, 0
     );
 
     public static final Kernel HIGHPASS_5x5 = new Kernel(
