@@ -19,6 +19,7 @@ public class Launcher {
         */
 
         final Processor<Image, Image> source = new DefaultVideoSource()
+                .connectTo(new Binarization(30))
                 .connectTo(new Convolution(Convolution.SOBEL_TD));
 
         Viewer.start(source);

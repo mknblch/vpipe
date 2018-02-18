@@ -18,7 +18,6 @@ public class Convolution extends Processor<Image, Image> {
     @Override
     public Image compute(Image image) {
 
-
         final int width = image.width();
         final int height = image.height();
         if (null == out) {
@@ -26,16 +25,16 @@ public class Convolution extends Processor<Image, Image> {
         }
         final int ow = (kernel.width - 1) / 2;
         final int oh = (kernel.height - 1) / 2;
-        final byte[] data = image.data();
-        final byte[] result = new byte[data.length];
 
         y:
         for (int y = 0; y < height; y++) {
             x:
             for (int x = 0; x < width; x++) {
-                double t = 0;
-                for (int ty = -oh; ty < oh; ty++) {
-                    for (int tx = -ow; tx < ow; tx++) {
+                double t = 0.;
+                for (int ty = -oh; ty < oh + 1; ty++) {
+
+                    for (int tx = -ow; tx < ow + 1; tx++) {
+
                         final int ky = y + ty;
                         final int kx = x + tx;
                         if (ky > height || ky < 0) {
@@ -44,15 +43,23 @@ public class Convolution extends Processor<Image, Image> {
                         if (kx > width || kx < 0) {
                             continue x;
                         }
-                        t += (image.getValue(x, y) & 0xFF) * kernel.value(tx, ty);
+                        final int v = image.getValue(x, y) & 0xFF;
+                        final double h = kernel.value(tx, ty);
+
+                        System.out.println("v = " + v);
+                        System.out.println("h = " + h);
+                        System.out.println("t = " + t);
+                        t += v * h;
+                        //System.out.println(tx + " " + ty);
                     }
                 }
-                result[y * width + x] = Image.clip(t * kernel.multiplier);
-            }
-        }
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                out.setValue(x, y, result[y * width + x]);
+
+                //System.out.println();
+
+                //System.out.println("t = " + t);
+                final byte clip = Image.clip(t * kernel.multiplier + kernel.addend);
+                //System.out.println("clip = " + clip);
+                out.setValue(x, y, clip);
             }
         }
         return out;
@@ -62,18 +69,28 @@ public class Convolution extends Processor<Image, Image> {
 
         public final double[] H;
         public final double multiplier;
+        public final double addend;
         public final int width;
         public final int height;
 
         public Kernel(double[] h, int width, int height, double multiplier) {
+            this(h, width, height, multiplier, 0);
+        }
+
+        public Kernel(double[] h, int width, int height, double multiplier, double addend) {
             H = h;
             this.multiplier = multiplier;
             this.width = width;
             this.height = height;
+            this.addend = addend;
         }
 
         public Kernel(double[] h, double multiplier) {
             this(h, (int) Math.sqrt(h.length), (int) Math.sqrt(h.length), multiplier);
+        }
+
+        public Kernel(double[] h, double multiplier, double addend) {
+            this(h, (int) Math.sqrt(h.length), (int) Math.sqrt(h.length), multiplier, addend);
         }
 
         public Kernel(double[] h) {
@@ -104,12 +121,12 @@ public class Convolution extends Processor<Image, Image> {
 
     public static final Kernel SMOOTH_5x5 = new Kernel(
             new double[]{
-                    1. / 25, 1. / 25, 1. / 25, 1. / 25, 1. / 25,
-                    1. / 25, 1. / 25, 1. / 25, 1. / 25, 1. / 25,
-                    1. / 25, 1. / 25, 1. / 25, 1. / 25, 1. / 25,
-                    1. / 25, 1. / 25, 1. / 25, 1. / 25, 1. / 25,
-                    1. / 25, 1. / 25, 1. / 25, 1. / 25, 1. / 25,
-            }
+                    1., 1., 1., 1., 1.,
+                    1., 1., 1., 1., 1.,
+                    1., 1., 1., 1., 1.,
+                    1., 1., 1., 1., 1.,
+                    1., 1., 1., 1., 1.,
+            }, 1. / 25
     );
 
 
@@ -148,7 +165,7 @@ public class Convolution extends Processor<Image, Image> {
                     -1, -2, -1,
                     0, 0, 0,
                     1, 2, 1
-            }, 1. / 4
+            }, 1, 128
     );
 
     public static final Kernel SOBEL_LR = new Kernel(
