@@ -1,12 +1,7 @@
 package de.mknblch.contours;
 
-import com.github.sarxos.webcam.Webcam;
-import com.sun.tools.doclint.Entity;
-
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 
 /**
