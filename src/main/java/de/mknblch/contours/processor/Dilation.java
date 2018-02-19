@@ -16,10 +16,13 @@ public class Dilation extends Processor<Image, Image> {
      *
      * @param img The image on which dilation operation is performed
      */
-    public static void transform(Image img){
+    public static Image transform(Image img){
+
 
         int width = img.width();
         int height = img.height();
+
+        final Image out = new Image(width, height, img.type);
 
         //buff
         int buff[];
@@ -43,7 +46,7 @@ public class Dilation extends Processor<Image, Image> {
                 //sort buff
                 java.util.Arrays.sort(buff);
                 //save highest value
-                temp[x + y * width] = (byte) (buff[8] & 0xFF);
+                out.setValue(x, y, (byte) (buff[8] & 0xFF));
             }
         }
 
