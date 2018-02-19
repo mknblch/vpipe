@@ -88,7 +88,7 @@ public class Convolution extends Processor<Image, Image> {
         }
 
         public Kernel(double[] h) {
-            this(h, 1., 128);
+            this(h, 1., 0);
         }
 
         public double value(int xo, int yo) {
@@ -191,7 +191,7 @@ public class Convolution extends Processor<Image, Image> {
                     0, -1, 0,
                     -1, 4, -1,
                     0, -1, 0
-            }
+            }, 2
     );
 
 }
