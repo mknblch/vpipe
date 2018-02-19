@@ -19,8 +19,7 @@ public class Launcher {
         */
 
         final Processor<Image, Image> source = new DefaultVideoSource()
-                .connectTo(new Dilation())
-                .connectTo(new Erosion());
+                .connectTo(new Convolution(Convolution.LAPLACIAN));
 
         Viewer.start(source);
 
