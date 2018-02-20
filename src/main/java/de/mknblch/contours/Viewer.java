@@ -9,12 +9,12 @@ import java.awt.image.BufferedImage;
  */
 public class Viewer extends JPanel {
 
-    private final Processor<?, Image> source;
+    private final Processor<?, ? extends Image> source;
     private final BufferedImageRenderer bufferedImageRenderer;
 
     private volatile boolean running = false;
 
-    public Viewer(Processor<?, Image> source) {
+    public Viewer(Processor<?, ? extends Image> source) {
         this.source = source;
         bufferedImageRenderer = new BufferedImageRenderer();
     }
@@ -45,7 +45,7 @@ public class Viewer extends JPanel {
         }
     }
 
-    public static void start(Processor<?, Image> imageProcessor) {
+    public static void start(Processor<?, ? extends Image> imageProcessor) {
 
         javax.swing.SwingUtilities.invokeLater(() -> {
 

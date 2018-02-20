@@ -25,9 +25,9 @@ public class BufferedImageRenderer {
                 height,
                 3,
                 width * 3,
-                new int[]{Image.Component.RED.value,
-                        Image.Component.GREEN.value,
-                        Image.Component.BLUE.value});
+                new int[]{ColorImage.RED,
+                        ColorImage.GREEN,
+                        ColorImage.BLUE});
         final ComponentColorModel cmodel = new ComponentColorModel(
                 ColorSpace.getInstance(ColorSpace.CS_sRGB),
                 new int[]{8, 8, 8},
@@ -54,7 +54,7 @@ public class BufferedImageRenderer {
                 height,
                 1,
                 width,
-                new int[]{Image.Component.RED.value});
+                new int[]{ColorImage.RED});
         final ComponentColorModel cmodel = new ComponentColorModel(
                 ColorSpace.getInstance(ColorSpace.CS_GRAY),
                 new int[]{8},
@@ -79,7 +79,7 @@ public class BufferedImageRenderer {
                 height,
                 1,
                 width,
-                new int[]{Image.Component.RED.value});
+                new int[]{ColorImage.RED});
         final ComponentColorModel cmodel = new ComponentColorModel(
                 ColorSpace.getInstance(ColorSpace.CS_GRAY),
                 new int[]{8},
@@ -100,24 +100,18 @@ public class BufferedImageRenderer {
                 image.data(),
                 image.width(),
                 image.height(),
-                image.type());
+                image instanceof ColorImage);
     }
 
     public BufferedImage render(byte[] data,
-                                int width, int height, Image.Type type) {
+                                int width, int height, boolean color) {
         if (null == out) {
-            switch (type) {
-                case COLOR:
-                    out = createColorImage(width, height);
-                    break;
-
-                default:
-                    System.out.println("mono");
-                    out = createMono3Image(width, height);
-                    break;
+            if (color) {
+                out = createColorImage(width, height);
+            } else {
+                out = createMono3Image(width, height);
             }
         }
-
         final byte[] imageData = ((DataBufferByte) out
                 .getRaster()
                 .getDataBuffer())

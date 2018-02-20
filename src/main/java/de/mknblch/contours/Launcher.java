@@ -23,11 +23,7 @@ public class Launcher {
 //                        new Split.NoOpProcessor<>()
 //                )).connectTo(new Merge.MergeTwo<>(new ContourRenderFunction()));
 
-        final Processor<?, Image> source = new DefaultVideoSource()
-                .connectTo(PixelProcessor.grayMean())
-                .connectTo(new Dilation())
-                .connectTo(new Erosion());
-
+        final Processor<?, ColorImage> source = new DefaultVideoSource();
 
 
         Viewer.start(source);

@@ -10,10 +10,10 @@ import java.util.List;
 /**
  * @author mknblch
  */
-public class DefaultVideoSource extends Processor<Void, Image> implements VideoSource {
+public class DefaultVideoSource extends Processor<Void, ColorImage> implements VideoSource {
 
     private final Webcam webcam;
-    private final Image image;
+    private final ColorImage image;
 
     public DefaultVideoSource() {
 
@@ -38,11 +38,11 @@ public class DefaultVideoSource extends Processor<Void, Image> implements VideoS
         if (!webcam.open()) {
             throw new IllegalStateException("Cannot open Webcam");
         }
-        image = new Image(640, 480, Image.Type.COLOR);
+        image = new ColorImage(640, 480);
     }
 
     @Override
-    public Image image() {
+    public ColorImage image() {
         final DataBufferByte buffer = (DataBufferByte) webcam
                 .getImage()
                 .getRaster()
@@ -57,12 +57,12 @@ public class DefaultVideoSource extends Processor<Void, Image> implements VideoS
     }
 
     @Override
-    public Image pull() {
+    public ColorImage pull() {
         return image();
     }
 
     @Override
-    public Image compute(Void image) {
+    public ColorImage compute(Void image) {
         return null;
     }
 }

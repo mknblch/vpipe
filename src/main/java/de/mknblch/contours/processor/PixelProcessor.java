@@ -1,8 +1,12 @@
 package de.mknblch.contours.processor;
 
-import de.mknblch.contours.Image;
+import de.mknblch.contours.ColorImage;
+import de.mknblch.contours.GrayImage;
+import de.mknblch.contours.Processor;
 
 import java.util.function.IntUnaryOperator;
+
+import static de.mknblch.contours.Image.I;
 
 /**
  * @author mknblch
@@ -13,75 +17,75 @@ public class PixelProcessor {
         int apply(int r, int g, int b);
     }
 
-    public static class MonochromePixelProcessor extends ImageProcessor<Image> {
-
+    public static class Mono extends Processor<GrayImage, GrayImage> {
         private final IntUnaryOperator function;
+        private GrayImage out = null;
 
-        public MonochromePixelProcessor(IntUnaryOperator function) {
+        public Mono(IntUnaryOperator function) {
             this.function = function;
         }
 
         @Override
-        protected void computeOut(Image in) {
-            Image.requireMonochrom(in);
-            adaptTo(in, Image.Type.MONOCHROME);
+        public GrayImage compute(GrayImage in) {
+            out = GrayImage.adaptTo(out, in);
             final int pixels = in.pixels();
             for (int i = 0; i < pixels; i += 3) {
-                out.setValue(i, function.applyAsInt(in.data[i] & 0xFF));
+                out.setValue(i, function.applyAsInt(I(in, i)));
             }
+            return out;
         }
     }
 
-    public static class ColorPixelProcessor extends ImageProcessor<Image> {
-
+    public static class Color extends Processor<ColorImage, ColorImage> {
+        private ColorImage out = null;
         private final ColorPixelFunction function;
 
-        public ColorPixelProcessor(ColorPixelFunction function) {
+        public Color(ColorPixelFunction function) {
             this.function = function;
         }
 
         @Override
-        protected void computeOut(Image in) {
-            Image.requireColor(in);
-            adaptTo(in, Image.Type.COLOR);
+        public ColorImage compute(ColorImage in) {
+            out = ColorImage.adaptTo(out, in);
             final int pixels = in.data.length;
             for (int i = 0; i < pixels; i += 3) {
                 final int v = function.apply(
-                        in.data[i + Image.Component.RED.value] & 0xFF,
-                        in.data[i + Image.Component.GREEN.value] & 0xFF,
-                        in.data[i + Image.Component.BLUE.value] & 0xFF);
-                out.setColor(i, Image.Component.RED, v);
-                out.setColor(i, Image.Component.GREEN, v);
-                out.setColor(i, Image.Component.BLUE, v);
+                        I(in, i + ColorImage.RED),
+                        I(in, i + ColorImage.GREEN),
+                        I(in, i + ColorImage.BLUE));
+                out.setColor(i, ColorImage.RED, ColorImage.red(v));
+                out.setColor(i, ColorImage.GREEN, ColorImage.green(v));
+                out.setColor(i, ColorImage.BLUE, ColorImage.blue(v));
             }
+            return out;
         }
     }
 
-    public static class Grayscale extends ImageProcessor<Image> {
-
+    public static class ColorToMono extends Processor<ColorImage, GrayImage> {
+        private GrayImage out = null;
         private final ColorPixelFunction function;
 
-        public Grayscale(ColorPixelFunction function) {
+        public ColorToMono(ColorPixelFunction function) {
             this.function = function;
         }
 
         @Override
-        protected void computeOut(Image in) {
-            Image.requireColor(in);
-            adaptTo(in, Image.Type.MONOCHROME);
+        public GrayImage compute(ColorImage in) {
+            out = GrayImage.adaptTo(out, in);
             final int pixels = in.data.length;
             for (int i = 0; i < pixels; i += 3) {
                 final int v = function.apply(
-                        in.data[i + Image.Component.RED.value] & 0xFF,
-                        in.data[i + Image.Component.GREEN.value] & 0xFF,
-                        in.data[i + Image.Component.BLUE.value] & 0xFF);
+                        I(in, i + ColorImage.RED),
+                        I(in, i + ColorImage.GREEN),
+                        I(in, i + ColorImage.BLUE));
                 out.setValue(i / 3, v);
             }
+            return out;
         }
     }
 
-    public static PixelProcessor.Grayscale grayMean() {
-        return new Grayscale((r, g, b) -> (r + g + b) / 3);
+    public static ColorToMono grayMean() {
+        return new ColorToMono((r, g, b) -> (r + g + b) / 3);
     }
 
 }

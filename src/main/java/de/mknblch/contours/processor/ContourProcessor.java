@@ -1,5 +1,6 @@
 package de.mknblch.contours.processor;
 
+import de.mknblch.contours.GrayImage;
 import de.mknblch.contours.Image;
 import de.mknblch.contours.Processor;
 
@@ -14,7 +15,7 @@ import static de.mknblch.contours.processor.ContourProcessor.Direction.*;
 /**
  * @author mknblch
  */
-public class ContourProcessor extends Processor<Image, List<ContourProcessor.Contour>> {
+public class ContourProcessor extends Processor<GrayImage, List<ContourProcessor.Contour>> {
 
     enum Direction {
         E, S, W, N;
@@ -32,7 +33,7 @@ public class ContourProcessor extends Processor<Image, List<ContourProcessor.Con
     }
 
     @Override
-    public List<Contour> compute(Image image) {
+    public List<Contour> compute(GrayImage image) {
         visited.clear();
         final ArrayList<Contour> contours = new ArrayList<>();
         for (int y = 0; y < image.height - 1; y++) {
@@ -47,7 +48,7 @@ public class ContourProcessor extends Processor<Image, List<ContourProcessor.Con
         return contours;
     }
 
-    private Contour chain4(Image image, int x, int y) {
+    private Contour chain4(GrayImage image, int x, int y) {
 
         final Contour contour = new Contour(x, y);
         Direction d = S;
