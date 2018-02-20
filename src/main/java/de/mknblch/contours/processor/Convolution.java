@@ -21,7 +21,7 @@ public class Convolution extends Processor<Image, Image> {
         final int width = image.width();
         final int height = image.height();
         if (null == out) {
-            out = new Image(width, height, Image.Type.MONOCHROM);
+            out = new Image(width, height, Image.Type.MONOCHROME);
         }
         final int ow = (kernel.width - 1) / 2;
         final int oh = (kernel.height - 1) / 2;
@@ -42,7 +42,7 @@ public class Convolution extends Processor<Image, Image> {
                         if (kx >= width || kx < 0) {
                             continue x;
                         }
-                        final int v = image.getValue(kx, ky, Image.Component.RED);
+                        final int v = image.getValue(kx, ky);
                         final double h = kernel.value(tx, ty);
 
                         // System.out.println(v + " * " + h + " = " + (v * h) + " | t = " + t);

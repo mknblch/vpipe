@@ -21,6 +21,13 @@ public class Parallelize {
         return new ParallelThree<>(leftProcessor, middleProcessor, rightProcessor);
     }
 
+    public static class NoOpProcessor<I> extends Processor<I, I> {
+        @Override
+        public I compute(I in) {
+            return in;
+        }
+    }
+
     public static class TupleTwo<L, R> {
         private final L left;
         private final R right;

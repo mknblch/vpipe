@@ -7,8 +7,7 @@ public class Dilation extends Processor<Image, Image> {
 
     @Override
     public Image compute(Image image) {
-        transform(image);
-        return image;
+        return transform(image);
     }
 
     /**
@@ -26,9 +25,6 @@ public class Dilation extends Processor<Image, Image> {
 
         //buff
         int buff[];
-
-        //output of dilation
-        final byte temp[] = new byte[width * height];
 
         //perform dilation
         for(int y = 0; y < height; y++){
@@ -50,13 +46,6 @@ public class Dilation extends Processor<Image, Image> {
             }
         }
 
-        /**
-         * Save the erosion value in image img.
-         */
-        for(int y = 0; y < height; y++){
-            for(int x = 0; x < width; x++){
-                img.setValue(x, y, (byte) temp[x + y * width]);
-            }
-        }
+        return out;
     }
 }

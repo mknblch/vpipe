@@ -18,7 +18,7 @@ public class Binarization extends Processor<Image, Image> {
     @Override
     public Image compute(Image in) {
         if (null == image) {
-            image = new Image(in.width, in.height, Image.Type.MONOCHROM);
+            image = new Image(in.width, in.height, Image.Type.MONOCHROME);
         }
         for (int i = 0; i < image.data.length; i++) {
             image.data[i] = (in.data[i * in.type.channels + Image.Component.RED.value] & 0xFF

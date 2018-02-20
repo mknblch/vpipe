@@ -18,18 +18,24 @@ public class Launcher {
                 .connectTo(new ContourProcessor());
         */
 
-        final Processor<Image, Image> source = new DefaultVideoSource()
-                .connectTo(new Convolution(Convolution.LAPLACIAN));
-
-        Viewer.start(source);
-
-
-
-
         /*
-        final Processor<Image, Image> source = new TestSource().connectTo(new ContourProcessor());
+        final Processor<?, Image> source = new DefaultVideoSource()
+                .connectTo(new Convolution(Convolution.SMOOTH_3x3))
+                .connectTo(Parallelize.parallel(
+                        new Convolution(Convolution.HIGHPASS),
+                        new Parallelize.NoOpProcessor<>()
+                )).connectTo(new Merge.MergeTwo<>(
+                        (Image l, Image r) ->
+                                l.mul(r.mul(2))
+                ));
         */
 
+        final Processor<?, Image> source = new DefaultVideoSource()
+                .connectTo(PixelProcessor.grayMean());
+
+
+
+        Viewer.start(source);
 
     }
 }

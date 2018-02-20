@@ -11,7 +11,7 @@ public class TestSource extends Processor<Void, Image> implements VideoSource {
             0, (byte) 255, 0, (byte) 255, 0,
             0, (byte) 255, (byte) 255, (byte) 255, 0,
             0, 0, 0, 0, 0
-    }, 5, 5, Image.Type.MONOCHROM);
+    }, 5, 5, Image.Type.MONOCHROME);
 
     @Override
     public Image image() {
