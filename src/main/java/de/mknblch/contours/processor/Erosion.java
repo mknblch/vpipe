@@ -6,62 +6,23 @@ import de.mknblch.contours.Processor;
 /**
  * @author mknblch
  */
-public class Erosion extends Processor<Image, Image> {
+public class Erosion extends ImageProcessor<Image> {
 
     @Override
-    public Image compute(Image image) {
-        transform(image);
-        return image;
-    }
-
-    /**
-     * This method will perform erosion operation on the grayscale image img.
-     *
-     * @param img The image on which erosion operation is performed
-     */
-    public static void transform(Image img){
-        /**
-         * Dimension of the image img.
-         */
-        int width = img.width();
-        int height = img.height();
-
-        //buff
-        int[] buff;
-
-        //output of erosion
-        byte output[] = new byte[width*height];
-
-        //perform erosion
+    protected void computeOut(Image in) {
+        Image.requireMonochrom(in);
+        adaptTo(in);
         for(int y = 0; y < height; y++){
             for(int x = 0; x < width; x++){
-                buff = new int[9];
-                int i = 0;
+                int min = 255;
                 for(int ty = y - 1; ty <= y + 1; ty++){
                     for(int tx = x - 1; tx <= x + 1; tx++){
                         if(ty >= 0 && ty < height && tx >= 0 && tx < width){
-                            //pixel under the mask
-                            buff[i] = img.getValue(tx, ty);
-                            i++;
+                            min = Math.min(min, in.getValue(tx, ty));
                         }
                     }
                 }
-
-                //sort buff
-                java.util.Arrays.sort(buff);
-
-                //save lowest value
-                output[x+y*width] = (byte) (buff[9-i] & 0xFF);
-            }
-        }
-
-        /**
-         * Save the erosion value in image img.
-         */
-        for(int y = 0; y < height; y++){
-            for(int x = 0; x < width; x++){
-                byte v = output[x + y * width];
-                img.setValue(x, y, v);
+                out.setValue(x, y, min);
             }
         }
     }

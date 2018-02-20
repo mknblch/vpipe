@@ -65,8 +65,8 @@ public class Image {
         return width * height;
     }
 
-    public void fill(byte v) {
-        Arrays.fill(data, v);
+    public void fill(int v) {
+        Arrays.fill(data, (byte) v);
     }
 
     public Image plus(Image image) {

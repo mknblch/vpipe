@@ -1,8 +1,8 @@
 package de.mknblch.contours.processor;
 
 import de.mknblch.contours.Processor;
-import de.mknblch.contours.processor.Parallelize.TupleThree;
-import de.mknblch.contours.processor.Parallelize.TupleTwo;
+import de.mknblch.contours.processor.Split.TupleThree;
+import de.mknblch.contours.processor.Split.TupleTwo;
 
 import java.util.function.BiFunction;
 

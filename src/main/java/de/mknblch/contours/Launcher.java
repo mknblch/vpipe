@@ -2,8 +2,6 @@ package de.mknblch.contours;
 
 import de.mknblch.contours.processor.*;
 
-import java.util.List;
-
 /**
  * @author mknblch
  */
@@ -18,20 +16,17 @@ public class Launcher {
                 .connectTo(new ContourProcessor());
         */
 
-        /*
-        final Processor<?, Image> source = new DefaultVideoSource()
-                .connectTo(new Convolution(Convolution.SMOOTH_3x3))
-                .connectTo(Parallelize.parallel(
-                        new Convolution(Convolution.HIGHPASS),
-                        new Parallelize.NoOpProcessor<>()
-                )).connectTo(new Merge.MergeTwo<>(
-                        (Image l, Image r) ->
-                                l.mul(r.mul(2))
-                ));
-        */
+//        final Processor<?, Image> source = new DefaultVideoSource()
+//                .connectTo(new Convolution(Convolution.SMOOTH_3x3))
+//                .connectTo(Split.split(
+//                        new ContourProcessor(),
+//                        new Split.NoOpProcessor<>()
+//                )).connectTo(new Merge.MergeTwo<>(new ContourRenderFunction()));
 
         final Processor<?, Image> source = new DefaultVideoSource()
-                .connectTo(PixelProcessor.grayMean());
+                .connectTo(PixelProcessor.grayMean())
+                .connectTo(new Dilation())
+                .connectTo(new Erosion());
 
 
 

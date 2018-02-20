@@ -7,18 +7,18 @@ import static java.util.Objects.requireNonNull;
 /**
  * @author Jiří Kraml (jkraml@avantgarde-labs.de)
  */
-public class Parallelize {
+public class Split {
 
-    private Parallelize() {
+    private Split() {
         throw new UnsupportedOperationException("no instantiation allowed");
     }
 
-    public static <I, L, R> Processor<I, TupleTwo<L, R>> parallel(Processor<I, L> leftProcessor, Processor<I, R> rightProcessor) {
-        return new ParallelTwo<>(leftProcessor, rightProcessor);
+    public static <I, L, R> Processor<I, TupleTwo<L, R>> split(Processor<I, L> leftProcessor, Processor<I, R> rightProcessor) {
+        return new SplitTwo<>(leftProcessor, rightProcessor);
     }
 
-    public static <I, L, M, R> Processor<I, TupleThree<L, M, R>> parallel(Processor<I, L> leftProcessor, Processor<I, M> middleProcessor, Processor<I, R> rightProcessor) {
-        return new ParallelThree<>(leftProcessor, middleProcessor, rightProcessor);
+    public static <I, L, M, R> Processor<I, TupleThree<L, M, R>> split(Processor<I, L> leftProcessor, Processor<I, M> middleProcessor, Processor<I, R> rightProcessor) {
+        return new SplitThree<>(leftProcessor, middleProcessor, rightProcessor);
     }
 
     public static class NoOpProcessor<I> extends Processor<I, I> {
@@ -70,11 +70,11 @@ public class Parallelize {
         }
     }
 
-    public static class ParallelTwo<I, L, R> extends Processor<I, TupleTwo<L, R>> {
+    public static class SplitTwo<I, L, R> extends Processor<I, TupleTwo<L, R>> {
         private final Processor<I, L> leftProcessor;
         private final Processor<I, R> rightProcessor;
 
-        public ParallelTwo(Processor<I, L> leftProcessor, Processor<I, R> rightProcessor) {
+        public SplitTwo(Processor<I, L> leftProcessor, Processor<I, R> rightProcessor) {
             requireNonNull(leftProcessor, "leftProcessor must not be null");
             requireNonNull(rightProcessor, "rightProcessor must not be null");
 
@@ -91,12 +91,12 @@ public class Parallelize {
         }
     }
 
-    public static class ParallelThree<I, L, M, R> extends Processor<I, TupleThree<L, M, R>> {
+    public static class SplitThree<I, L, M, R> extends Processor<I, TupleThree<L, M, R>> {
         private final Processor<I, L> leftProcessor;
         private final Processor<I, M> middleProcessor;
         private final Processor<I, R> rightProcessor;
 
-        public ParallelThree(Processor<I, L> leftProcessor, Processor<I, M> middleProcessor, Processor<I, R> rightProcessor) {
+        public SplitThree(Processor<I, L> leftProcessor, Processor<I, M> middleProcessor, Processor<I, R> rightProcessor) {
             requireNonNull(leftProcessor, "leftProcessor must not be null");
             requireNonNull(middleProcessor, "middleProcessor must not be null");
             requireNonNull(rightProcessor, "rightProcessor must not be null");
