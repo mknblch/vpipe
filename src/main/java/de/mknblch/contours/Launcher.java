@@ -2,6 +2,8 @@ package de.mknblch.contours;
 
 import de.mknblch.contours.processor.*;
 
+import static de.mknblch.contours.processor.Kernels.*;
+
 /**
  * @author mknblch
  */
@@ -16,14 +18,18 @@ public class Launcher {
                 .connectTo(new ContourProcessor());
         */
 
-//        final Processor<?, Image> source = new DefaultVideoSource()
-//                .connectTo(new Convolution(Convolution.SMOOTH_3x3))
-//                .connectTo(Split.split(
-//                        new ContourProcessor(),
-//                        new Split.NoOpProcessor<>()
-//                )).connectTo(new Merge.MergeTwo<>(new ContourRenderFunction()));
+        final Processor<?, GrayImage> source = new DefaultVideoSource()
+                .connectTo(Processors.grayscale())
+                .connectTo(new Convolution(SMOOTH_3x3))
+                .connectTo(Split.split(
+                        new ContourProcessor(),
+                        new Split.NoOpProcessor<>()
+                )).connectTo(new Merge.MergeTwo<>(new ContourRenderFunction()));
 
-        final Processor<?, ColorImage> source = new DefaultVideoSource();
+//        final Processor<?, GrayImage> source = new DefaultVideoSource()
+//                .connectTo(Processors.grayscale())
+//                .connectTo(Processors.erosion())
+//                .connectTo(Processors.dilation());
 
 
         Viewer.start(source);
