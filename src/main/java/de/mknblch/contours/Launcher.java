@@ -20,7 +20,6 @@ public class Launcher {
 
         final Processor<?, GrayImage> source = new DefaultVideoSource()
                 .connectTo(Processors.grayscale())
-                .connectTo(new Convolution(SMOOTH_3x3))
                 .connectTo(Split.split(
                         new ContourProcessor(),
                         new Split.NoOpProcessor<>()
