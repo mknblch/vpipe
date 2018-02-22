@@ -21,14 +21,15 @@ public class DefaultVideoSource extends Processor<Void, ColorImage> implements V
         if (webcams.size() == 1) {
             webcam = webcams.get(0);
         } else {
-            final Object[] array = webcams.toArray();
-            webcam = (Webcam) JOptionPane.showInputDialog(null,
-                    "Choose cam",
-                    "The Choice of a Lifetime",
-                    JOptionPane.QUESTION_MESSAGE,
-                    null,
-                    array, // Array of choices
-                    array[0]);
+//            final Object[] array = webcams.toArray();
+//            webcam = (Webcam) JOptionPane.showInputDialog(null,
+//                    "Choose cam",
+//                    "The Choice of a Lifetime",
+//                    JOptionPane.QUESTION_MESSAGE,
+//                    null,
+//                    array, // Array of choices
+//                    array[0]);
+            webcam = webcams.get(2);
             if (null == webcam) {
                 System.exit(0);
             }

@@ -44,19 +44,23 @@ public class ContourProcessor extends Processor<GrayImage, List<ContourProcessor
     public List<Contour> compute(GrayImage image) {
         visited.clear();
         final ArrayList<Contour> contours = new ArrayList<>();
-        for (int y = 0; y < image.height - 1; y++) {
-            for (int x = 1; x < image.width - 1; x++) {
-                final boolean t1 = threshold.test(image.getValue(x - 1, y));
-                final boolean t = threshold.test(image.getValue(x, y));
-                if (!visited.get(y * image.width + x) && !t1 && t) {
-                    contours.add(chain4(image, x, y));
-                }
+        for (int i = 0; i < image.data.length - image.width - 1; i++) {
+            if (visited.get(i)) {
+                continue;
+            }
+            final int x = i % image.width;
+            if (x == image.width - 1) {
+                continue;
+            }
+            final int y = i / image.width;
+            if ((x == 0 || !threshold.test(image.getValue(x - 1, y))) && threshold.test(image.getValue(x, y))) {
+                contours.add(chain4(image, i, x, y));
             }
         }
         return contours;
     }
 
-    private Contour chain4(GrayImage image, int sx, int sy) {
+    private Contour chain4(GrayImage image, int i, int sx, int sy) {
 
         final Contour contour = new Contour(sx, sy);
         Direction d = S;
@@ -65,14 +69,14 @@ public class ContourProcessor extends Processor<GrayImage, List<ContourProcessor
             switch (d) {
                 case E:
                     if (x == image.width - 1 || !threshold.test(image.getValue(x, y - 1))) {
-                        visited.set(y * image.width + x);
+                        visited.set(i);
                         d = N;
                         y--;
                     } else if (y == image.height - 1 || !threshold.test(image.getValue(x, y))) {
                         d = E;
                         x++;
                     } else {
-                        visited.set(y * image.width + x);
+                        visited.set(i);
                         d = S;
                         y++;
                     }
@@ -82,7 +86,7 @@ public class ContourProcessor extends Processor<GrayImage, List<ContourProcessor
                         d = E;
                         x++;
                     } else if (x <= 0 || !threshold.test(image.getValue(x - 1, y))) {
-                        visited.set(y * image.width + x);
+                        visited.set(i);
                         d = S;
                         y++;
                     } else {
@@ -92,14 +96,14 @@ public class ContourProcessor extends Processor<GrayImage, List<ContourProcessor
                     break;
                 case W:
                     if (x <= 0 || !threshold.test(image.getValue(x - 1, y))) {
-                        visited.set(y * image.width + x);
+                        visited.set(i);
                         d = S;
                         y++;
                     } else if (y <= 0 || !threshold.test(image.getValue(x - 1, y - 1))) {
                         d = W;
                         x--;
                     } else {
-                        visited.set(y * image.width + x);
+                        visited.set(i);
                         d = N;
                         y--;
                     }
@@ -109,7 +113,7 @@ public class ContourProcessor extends Processor<GrayImage, List<ContourProcessor
                         d = W;
                         x--;
                     } else if (x == image.width - 1 || !threshold.test(image.getValue(x, y - 1))) {
-                        visited.set(y * image.width + x);
+                        visited.set(i);
                         d = N;
                         y--;
                     } else {

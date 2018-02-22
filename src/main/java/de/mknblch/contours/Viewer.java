@@ -14,6 +14,9 @@ public class Viewer extends JPanel {
 
     private volatile boolean running = false;
 
+    private int fps;
+    private long n, l = System.currentTimeMillis();
+
     public Viewer(Processor<?, ? extends Image> source) {
         this.source = source;
         bufferedImageRenderer = new BufferedImageRenderer();
@@ -24,10 +27,13 @@ public class Viewer extends JPanel {
         running = true;
         new Thread(() -> {
             while (running) {
+
                 this.repaint();
                 try {
                     Thread.sleep((1000 / 20));
                 } catch (InterruptedException e) {}
+
+
             }
         }).start();
     }
@@ -42,6 +48,11 @@ public class Viewer extends JPanel {
         final BufferedImage image = bufferedImageRenderer.render(source.pull());
         if (null != image) {
             g.drawImage(image, 0, 0, this);
+            n = System.currentTimeMillis();
+            fps = (int) (1000 / (n - l + 1));
+            l = n;
+            g.setColor(Color.GREEN);
+            g.drawString("FPS: " + fps, 10, 20);
         }
     }
 

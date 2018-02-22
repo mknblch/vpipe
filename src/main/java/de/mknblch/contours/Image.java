@@ -35,6 +35,10 @@ public abstract class Image {
         return width * height;
     }
 
+    public int length() {
+        return data.length;
+    }
+
     public void fill(int v) {
         Arrays.fill(data, (byte) v);
     }
