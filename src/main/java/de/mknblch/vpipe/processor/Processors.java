@@ -1,5 +1,6 @@
 package de.mknblch.vpipe.processor;
 
+import de.mknblch.vpipe.model.ColorImage;
 import de.mknblch.vpipe.model.GrayImage;
 import de.mknblch.vpipe.model.Processor;
 import de.mknblch.vpipe.model.Contour;
@@ -32,11 +33,11 @@ public class Processors {
         };
     }
 
-    public static PixelProcessor.ColorToMono binarization(int threshold) {
+    public static Processor<ColorImage, GrayImage> binarization(int threshold) {
         return new PixelProcessor.ColorToMono((r, g, b) -> (r + g + b) / 3 >= threshold ? 255 : 0);
     }
 
-    public static PixelProcessor.ColorToMono grayscale() {
+    public static Processor<ColorImage, GrayImage> grayscale() {
         return new PixelProcessor.ColorToMono((r, g, b) -> (r + g + b) / 3);
     }
 

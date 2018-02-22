@@ -5,8 +5,8 @@ package de.mknblch.vpipe.model;
  */
 public abstract class Processor<I, O> {
 
-    private Processor<?, I> previous;
-    private Processor<O, ?> next;
+    protected Processor<?, I> previous;
+    protected Processor<O, ?> next;
 
     public O pull() {
         return compute(previous.pull());
