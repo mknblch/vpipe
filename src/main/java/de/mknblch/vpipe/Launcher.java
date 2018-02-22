@@ -1,10 +1,6 @@
-package de.mknblch.contours;
+package de.mknblch.vpipe;
 
-import de.mknblch.contours.processor.*;
-
-import java.util.List;
-
-import static de.mknblch.contours.processor.Kernels.*;
+import de.mknblch.vpipe.processor.*;
 
 /**
  * @author mknblch
@@ -22,7 +18,7 @@ public class Launcher {
 
         final Processor<?, GrayImage> source = new DefaultVideoSource()
                 .connectTo(Processors.grayscale())
-                .connectTo(new ContourProcessor())
+                .connectTo(Processors.contours(128))
                 .connectTo(new ContourProcessor.Renderer());
 
 //        final Processor<?, GrayImage> source = new DefaultVideoSource()

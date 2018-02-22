@@ -1,4 +1,4 @@
-package de.mknblch.contours;
+package de.mknblch.vpipe;
 
 import java.awt.*;
 import java.awt.color.ColorSpace;

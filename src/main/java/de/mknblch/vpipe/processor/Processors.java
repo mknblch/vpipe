@@ -1,16 +1,21 @@
-package de.mknblch.contours.processor;
+package de.mknblch.vpipe.processor;
 
-import de.mknblch.contours.GrayImage;
-import de.mknblch.contours.Processor;
+import de.mknblch.vpipe.GrayImage;
+import de.mknblch.vpipe.Processor;
 
-import static de.mknblch.contours.Image.B;
-import static de.mknblch.contours.Image.I;
-import static de.mknblch.contours.Image.adaptTo;
+import java.util.List;
+
+import static de.mknblch.vpipe.Image.B;
+import static de.mknblch.vpipe.Image.I;
 
 /**
  * @author mknblch
  */
 public class Processors {
+
+    public static Processor<GrayImage, List<Contour>> contours(int threshold) {
+        return new ContourProcessor(threshold);
+    }
 
     public static Processor<GrayImage, GrayImage> invert() {
         return new Processor<GrayImage, GrayImage>() {

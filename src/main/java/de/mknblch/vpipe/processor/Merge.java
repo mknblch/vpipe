@@ -1,8 +1,8 @@
-package de.mknblch.contours.processor;
+package de.mknblch.vpipe.processor;
 
-import de.mknblch.contours.Processor;
-import de.mknblch.contours.processor.Split.TupleThree;
-import de.mknblch.contours.processor.Split.TupleTwo;
+import de.mknblch.vpipe.Processor;
+import de.mknblch.vpipe.processor.Split.TupleThree;
+import de.mknblch.vpipe.processor.Split.TupleTwo;
 
 import java.util.function.BiFunction;
 

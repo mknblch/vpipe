@@ -1,8 +1,7 @@
-package de.mknblch.contours;
+package de.mknblch.vpipe;
 
 import com.github.sarxos.webcam.Webcam;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.image.DataBufferByte;
 import java.util.List;

@@ -1,4 +1,4 @@
-package de.mknblch.contours;
+package de.mknblch.vpipe;
 
 /**
  * @author mknblch

@@ -1,12 +1,12 @@
-package de.mknblch.contours.processor;
+package de.mknblch.vpipe.processor;
 
-import de.mknblch.contours.ColorImage;
-import de.mknblch.contours.GrayImage;
-import de.mknblch.contours.Processor;
+import de.mknblch.vpipe.ColorImage;
+import de.mknblch.vpipe.GrayImage;
+import de.mknblch.vpipe.Processor;
 
 import java.util.function.IntUnaryOperator;
 
-import static de.mknblch.contours.Image.I;
+import static de.mknblch.vpipe.Image.I;
 
 /**
  * @author mknblch

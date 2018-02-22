@@ -1,8 +1,7 @@
-package de.mknblch.contours.processor;
+package de.mknblch.vpipe.processor;
 
-import de.mknblch.contours.GrayImage;
-import de.mknblch.contours.Image;
-import de.mknblch.contours.Processor;
+import de.mknblch.vpipe.GrayImage;
+import de.mknblch.vpipe.Processor;
 
 /**
  * @author mknblch
