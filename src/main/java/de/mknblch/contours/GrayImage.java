@@ -21,6 +21,11 @@ public class GrayImage extends Image {
         return data[y * width + x] & 0xFF;
     }
 
+
+    public int getValue(int x, int y, int defaultValue) {
+        return x < 0 || x >= width || y < 0 || y >= height ? defaultValue : data[y * width + x] & 0xFF;
+    }
+
     public void setValue(int x, int y, int iValue) {
         setValue(x, y, Image.clip(iValue));
     }
@@ -82,6 +87,13 @@ public class GrayImage extends Image {
     public static GrayImage adaptTo(GrayImage current, Image template) {
         if (null == current || current.width != template.width || current.height != template.height) {
             return new GrayImage(template);
+        }
+        return current;
+    }
+
+    public static GrayImage adaptTo(GrayImage current, int width, int height) {
+        if (null == current || current.width != width || current.height != height) {
+            return new GrayImage(width, height);
         }
         return current;
     }

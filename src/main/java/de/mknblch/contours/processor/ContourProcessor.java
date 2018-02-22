@@ -207,4 +207,16 @@ public class ContourProcessor extends Processor<GrayImage, List<ContourProcessor
         }
     }
 
+    public static class Renderer extends Processor<List<Contour>, GrayImage> {
+
+        private GrayImage out;
+
+        @Override
+        public GrayImage compute(List<Contour> in) {
+            out = GrayImage.adaptTo(out, 640, 480);
+            out.fill(0);
+            in.forEach(c -> c.forEach((x, y) -> out.setValue(x, y, 255)));
+            return out;
+        }
+    }
 }

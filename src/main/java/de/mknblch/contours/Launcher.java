@@ -2,6 +2,8 @@ package de.mknblch.contours;
 
 import de.mknblch.contours.processor.*;
 
+import java.util.List;
+
 import static de.mknblch.contours.processor.Kernels.*;
 
 /**
@@ -20,10 +22,8 @@ public class Launcher {
 
         final Processor<?, GrayImage> source = new DefaultVideoSource()
                 .connectTo(Processors.grayscale())
-                .connectTo(Split.split(
-                        new ContourProcessor(),
-                        new Split.NoOpProcessor<>()
-                )).connectTo(new Merge.MergeTwo<>(new ContourRenderFunction()));
+                .connectTo(new ContourProcessor())
+                .connectTo(new ContourProcessor.Renderer());
 
 //        final Processor<?, GrayImage> source = new DefaultVideoSource()
 //                .connectTo(Processors.grayscale())
