@@ -19,6 +19,8 @@ import static de.mknblch.contours.processor.ContourProcessor.Direction.*;
  */
 public class ContourProcessor extends Processor<GrayImage, List<ContourProcessor.Contour>> {
 
+    private static final int MIN_CONTOUR_LENGTH = 15;
+
     enum Direction {
         E(0), S(1), W(2), N(3);
 
@@ -54,7 +56,11 @@ public class ContourProcessor extends Processor<GrayImage, List<ContourProcessor
             }
             final int y = i / image.width;
             if ((x == 0 || !threshold.test(image.getValue(x - 1, y))) && threshold.test(image.getValue(x, y))) {
-                contours.add(chain4(image, i, x, y));
+                final Contour c = chain4(image, i, x, y);
+                if (c.length() < MIN_CONTOUR_LENGTH) {
+                    continue;
+                }
+                contours.add(c);
             }
         }
         return contours;
@@ -65,65 +71,90 @@ public class ContourProcessor extends Processor<GrayImage, List<ContourProcessor
         final Contour contour = new Contour(sx, sy);
         Direction d = S;
         int x = sx, y = sy + 1;
+        final byte[] data = image.data;
+        final int width = image.width;
+        int t = i + width;
         do {
             switch (d) {
                 case E:
-                    if (x == image.width - 1 || !threshold.test(image.getValue(x, y - 1))) {
-                        visited.set(i);
+//                    if (x == image.width - 1 || !threshold.test(image.getValue(x, y - 1))) {
+                    if (x == width - 1 || !threshold.test(I(data[t - width]))) {
+                        visited.set(t);
                         d = N;
                         y--;
-                    } else if (y == image.height - 1 || !threshold.test(image.getValue(x, y))) {
+                        t -= width;
+//                    } else if (y == image.height - 1 || !threshold.test(image.getValue(x, y))) {
+                    } else if (y == image.height - 1 || !threshold.test(I(data[t]))) {
                         d = E;
                         x++;
+                        t++;
                     } else {
-                        visited.set(i);
+                        visited.set(t);
                         d = S;
                         y++;
+                        t += width;
                     }
                     break;
                 case S:
-                    if (y == image.height -1 || !threshold.test(image.getValue(x, y))) {
+//                    if (y == image.height -1 || !threshold.test(image.getValue(x, y))) {
+                    if (y == image.height -1 || !threshold.test(I(data[t]))) {
                         d = E;
                         x++;
-                    } else if (x <= 0 || !threshold.test(image.getValue(x - 1, y))) {
-                        visited.set(i);
+                        t++;
+//                    } else if (x <= 0 || !threshold.test(image.getValue(x - 1, y))) {
+                    } else if (x <= 0 || !threshold.test(I(data[t - 1]))) {
+                        visited.set(t);
                         d = S;
                         y++;
+                        t += width;
                     } else {
                         d = W;
                         x--;
+                        t--;
                     }
                     break;
                 case W:
-                    if (x <= 0 || !threshold.test(image.getValue(x - 1, y))) {
-                        visited.set(i);
+//                    if (x <= 0 || !threshold.test(image.getValue(x - 1, y))) {
+                    if (x <= 0 || !threshold.test(I(data[t - 1]))) {
+                        visited.set(t);
                         d = S;
                         y++;
-                    } else if (y <= 0 || !threshold.test(image.getValue(x - 1, y - 1))) {
+                        t += width;
+//                    } else if (y <= 0 || !threshold.test(image.getValue(x - 1, y - 1))) {
+                    } else if (y <= 0 || !threshold.test(I(data[t - width - 1]))) {
                         d = W;
                         x--;
+                        t--;
                     } else {
-                        visited.set(i);
+                        visited.set(t);
                         d = N;
                         y--;
+                        t -= width;
                     }
                     break;
                 case N:
-                    if (y <= 0 || !threshold.test(image.getValue(x - 1, y - 1))) {
+//                    if (y <= 0 || !threshold.test(image.getValue(x - 1, y - 1))) {
+                    if (y <= 0 || !threshold.test(I(data[t - width - 1]))) {
                         d = W;
                         x--;
-                    } else if (x == image.width - 1 || !threshold.test(image.getValue(x, y - 1))) {
-                        visited.set(i);
+                        t--;
+//                    } else if (x == width - 1 || !threshold.test(image.getValue(x, y - 1))) {
+                    } else if (x == width - 1 || !threshold.test(I(data[t - width]))) {
+                        visited.set(t);
                         d = N;
                         y--;
+                        t -= width;
                     } else {
                         d = E;
                         x++;
+                        t++;
                     }
                     break;
             }
             contour.add(d, x, y);
-        } while (sx != x || sy != y);
+//            System.out.println(x + " " + y);
+//        } while (sx != x || sy != y);
+        } while (i != t);
         return contour;
     }
 
