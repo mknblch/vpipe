@@ -1,6 +1,6 @@
 package de.mknblch.vpipe.processor;
 
-import de.mknblch.vpipe.Processor;
+import de.mknblch.vpipe.model.Processor;
 
 import static java.util.Objects.requireNonNull;
 

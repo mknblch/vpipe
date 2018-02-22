@@ -1,7 +1,7 @@
 package de.mknblch.vpipe.processor;
 
-import de.mknblch.vpipe.GrayImage;
-import de.mknblch.vpipe.Processor;
+import de.mknblch.vpipe.model.GrayImage;
+import de.mknblch.vpipe.model.Processor;
 
 /**
  * @author mknblch

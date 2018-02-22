@@ -1,6 +1,7 @@
 package de.mknblch.vpipe.processor;
 
-import de.mknblch.vpipe.GrayImage;
+import de.mknblch.vpipe.model.GrayImage;
+import de.mknblch.vpipe.model.Contour;
 
 import java.util.List;
 import java.util.function.BiFunction;

@@ -1,5 +1,8 @@
 package de.mknblch.vpipe;
 
+import de.mknblch.vpipe.model.Image;
+import de.mknblch.vpipe.model.Processor;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -17,7 +20,7 @@ public class Viewer extends JPanel {
     private int fps;
     private long n, l = System.currentTimeMillis();
 
-    public Viewer(Processor<?, ? extends Image> source) {
+    public Viewer(Processor<?, ? extends de.mknblch.vpipe.model.Image> source) {
         this.source = source;
         bufferedImageRenderer = new BufferedImageRenderer();
     }

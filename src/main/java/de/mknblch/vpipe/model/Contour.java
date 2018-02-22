@@ -1,8 +1,8 @@
-package de.mknblch.vpipe.processor;
+package de.mknblch.vpipe.model;
 
 public class Contour {
 
-    enum Direction {
+    public enum Direction {
         E(0), S(1), W(2), N(3);
 
         public final byte v;

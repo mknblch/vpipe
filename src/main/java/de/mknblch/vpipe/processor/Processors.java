@@ -1,12 +1,13 @@
 package de.mknblch.vpipe.processor;
 
-import de.mknblch.vpipe.GrayImage;
-import de.mknblch.vpipe.Processor;
+import de.mknblch.vpipe.model.GrayImage;
+import de.mknblch.vpipe.model.Processor;
+import de.mknblch.vpipe.model.Contour;
 
 import java.util.List;
 
-import static de.mknblch.vpipe.Image.B;
-import static de.mknblch.vpipe.Image.I;
+import static de.mknblch.vpipe.model.Image.B;
+import static de.mknblch.vpipe.model.Image.I;
 
 /**
  * @author mknblch

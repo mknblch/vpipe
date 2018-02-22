@@ -1,13 +1,14 @@
 package de.mknblch.vpipe.processor;
 
-import de.mknblch.vpipe.GrayImage;
-import de.mknblch.vpipe.Processor;
+import de.mknblch.vpipe.model.GrayImage;
+import de.mknblch.vpipe.model.Processor;
+import de.mknblch.vpipe.model.Contour;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import static de.mknblch.vpipe.Image.I;
-import static de.mknblch.vpipe.processor.Contour.Direction.*;
+import static de.mknblch.vpipe.model.Image.I;
+import static de.mknblch.vpipe.model.Contour.Direction.*;
 
 /**
  * @author mknblch
@@ -140,11 +141,13 @@ public class ContourProcessor extends Processor<GrayImage, List<Contour>> {
             if (offset + 1 > data.length) {
                 data = Arrays.copyOf(data, offset + offset / 3);
             }
+
             data[offset++] = d.v;
             minX = x < minX ? x : minX;
             maxX = x > maxX ? x : maxX;
             minY = y < minY ? y : minY;
             maxY = y > maxY ? y : maxY;
+
         } while (i != j);
 
         return offset >= MIN_CONTOUR_LENGTH ?

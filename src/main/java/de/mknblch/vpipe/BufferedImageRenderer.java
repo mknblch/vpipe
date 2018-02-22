@@ -1,5 +1,8 @@
 package de.mknblch.vpipe;
 
+import de.mknblch.vpipe.model.ColorImage;
+import de.mknblch.vpipe.model.Image;
+
 import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.awt.image.*;

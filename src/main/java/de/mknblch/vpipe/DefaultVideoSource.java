@@ -1,6 +1,9 @@
 package de.mknblch.vpipe;
 
 import com.github.sarxos.webcam.Webcam;
+import de.mknblch.vpipe.model.ColorImage;
+import de.mknblch.vpipe.model.Processor;
+import de.mknblch.vpipe.model.VideoSource;
 
 import java.awt.*;
 import java.awt.image.DataBufferByte;

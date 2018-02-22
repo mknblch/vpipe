@@ -1,5 +1,7 @@
 package de.mknblch.vpipe;
 
+import de.mknblch.vpipe.model.GrayImage;
+import de.mknblch.vpipe.model.Processor;
 import de.mknblch.vpipe.processor.*;
 
 /**

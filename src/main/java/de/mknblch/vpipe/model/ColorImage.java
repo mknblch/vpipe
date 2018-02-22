@@ -1,4 +1,4 @@
-package de.mknblch.vpipe;
+package de.mknblch.vpipe.model;
 
 /**
  * @author mknblch
