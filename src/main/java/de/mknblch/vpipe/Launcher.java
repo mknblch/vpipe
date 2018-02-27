@@ -24,10 +24,6 @@ public class Launcher {
                 .connectTo(Processors.contours(128))
                 .connectTo(new ContourProcessor.Renderer());
 
-        final Chain<ColorImage, GrayImage> add = Chain.head(Processors.grayscale())
-                .add(Processors.contours(128))
-                .add(new ContourProcessor.Renderer());
-
 //        final Processor<?, GrayImage> source = new DefaultVideoSource()
 //                .connectTo(Processors.grayscale())
 //                .connectTo(Processors.erosion())

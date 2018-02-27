@@ -8,11 +8,12 @@ import de.mknblch.vpipe.model.VideoSource;
 import java.awt.*;
 import java.awt.image.DataBufferByte;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * @author mknblch
  */
-public class DefaultVideoSource extends Processor<Void, ColorImage> implements VideoSource {
+public class DefaultVideoSource extends Processor<Void, ColorImage> implements VideoSource, Supplier<ColorImage> {
 
     private final Webcam webcam;
     private final ColorImage image;
@@ -67,5 +68,10 @@ public class DefaultVideoSource extends Processor<Void, ColorImage> implements V
     @Override
     public ColorImage compute(Void image) {
         return null;
+    }
+
+    @Override
+    public ColorImage get() {
+        return image();
     }
 }

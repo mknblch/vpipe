@@ -2,11 +2,12 @@ package de.mknblch.vpipe.processor;
 
 import de.mknblch.vpipe.model.GrayImage;
 import de.mknblch.vpipe.model.Processor;
+import de.mknblch.vpipe.model.Process;
 
 /**
  * @author mknblch
  */
-public class Convolution extends Processor<GrayImage, GrayImage> {
+public class Convolution extends Processor<GrayImage, GrayImage> implements Process<GrayImage, GrayImage> {
 
     private final Kernel kernel;
     private GrayImage out;
