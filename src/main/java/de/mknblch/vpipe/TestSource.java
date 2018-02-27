@@ -1,8 +1,6 @@
 package de.mknblch.vpipe;
 
 import de.mknblch.vpipe.model.GrayImage;
-import de.mknblch.vpipe.model.Image;
-import de.mknblch.vpipe.model.Process;
 
 import java.util.function.Supplier;
 

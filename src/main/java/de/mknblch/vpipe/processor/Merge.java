@@ -1,6 +1,6 @@
 package de.mknblch.vpipe.processor;
 
-import de.mknblch.vpipe.model.Process;
+import de.mknblch.vpipe.model.Processor;
 import de.mknblch.vpipe.processor.Split.TupleThree;
 import de.mknblch.vpipe.processor.Split.TupleTwo;
 
@@ -18,11 +18,11 @@ public class Merge {
         throw new UnsupportedOperationException("no instantiation allowed");
     }
 
-    public static <L, R, O> Process<TupleTwo<L, R>, O> merge(BiFunction<L, R, O> mergeFunction) {
+    public static <L, R, O> Processor<TupleTwo<L, R>, O> merge(BiFunction<L, R, O> mergeFunction) {
         return new MergeTwo<>(mergeFunction);
     }
 
-    public static <L, M, R, O> Process<TupleThree<L, M, R>, O> merge(TriFunction<L, M, R, O> mergeFunction) {
+    public static <L, M, R, O> Processor<TupleThree<L, M, R>, O> merge(TriFunction<L, M, R, O> mergeFunction) {
         return new MergeThree<>(mergeFunction);
     }
 
@@ -31,7 +31,7 @@ public class Merge {
         O apply(L left, M middle, R right);
     }
 
-    public static class MergeTwo<L, R, O> implements Process<TupleTwo<L, R>, O> {
+    public static class MergeTwo<L, R, O> implements Processor<TupleTwo<L, R>, O> {
 
         private final BiFunction<L, R, O> mergeFunktion;
 
@@ -47,7 +47,7 @@ public class Merge {
         }
     }
 
-    public static class MergeThree<L, M, R, O> implements Process<TupleThree<L, M, R>, O> {
+    public static class MergeThree<L, M, R, O> implements Processor<TupleThree<L, M, R>, O> {
 
         private final TriFunction<L, M, R, O> mergeFunction;
 

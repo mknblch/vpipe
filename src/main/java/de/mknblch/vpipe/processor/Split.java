@@ -1,6 +1,6 @@
 package de.mknblch.vpipe.processor;
 
-import de.mknblch.vpipe.model.Process;
+import de.mknblch.vpipe.model.Processor;
 
 import static java.util.Objects.requireNonNull;
 
@@ -13,15 +13,15 @@ public class Split {
         throw new UnsupportedOperationException("no instantiation allowed");
     }
 
-    public static <I, L, R> Process<I, TupleTwo<L, R>> split(Process<I, L> leftProcess, Process<I, R> rightProcess) {
-        return new SplitTwo<>(leftProcess, rightProcess);
+    public static <I, L, R> Processor<I, TupleTwo<L, R>> split(Processor<I, L> leftProcessor, Processor<I, R> rightProcessor) {
+        return new SplitTwo<>(leftProcessor, rightProcessor);
     }
 
-    public static <I, L, M, R> Process<I, TupleThree<L, M, R>> split(Process<I, L> leftProcess, Process<I, M> middleProcess, Process<I, R> rightProcess) {
-        return new SplitThree<>(leftProcess, middleProcess, rightProcess);
+    public static <I, L, M, R> Processor<I, TupleThree<L, M, R>> split(Processor<I, L> leftProcessor, Processor<I, M> middleProcessor, Processor<I, R> rightProcessor) {
+        return new SplitThree<>(leftProcessor, middleProcessor, rightProcessor);
     }
 
-    public static class NoOpProcess<I> implements Process<I, I> {
+    public static class NoOpProcessor<I> implements Processor<I, I> {
         @Override
         public I compute(I in) {
             return in;
@@ -70,48 +70,48 @@ public class Split {
         }
     }
 
-    public static class SplitTwo<I, L, R> implements Process<I, TupleTwo<L, R>> {
-        private final Process<I, L> leftProcess;
-        private final Process<I, R> rightProcess;
+    public static class SplitTwo<I, L, R> implements Processor<I, TupleTwo<L, R>> {
+        private final Processor<I, L> leftProcessor;
+        private final Processor<I, R> rightProcessor;
 
-        public SplitTwo(Process<I, L> leftProcess, Process<I, R> rightProcess) {
-            requireNonNull(leftProcess, "leftProcess must not be null");
-            requireNonNull(rightProcess, "rightProcess must not be null");
+        public SplitTwo(Processor<I, L> leftProcessor, Processor<I, R> rightProcessor) {
+            requireNonNull(leftProcessor, "leftProcess must not be null");
+            requireNonNull(rightProcessor, "rightProcess must not be null");
 
-            this.leftProcess = leftProcess;
-            this.rightProcess = rightProcess;
+            this.leftProcessor = leftProcessor;
+            this.rightProcessor = rightProcessor;
         }
 
         @Override
         public TupleTwo<L, R> compute(I in) {
             return new TupleTwo<>(
-                    leftProcess.compute(in),
-                    rightProcess.compute(in)
+                    leftProcessor.compute(in),
+                    rightProcessor.compute(in)
             );
         }
     }
 
-    public static class SplitThree<I, L, M, R> implements Process<I, TupleThree<L, M, R>> {
-        private final Process<I, L> leftProcess;
-        private final Process<I, M> middleProcess;
-        private final Process<I, R> rightProcess;
+    public static class SplitThree<I, L, M, R> implements Processor<I, TupleThree<L, M, R>> {
+        private final Processor<I, L> leftProcessor;
+        private final Processor<I, M> middleProcessor;
+        private final Processor<I, R> rightProcessor;
 
-        public SplitThree(Process<I, L> leftProcess, Process<I, M> middleProcess, Process<I, R> rightProcess) {
-            requireNonNull(leftProcess, "leftProcess must not be null");
-            requireNonNull(middleProcess, "middleProcess must not be null");
-            requireNonNull(rightProcess, "rightProcess must not be null");
+        public SplitThree(Processor<I, L> leftProcessor, Processor<I, M> middleProcessor, Processor<I, R> rightProcessor) {
+            requireNonNull(leftProcessor, "leftProcess must not be null");
+            requireNonNull(middleProcessor, "middleProcess must not be null");
+            requireNonNull(rightProcessor, "rightProcess must not be null");
 
-            this.leftProcess = leftProcess;
-            this.middleProcess = middleProcess;
-            this.rightProcess = rightProcess;
+            this.leftProcessor = leftProcessor;
+            this.middleProcessor = middleProcessor;
+            this.rightProcessor = rightProcessor;
         }
 
         @Override
         public TupleThree<L, M, R> compute(I in) {
             return new TupleThree<>(
-                    leftProcess.compute(in),
-                    middleProcess.compute(in),
-                    rightProcess.compute(in)
+                    leftProcessor.compute(in),
+                    middleProcessor.compute(in),
+                    rightProcessor.compute(in)
             );
         }
     }

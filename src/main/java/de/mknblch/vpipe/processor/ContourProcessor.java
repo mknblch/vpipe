@@ -1,7 +1,7 @@
 package de.mknblch.vpipe.processor;
 
 import de.mknblch.vpipe.model.GrayImage;
-import de.mknblch.vpipe.model.Process;
+import de.mknblch.vpipe.model.Processor;
 import de.mknblch.vpipe.model.Contour;
 
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ import static de.mknblch.vpipe.model.Contour.Direction.*;
 /**
  * @author mknblch
  */
-public class ContourProcessor implements Process<GrayImage, List<Contour>> {
+public class ContourProcessor implements Processor<GrayImage, List<Contour>> {
 
     private static final int CAPACITY_LIMIT = 640 * 480;
 
@@ -163,7 +163,7 @@ public class ContourProcessor implements Process<GrayImage, List<Contour>> {
     }
 
 
-    public static class Renderer implements Process<List<Contour>, GrayImage> {
+    public static class Renderer implements Processor<List<Contour>, GrayImage> {
 
         private GrayImage out;
 
