@@ -1,12 +1,13 @@
 package de.mknblch.vpipe.processor;
 
 import de.mknblch.vpipe.model.GrayImage;
-import de.mknblch.vpipe.model.Processor;
+
+import java.util.function.Function;
 
 /**
  * @author mknblch
  */
-public class Convolution implements Processor<GrayImage, GrayImage> {
+public class Convolution implements Function<GrayImage, GrayImage> {
 
     private final Kernel kernel;
     private GrayImage out;
@@ -16,7 +17,7 @@ public class Convolution implements Processor<GrayImage, GrayImage> {
     }
 
     @Override
-    public GrayImage compute(GrayImage in) {
+    public GrayImage apply(GrayImage in) {
         out = GrayImage.adaptTo(out, in);
         final int ow = (kernel.width - 1) / 2;
         final int oh = (kernel.height - 1) / 2;

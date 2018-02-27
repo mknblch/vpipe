@@ -1,10 +1,10 @@
 package de.mknblch.vpipe.processor;
 
-import de.mknblch.vpipe.model.Processor;
 import de.mknblch.vpipe.processor.Split.TupleThree;
 import de.mknblch.vpipe.processor.Split.TupleTwo;
 
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import static java.util.Objects.requireNonNull;
 
@@ -23,7 +23,7 @@ public class Merge {
         O apply(L left, M middle, R right);
     }
 
-    public static class MergeTwo<L, R, O> implements Processor<TupleTwo<L, R>, O> {
+    public static class MergeTwo<L, R, O> implements Function<TupleTwo<L, R>, O> {
 
         private final BiFunction<L, R, O> mergeFunktion;
 
@@ -34,12 +34,12 @@ public class Merge {
         }
 
         @Override
-        public O compute(TupleTwo<L, R> in) {
+        public O apply(TupleTwo<L, R> in) {
             return mergeFunktion.apply(in.getLeft(), in.getRight());
         }
     }
 
-    public static class MergeThree<L, M, R, O> implements Processor<TupleThree<L, M, R>, O> {
+    public static class MergeThree<L, M, R, O> implements Function<TupleThree<L, M, R>, O> {
 
         private final TriFunction<L, M, R, O> mergeFunction;
 
@@ -50,7 +50,7 @@ public class Merge {
         }
 
         @Override
-        public O compute(TupleThree<L, M, R> in) {
+        public O apply(TupleThree<L, M, R> in) {
             return mergeFunction.apply(in.getLeft(), in.getMiddle(), in.getRight());
         }
     }

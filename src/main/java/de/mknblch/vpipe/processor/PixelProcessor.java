@@ -2,8 +2,8 @@ package de.mknblch.vpipe.processor;
 
 import de.mknblch.vpipe.model.ColorImage;
 import de.mknblch.vpipe.model.GrayImage;
-import de.mknblch.vpipe.model.Processor;
 
+import java.util.function.Function;
 import java.util.function.IntUnaryOperator;
 
 import static de.mknblch.vpipe.model.Image.I;
@@ -17,7 +17,7 @@ public class PixelProcessor {
         int apply(int r, int g, int b);
     }
 
-    public static class Mono implements Processor<GrayImage, GrayImage> {
+    public static class Mono implements Function<GrayImage, GrayImage> {
 
         private final IntUnaryOperator function;
         private GrayImage out = null;
@@ -27,7 +27,7 @@ public class PixelProcessor {
         }
 
         @Override
-        public GrayImage compute(GrayImage in) {
+        public GrayImage apply(GrayImage in) {
             out = GrayImage.adaptTo(out, in);
             final int pixels = in.pixels();
             for (int i = 0; i < pixels; i ++) {
@@ -37,7 +37,7 @@ public class PixelProcessor {
         }
     }
 
-    public static class Color implements Processor<ColorImage, ColorImage> {
+    public static class Color implements Function<ColorImage, ColorImage> {
 
         private ColorImage out = null;
         private final ColorPixelFunction function;
@@ -47,7 +47,7 @@ public class PixelProcessor {
         }
 
         @Override
-        public ColorImage compute(ColorImage in) {
+        public ColorImage apply(ColorImage in) {
             out = ColorImage.adaptTo(out, in);
             final int pixels = in.data.length;
             for (int i = 0; i < pixels; i += 3) {
@@ -63,7 +63,7 @@ public class PixelProcessor {
         }
     }
 
-    public static class ColorToMono implements Processor<ColorImage, GrayImage> {
+    public static class ColorToMono implements Function<ColorImage, GrayImage> {
 
         private GrayImage out = null;
         private final ColorPixelFunction function;
@@ -73,7 +73,7 @@ public class PixelProcessor {
         }
 
         @Override
-        public GrayImage compute(ColorImage in) {
+        public GrayImage apply(ColorImage in) {
             out = GrayImage.adaptTo(out, in);
             final int pixels = in.data.length;
             for (int i = 0; i < pixels; i += 3) {
@@ -85,9 +85,5 @@ public class PixelProcessor {
             }
             return out;
         }
-    }
-
-    public static ColorToMono grayMean() {
-        return new ColorToMono((r, g, b) -> (r + g + b) / 3);
     }
 }

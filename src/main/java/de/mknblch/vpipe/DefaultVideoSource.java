@@ -2,41 +2,27 @@ package de.mknblch.vpipe;
 
 import com.github.sarxos.webcam.Webcam;
 import de.mknblch.vpipe.model.ColorImage;
+import de.mknblch.vpipe.model.Source;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.DataBufferByte;
 import java.util.List;
-import java.util.function.Supplier;
 
 /**
  * @author mknblch
  */
-public class DefaultVideoSource implements Supplier<ColorImage>, AutoCloseable {
+public class DefaultVideoSource implements Source<ColorImage>, AutoCloseable {
 
     private final Webcam webcam;
     private final ColorImage image;
 
     public DefaultVideoSource() {
+        this(chooseCam());
+    }
 
-        final List<Webcam> webcams = Webcam.getWebcams();
-        if (webcams.size() == 1) {
-            webcam = webcams.get(0);
-        } else {
-            final Object[] array = webcams.toArray();
-            webcam = (Webcam) JOptionPane.showInputDialog(null,
-                    "Choose cam",
-                    "The Choice of a Lifetime",
-                    JOptionPane.QUESTION_MESSAGE,
-                    null,
-                    array, // Array of choices
-                    array[0]);
-//            webcam = webcams.get(2);
-            if (null == webcam) {
-                System.exit(0);
-            }
-        }
-
+    public DefaultVideoSource(Webcam webcam) {
+        this.webcam = webcam;
         webcam.setViewSize(new Dimension(640, 480));
         if (!webcam.open()) {
             throw new IllegalStateException("Cannot open Webcam");
@@ -45,7 +31,7 @@ public class DefaultVideoSource implements Supplier<ColorImage>, AutoCloseable {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         webcam.close();
     }
 
@@ -57,5 +43,26 @@ public class DefaultVideoSource implements Supplier<ColorImage>, AutoCloseable {
                 .getDataBuffer();
         System.arraycopy(buffer.getData(), 0, image.data, 0, image.data.length);
         return image;
+    }
+
+    private static Webcam chooseCam() {
+        Webcam webcam;
+        final List<Webcam> webcams = Webcam.getWebcams();
+        if (webcams.size() == 1) {
+            webcam = webcams.get(0);
+        } else {
+            final Object[] array = webcams.toArray();
+            webcam = (Webcam) JOptionPane.showInputDialog(null,
+                    "Choose cam",
+                    "Cam:",
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    array,
+                    array[0]);
+            if (null == webcam) {
+                System.exit(0);
+            }
+        }
+        return webcam;
     }
 }

@@ -1,6 +1,6 @@
 package de.mknblch.vpipe.processor;
 
-import de.mknblch.vpipe.model.Processor;
+import java.util.function.Function;
 
 import static java.util.Objects.requireNonNull;
 
@@ -11,13 +11,6 @@ public class Split {
 
     private Split() {
         throw new UnsupportedOperationException("no instantiation allowed");
-    }
-
-    public static class NoOpProcessor<I> implements Processor<I, I> {
-        @Override
-        public I compute(I in) {
-            return in;
-        }
     }
 
     public static class TupleTwo<L, R> {
@@ -62,11 +55,11 @@ public class Split {
         }
     }
 
-    public static class SplitTwo<I, L, R> implements Processor<I, TupleTwo<L, R>> {
-        private final Processor<I, L> leftProcessor;
-        private final Processor<I, R> rightProcessor;
+    public static class SplitTwo<I, L, R> implements Function<I, TupleTwo<L, R>> {
+        private final Function<I, L> leftProcessor;
+        private final Function<I, R> rightProcessor;
 
-        public SplitTwo(Processor<I, L> leftProcessor, Processor<I, R> rightProcessor) {
+        public SplitTwo(Function<I, L> leftProcessor, Function<I, R> rightProcessor) {
             requireNonNull(leftProcessor, "leftProcess must not be null");
             requireNonNull(rightProcessor, "rightProcess must not be null");
 
@@ -75,20 +68,20 @@ public class Split {
         }
 
         @Override
-        public TupleTwo<L, R> compute(I in) {
+        public TupleTwo<L, R> apply(I in) {
             return new TupleTwo<>(
-                    leftProcessor.compute(in),
-                    rightProcessor.compute(in)
+                    leftProcessor.apply(in),
+                    rightProcessor.apply(in)
             );
         }
     }
 
-    public static class SplitThree<I, L, M, R> implements Processor<I, TupleThree<L, M, R>> {
-        private final Processor<I, L> leftProcessor;
-        private final Processor<I, M> middleProcessor;
-        private final Processor<I, R> rightProcessor;
+    public static class SplitThree<I, L, M, R> implements Function<I, TupleThree<L, M, R>> {
+        private final Function<I, L> leftProcessor;
+        private final Function<I, M> middleProcessor;
+        private final Function<I, R> rightProcessor;
 
-        public SplitThree(Processor<I, L> leftProcessor, Processor<I, M> middleProcessor, Processor<I, R> rightProcessor) {
+        public SplitThree(Function<I, L> leftProcessor, Function<I, M> middleProcessor, Function<I, R> rightProcessor) {
             requireNonNull(leftProcessor, "leftProcess must not be null");
             requireNonNull(middleProcessor, "middleProcess must not be null");
             requireNonNull(rightProcessor, "rightProcess must not be null");
@@ -99,11 +92,11 @@ public class Split {
         }
 
         @Override
-        public TupleThree<L, M, R> compute(I in) {
+        public TupleThree<L, M, R> apply(I in) {
             return new TupleThree<>(
-                    leftProcessor.compute(in),
-                    middleProcessor.compute(in),
-                    rightProcessor.compute(in)
+                    leftProcessor.apply(in),
+                    middleProcessor.apply(in),
+                    rightProcessor.apply(in)
             );
         }
     }

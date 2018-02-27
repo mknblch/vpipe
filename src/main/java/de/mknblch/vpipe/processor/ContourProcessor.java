@@ -1,24 +1,26 @@
 package de.mknblch.vpipe.processor;
 
 import de.mknblch.vpipe.model.GrayImage;
-import de.mknblch.vpipe.model.Processor;
 import de.mknblch.vpipe.model.Contour;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
+
 import static de.mknblch.vpipe.model.Image.I;
 import static de.mknblch.vpipe.model.Contour.Direction.*;
 
 /**
  * @author mknblch
  */
-public class ContourProcessor implements Processor<GrayImage, List<Contour>> {
+public class ContourProcessor implements Function<GrayImage, List<Contour>> {
 
-    private static final int CAPACITY_LIMIT = 640 * 480;
+    private static final int CAPACITY_LIMIT = 640 * 480 * 4;
+    private static final int MIN_CONTOUR_LENGTH = 16;
 
-    private static final int MIN_CONTOUR_LENGTH = 15;
-    public static final int INITIAL_CAPACITY = 16;
+    public static final int INITIAL_CAPACITY = 64;
+
     private final int threshold;
     private boolean[] visited;
 
@@ -27,7 +29,7 @@ public class ContourProcessor implements Processor<GrayImage, List<Contour>> {
     }
 
     @Override
-    public List<Contour> compute(GrayImage image) {
+    public List<Contour> apply(GrayImage image) {
         if (null == visited) {
             visited = new boolean[image.width * image.height];
         } else {
@@ -160,19 +162,5 @@ public class ContourProcessor implements Processor<GrayImage, List<Contour>> {
                         minY,
                         maxY
                 ) : null;
-    }
-
-
-    public static class Renderer implements Processor<List<Contour>, GrayImage> {
-
-        private GrayImage out;
-
-        @Override
-        public GrayImage compute(List<Contour> in) {
-            out = GrayImage.adaptTo(out, 640, 480);
-            out.fill(0);
-            in.forEach(c -> c.forEach((x, y) -> out.setValue(x, y, 255)));
-            return out;
-        }
     }
 }
