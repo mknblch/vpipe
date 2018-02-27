@@ -3,24 +3,23 @@ package de.mknblch.vpipe.model;
 /**
  * @author mknblch
  */
-public class GrayImage extends Image {
+public class MonoImage extends Image {
 
-    public GrayImage(Image template) {
+    public MonoImage(Image template) {
         this(template.width, template.height);
     }
 
-    public GrayImage(byte[] data, int width, int height) {
+    public MonoImage(byte[] data, int width, int height) {
         super(data, width, height);
     }
 
-    public GrayImage(int width, int height) {
+    public MonoImage(int width, int height) {
         this(new byte[width * height], width, height);
     }
 
     public int getValue(int x, int y) {
         return data[y * width + x] & 0xFF;
     }
-
 
     public int getValue(int x, int y, int defaultValue) {
         return x < 0 || x >= width || y < 0 || y >= height ? defaultValue : data[y * width + x] & 0xFF;
@@ -34,42 +33,42 @@ public class GrayImage extends Image {
         data[y * width + x] = value;
     }
 
-    public GrayImage plus(Image image) {
+    public MonoImage plus(Image image) {
         if (!dimensionEqual(this, image)) {
             throw new IllegalArgumentException(
                     "Wrong dimensions: " + image.width + "x" + image.height + " + " +
                             width + "x" + height
             );
         }
-        final GrayImage out = new GrayImage(image);
+        final MonoImage out = new MonoImage(image);
         for (int i = 0; i < data.length; i++) {
             out.data[i] = clip(I(this, i) + I(image, i));
         }
         return out;
     }
 
-    public GrayImage minus(Image image) {
+    public MonoImage minus(Image image) {
         if (!dimensionEqual(this, image)) {
             throw new IllegalArgumentException(
                     "Wrong dimensions: " + image.width + "x" + image.height + " - " +
                             width + "x" + height
             );
         }
-        final GrayImage out = new GrayImage(image);
+        final MonoImage out = new MonoImage(image);
         for (int i = 0; i < data.length; i++) {
             out.data[i] = clip(I(this, i) - I(image, i));
         }
         return out;
     }
 
-    public GrayImage mul(Image image) {
+    public MonoImage mul(Image image) {
         if (!dimensionEqual(this, image)) {
             throw new IllegalArgumentException(
                     "Wrong dimensions: " + image.width + "x" + image.height + " * " +
                             width + "x" + height
             );
         }
-        final GrayImage out = new GrayImage(image);
+        final MonoImage out = new MonoImage(image);
         for (int i = 0; i < data.length; i++) {
             out.data[i] = clip(I(this, i) * I(image, i));
         }
@@ -77,23 +76,23 @@ public class GrayImage extends Image {
     }
 
     public Image mul(double f) {
-        final GrayImage out = new GrayImage(this);
+        final MonoImage out = new MonoImage(this);
         for (int i = 0; i < data.length; i++) {
             out.data[i] = clip(I(this, i) * f);
         }
         return out;
     }
 
-    public static GrayImage adaptTo(GrayImage current, Image template) {
+    public static MonoImage adaptTo(MonoImage current, Image template) {
         if (null == current || current.width != template.width || current.height != template.height) {
-            return new GrayImage(template);
+            return new MonoImage(template);
         }
         return current;
     }
 
-    public static GrayImage adaptTo(GrayImage current, int width, int height) {
+    public static MonoImage adaptTo(MonoImage current, int width, int height) {
         if (null == current || current.width != width || current.height != height) {
-            return new GrayImage(width, height);
+            return new MonoImage(width, height);
         }
         return current;
     }

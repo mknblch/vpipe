@@ -1,7 +1,7 @@
 package de.mknblch.vpipe.processor;
 
 import de.mknblch.vpipe.model.ColorImage;
-import de.mknblch.vpipe.model.GrayImage;
+import de.mknblch.vpipe.model.MonoImage;
 import de.mknblch.vpipe.model.Contour;
 
 import java.util.List;
@@ -52,7 +52,7 @@ public class Processors {
      * calculate contours of a GrayImage based on a threshold
      * @param threshold a threshold between 0 and 255
      */
-    public static Function<GrayImage, List<Contour>> contours(int threshold) {
+    public static Function<MonoImage, List<Contour>> contours(int threshold) {
         return new ContourProcessor(threshold);
     }
 
@@ -60,13 +60,13 @@ public class Processors {
      * calculate contours of a GrayImage based on a threshold and render
      * @param threshold a threshold between 0 and 255
      */
-    public static Function<GrayImage, GrayImage> renderContour(int threshold, int width, int height) {
+    public static Function<MonoImage, MonoImage> renderContour(int threshold, int width, int height) {
         return new ContourProcessor(threshold)
-                .andThen(new Function<List<Contour>, GrayImage>() {
-                    private GrayImage out;
+                .andThen(new Function<List<Contour>, MonoImage>() {
+                    private MonoImage out;
                     @Override
-                    public GrayImage apply(List<Contour> in) {
-                        out = GrayImage.adaptTo(out, width, height);
+                    public MonoImage apply(List<Contour> in) {
+                        out = MonoImage.adaptTo(out, width, height);
                         out.fill(0);
                         in.forEach(c -> c.forEach((x, y) -> out.setValue(x, y, 255)));
                         return out;
@@ -77,12 +77,12 @@ public class Processors {
     /**
      * invert a GrayImage
      */
-    public static Function<GrayImage, GrayImage> invert() {
-        return new Function<GrayImage, GrayImage>() {
-            private GrayImage out;
+    public static Function<MonoImage, MonoImage> invert() {
+        return new Function<MonoImage, MonoImage>() {
+            private MonoImage out;
             @Override
-            public GrayImage apply(GrayImage in) {
-                out = GrayImage.adaptTo(out, in);
+            public MonoImage apply(MonoImage in) {
+                out = MonoImage.adaptTo(out, in);
                 for (int i = 0; i < in.data.length; i++) {
                     out.data[i] = B(Math.abs(255 - I(in, i)));
                 }
@@ -95,14 +95,14 @@ public class Processors {
      * ColorImage binarization based on rgb-mean
      * @param threshold
      */
-    public static Function<ColorImage, GrayImage> binarization(int threshold) {
+    public static Function<ColorImage, MonoImage> binarization(int threshold) {
         return new PixelProcessor.ColorToMono((r, g, b) -> (r + g + b) / 3 >= threshold ? 255 : 0);
     }
 
     /**
      * Mean RGB
      */
-    public static Function<ColorImage, GrayImage> grayscale() {
+    public static Function<ColorImage, MonoImage> grayscale() {
         return new PixelProcessor.ColorToMono((r, g, b) -> (r + g + b) / 3);
     }
 
@@ -110,7 +110,7 @@ public class Processors {
      * gamma
      * @param a -255 - 255
      */
-    public static Function<GrayImage, GrayImage> gamma(int a) {
+    public static Function<MonoImage, MonoImage> gamma(int a) {
         return new PixelProcessor.Mono(b -> b + a);
     }
 
@@ -118,33 +118,33 @@ public class Processors {
      * raise contrast
      * @param f factor
      */
-    public static Function<GrayImage, GrayImage> contrast(double f) {
+    public static Function<MonoImage, MonoImage> contrast(double f) {
         return new PixelProcessor.Mono(b -> (int)((b - 128) * f) + 128);
     }
 
     /**
      * closing operation
      */
-    public static Function<GrayImage, GrayImage> closing() {
+    public static Function<MonoImage, MonoImage> closing() {
         return dilation().andThen(erosion());
     }
 
     /**
      * opening operation
      */
-    public static Function<GrayImage, GrayImage> opening() {
+    public static Function<MonoImage, MonoImage> opening() {
         return erosion().andThen(dilation());
     }
 
     /**
      * pixel dilation
      */
-    public static Function<GrayImage, GrayImage> dilation() {
-        return new Function<GrayImage, GrayImage>() {
-            private GrayImage out;
+    public static Function<MonoImage, MonoImage> dilation() {
+        return new Function<MonoImage, MonoImage>() {
+            private MonoImage out;
             @Override
-            public GrayImage apply(GrayImage in) {
-                out = GrayImage.adaptTo(out, in);
+            public MonoImage apply(MonoImage in) {
+                out = MonoImage.adaptTo(out, in);
                 for (int y = 0; y < in.height; y++) {
                     for (int x = 0; x < in.width; x++) {
                         int max = 0;
@@ -167,12 +167,12 @@ public class Processors {
     /**
      * pixel erosion
      */
-    public static Function<GrayImage, GrayImage> erosion() {
-        return new Function<GrayImage, GrayImage>() {
-            private GrayImage out;
+    public static Function<MonoImage, MonoImage> erosion() {
+        return new Function<MonoImage, MonoImage>() {
+            private MonoImage out;
             @Override
-            public GrayImage apply(GrayImage in) {
-                out = GrayImage.adaptTo(out, in);
+            public MonoImage apply(MonoImage in) {
+                out = MonoImage.adaptTo(out, in);
                 for (int y = 0; y < in.height; y++) {
                     for (int x = 0; x < in.width; x++) {
                         int min = 255;

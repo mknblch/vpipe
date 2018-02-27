@@ -1,6 +1,6 @@
 package de.mknblch.vpipe.processor;
 
-import de.mknblch.vpipe.model.GrayImage;
+import de.mknblch.vpipe.model.MonoImage;
 import de.mknblch.vpipe.model.Contour;
 
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ import static de.mknblch.vpipe.model.Contour.Direction.*;
 /**
  * @author mknblch
  */
-public class ContourProcessor implements Function<GrayImage, List<Contour>> {
+public class ContourProcessor implements Function<MonoImage, List<Contour>> {
 
     private static final int CAPACITY_LIMIT = 640 * 480 * 4;
     private static final int MIN_CONTOUR_LENGTH = 16;
@@ -29,7 +29,7 @@ public class ContourProcessor implements Function<GrayImage, List<Contour>> {
     }
 
     @Override
-    public List<Contour> apply(GrayImage image) {
+    public List<Contour> apply(MonoImage image) {
         if (null == visited) {
             visited = new boolean[image.width * image.height];
         } else {
@@ -56,7 +56,7 @@ public class ContourProcessor implements Function<GrayImage, List<Contour>> {
         return contours;
     }
 
-    private Contour chain4(GrayImage image, int i, int sx, int sy) {
+    private Contour chain4(MonoImage image, int i, int sx, int sy) {
         final byte[] input = image.data;
         final int width = image.width;
         byte[] data = new byte[INITIAL_CAPACITY];

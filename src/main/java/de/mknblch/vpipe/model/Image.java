@@ -91,8 +91,8 @@ public abstract class Image {
         if (null == current ||
                 current.width != template.width ||
                 current.height != template.height) {
-            if (type.isAssignableFrom(GrayImage.class)) {
-                return (T) new GrayImage(template);
+            if (type.isAssignableFrom(MonoImage.class)) {
+                return (T) new MonoImage(template);
             } else if (type.isAssignableFrom(ColorImage.class)) {
                 return (T) new ColorImage(template);
             }

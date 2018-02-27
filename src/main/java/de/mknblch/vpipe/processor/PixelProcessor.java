@@ -1,7 +1,7 @@
 package de.mknblch.vpipe.processor;
 
 import de.mknblch.vpipe.model.ColorImage;
-import de.mknblch.vpipe.model.GrayImage;
+import de.mknblch.vpipe.model.MonoImage;
 
 import java.util.function.Function;
 import java.util.function.IntUnaryOperator;
@@ -17,21 +17,21 @@ public class PixelProcessor {
         int apply(int r, int g, int b);
     }
 
-    public static class Mono implements Function<GrayImage, GrayImage> {
+    public static class Mono implements Function<MonoImage, MonoImage> {
 
         private final IntUnaryOperator function;
-        private GrayImage out = null;
+        private MonoImage out = null;
 
         public Mono(IntUnaryOperator function) {
             this.function = function;
         }
 
         @Override
-        public GrayImage apply(GrayImage in) {
-            out = GrayImage.adaptTo(out, in);
+        public MonoImage apply(MonoImage in) {
+            out = MonoImage.adaptTo(out, in);
             final int pixels = in.pixels();
             for (int i = 0; i < pixels; i ++) {
-                out.setValue(i, GrayImage.clip(function.applyAsInt(I(in, i))));
+                out.setValue(i, MonoImage.clip(function.applyAsInt(I(in, i))));
             }
             return out;
         }
@@ -63,9 +63,9 @@ public class PixelProcessor {
         }
     }
 
-    public static class ColorToMono implements Function<ColorImage, GrayImage> {
+    public static class ColorToMono implements Function<ColorImage, MonoImage> {
 
-        private GrayImage out = null;
+        private MonoImage out = null;
         private final ColorPixelFunction function;
 
         public ColorToMono(ColorPixelFunction function) {
@@ -73,8 +73,8 @@ public class PixelProcessor {
         }
 
         @Override
-        public GrayImage apply(ColorImage in) {
-            out = GrayImage.adaptTo(out, in);
+        public MonoImage apply(ColorImage in) {
+            out = MonoImage.adaptTo(out, in);
             final int pixels = in.data.length;
             for (int i = 0; i < pixels; i += 3) {
                 final int v = function.apply(
