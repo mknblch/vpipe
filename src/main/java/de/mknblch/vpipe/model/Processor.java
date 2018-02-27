@@ -3,7 +3,7 @@ package de.mknblch.vpipe.model;
 /**
  * @author mknblch
  */
-public abstract class Processor<I, O> {
+public abstract class Processor<I, O> implements Process<I, O> {
 
     protected Processor<?, I> previous;
 

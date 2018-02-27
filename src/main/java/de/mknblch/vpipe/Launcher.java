@@ -2,7 +2,9 @@ package de.mknblch.vpipe;
 
 import de.mknblch.vpipe.model.ColorImage;
 import de.mknblch.vpipe.model.GrayImage;
+import de.mknblch.vpipe.model.Process;
 import de.mknblch.vpipe.model.Processor;
+import de.mknblch.vpipe.model.PullProcessor;
 import de.mknblch.vpipe.processor.*;
 
 /**
@@ -29,6 +31,9 @@ public class Launcher {
 //                .connectTo(Processors.erosion())
 //                .connectTo(Processors.dilation());
 
+        final PullProcessor<GrayImage, GrayImage> processor = PullProcessor.from(new DefaultVideoSource())
+                .connectTo(Processors.grayscale())
+                .connectTo(new Convolution(Kernels.HIGHPASS));
 
         Viewer.start(source);
 

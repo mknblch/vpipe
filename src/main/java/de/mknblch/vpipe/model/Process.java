@@ -1,5 +1,7 @@
 package de.mknblch.vpipe.model;
 
+import java.util.function.Function;
+
 /**
  *
  * @author mknblch
@@ -11,5 +13,9 @@ public interface Process<I, O> {
 
     default <O2> Process<I, O2> connectTo(Process<? super O, ? extends O2> next) {
         return (I t) -> next.compute(compute(t));
+    }
+
+    static <T> Process<T, T> identity() {
+        return t -> t;
     }
 }

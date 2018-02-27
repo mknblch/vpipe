@@ -3,6 +3,7 @@ package de.mknblch.vpipe.processor;
 import de.mknblch.vpipe.model.ColorImage;
 import de.mknblch.vpipe.model.GrayImage;
 import de.mknblch.vpipe.model.Processor;
+import de.mknblch.vpipe.model.Process;
 
 import java.util.function.IntUnaryOperator;
 
@@ -17,7 +18,8 @@ public class PixelProcessor {
         int apply(int r, int g, int b);
     }
 
-    public static class Mono extends Processor<GrayImage, GrayImage> {
+    public static class Mono extends Processor<GrayImage, GrayImage> implements Process<GrayImage, GrayImage> {
+
         private final IntUnaryOperator function;
         private GrayImage out = null;
 
@@ -36,7 +38,7 @@ public class PixelProcessor {
         }
     }
 
-    public static class Color extends Processor<ColorImage, ColorImage> {
+    public static class Color extends Processor<ColorImage, ColorImage> implements Process<ColorImage, ColorImage> {
         private ColorImage out = null;
         private final ColorPixelFunction function;
 
@@ -61,7 +63,7 @@ public class PixelProcessor {
         }
     }
 
-    public static class ColorToMono extends Processor<ColorImage, GrayImage> {
+    public static class ColorToMono extends Processor<ColorImage, GrayImage> implements Process<ColorImage, GrayImage> {
         private GrayImage out = null;
         private final ColorPixelFunction function;
 
