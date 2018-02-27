@@ -1,12 +1,8 @@
 package de.mknblch.vpipe;
 
-import de.mknblch.vpipe.model.ColorImage;
-import de.mknblch.vpipe.model.MonoImage;
 import de.mknblch.vpipe.model.Source;
-import de.mknblch.vpipe.functions.*;
 
 import java.awt.image.BufferedImage;
-import java.util.function.Function;
 
 import static de.mknblch.vpipe.functions.Functions.*;
 
@@ -25,6 +21,5 @@ public class Launcher {
                 .connectTo(toBufferedImage());
 
         Viewer.start(pump);
-
     }
 }

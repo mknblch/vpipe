@@ -26,23 +26,15 @@ public class Viewer extends JPanel {
 
     public Viewer(Supplier<BufferedImage> supplier) {
         this.source = supplier;
+        Runtime.getRuntime().addShutdownHook(new Thread(this::stop));
     }
 
     public void start() {
         running = true;
 
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-
-            stop();
-
-        }));
-
         new Thread(() -> {
             while (running) {
                 this.repaint();
-                try {
-                    Thread.sleep((1000 / 20));
-                } catch (InterruptedException e) {}
             }
         }).start();
     }
