@@ -30,8 +30,8 @@ public class PixelProcessor {
         public GrayImage compute(GrayImage in) {
             out = GrayImage.adaptTo(out, in);
             final int pixels = in.pixels();
-            for (int i = 0; i < pixels; i += 3) {
-                out.setValue(i, function.applyAsInt(I(in, i)));
+            for (int i = 0; i < pixels; i ++) {
+                out.setValue(i, GrayImage.clip(function.applyAsInt(I(in, i))));
             }
             return out;
         }

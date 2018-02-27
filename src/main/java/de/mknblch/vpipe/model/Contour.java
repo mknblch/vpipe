@@ -32,6 +32,7 @@ public class Contour {
     public void forEach(PointConsumer consumer) {
         int tx = x, ty = y + 1;
         for (int i = 0; i < data.length; i++) {
+            consumer.consume(tx, ty);
             switch (data[i]) {
                 case 0:
                     tx++;
@@ -45,13 +46,11 @@ public class Contour {
                 case 3:
                     ty--;
                     break;
-
                 default:
-
                     break;
             }
-            consumer.consume(tx, ty);
         }
+        consumer.consume(tx, ty);
     }
 
     public interface PointConsumer {

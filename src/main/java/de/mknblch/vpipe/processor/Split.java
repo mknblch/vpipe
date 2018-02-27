@@ -13,14 +13,6 @@ public class Split {
         throw new UnsupportedOperationException("no instantiation allowed");
     }
 
-    public static <I, L, R> Processor<I, TupleTwo<L, R>> split(Processor<I, L> leftProcessor, Processor<I, R> rightProcessor) {
-        return new SplitTwo<>(leftProcessor, rightProcessor);
-    }
-
-    public static <I, L, M, R> Processor<I, TupleThree<L, M, R>> split(Processor<I, L> leftProcessor, Processor<I, M> middleProcessor, Processor<I, R> rightProcessor) {
-        return new SplitThree<>(leftProcessor, middleProcessor, rightProcessor);
-    }
-
     public static class NoOpProcessor<I> implements Processor<I, I> {
         @Override
         public I compute(I in) {

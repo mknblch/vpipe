@@ -18,14 +18,6 @@ public class Merge {
         throw new UnsupportedOperationException("no instantiation allowed");
     }
 
-    public static <L, R, O> Processor<TupleTwo<L, R>, O> merge(BiFunction<L, R, O> mergeFunction) {
-        return new MergeTwo<>(mergeFunction);
-    }
-
-    public static <L, M, R, O> Processor<TupleThree<L, M, R>, O> merge(TriFunction<L, M, R, O> mergeFunction) {
-        return new MergeThree<>(mergeFunction);
-    }
-
     @FunctionalInterface
     public interface TriFunction<L, M, R, O> {
         O apply(L left, M middle, R right);
