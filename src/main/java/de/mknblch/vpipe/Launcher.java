@@ -12,7 +12,9 @@ public class Launcher {
     public static void main(String[] args) {
 
         final PullProcessor<?, GrayImage> processor = PullProcessor.from(new DefaultVideoSource())
-                .connectTo(Processors.grayscale());
+                .connectTo(Processors.grayscale())
+                .connectTo(Processors.contours(128))
+                .connectTo(new ContourProcessor.Renderer());
 
         Viewer.start(processor);
 
