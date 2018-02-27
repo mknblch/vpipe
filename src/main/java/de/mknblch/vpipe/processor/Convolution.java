@@ -1,13 +1,12 @@
 package de.mknblch.vpipe.processor;
 
 import de.mknblch.vpipe.model.GrayImage;
-import de.mknblch.vpipe.model.Processor;
 import de.mknblch.vpipe.model.Process;
 
 /**
  * @author mknblch
  */
-public class Convolution extends Processor<GrayImage, GrayImage> implements Process<GrayImage, GrayImage> {
+public class Convolution implements Process<GrayImage, GrayImage> {
 
     private final Kernel kernel;
     private GrayImage out;
@@ -51,12 +50,16 @@ public class Convolution extends Processor<GrayImage, GrayImage> implements Proc
         public final double multiplier;
         public final int width;
         public final int height;
+        private final int h2;
+        private final int w2;
 
         public Kernel(double[] h, int width, int height, double multiplier) {
-            H = h;
+            this.H = h;
             this.multiplier = multiplier;
             this.width = width;
             this.height = height;
+            this.h2 = (height - 1) / 2;
+            this.w2 = (width - 1) / 2;
         }
 
         public Kernel(double[] h, double multiplier) {
@@ -68,7 +71,7 @@ public class Convolution extends Processor<GrayImage, GrayImage> implements Proc
         }
 
         public double value(int xo, int yo) {
-            return H[((height - 1) / 2 + yo) * width + (width - 1) / 2 + xo];
+            return H[(h2 + yo) * width + w2 + xo];
         }
     }
 

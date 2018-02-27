@@ -3,7 +3,6 @@ package de.mknblch.vpipe;
 import de.mknblch.vpipe.model.ColorImage;
 import de.mknblch.vpipe.model.GrayImage;
 import de.mknblch.vpipe.model.Process;
-import de.mknblch.vpipe.model.Processor;
 import de.mknblch.vpipe.model.PullProcessor;
 import de.mknblch.vpipe.processor.*;
 
@@ -21,10 +20,10 @@ public class Launcher {
                 .connectTo(new ContourProcessor());
         */
 
-        final Processor<?, GrayImage> source = new DefaultVideoSource()
-                .connectTo(Processors.grayscale())
-                .connectTo(Processors.contours(128))
-                .connectTo(new ContourProcessor.Renderer());
+//        final Processor<?, GrayImage> source = new DefaultVideoSource()
+//                .connectTo(Processors.grayscale())
+//                .connectTo(Processors.contours(128))
+//                .connectTo(new ContourProcessor.Renderer());
 
 //        final Processor<?, GrayImage> source = new DefaultVideoSource()
 //                .connectTo(Processors.grayscale())
@@ -35,7 +34,7 @@ public class Launcher {
                 .connectTo(Processors.grayscale())
                 .connectTo(new Convolution(Kernels.HIGHPASS));
 
-        Viewer.start(source);
+        Viewer.start(processor);
 
     }
 }

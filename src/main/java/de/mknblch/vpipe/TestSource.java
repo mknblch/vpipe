@@ -2,13 +2,14 @@ package de.mknblch.vpipe;
 
 import de.mknblch.vpipe.model.GrayImage;
 import de.mknblch.vpipe.model.Image;
-import de.mknblch.vpipe.model.Processor;
-import de.mknblch.vpipe.model.VideoSource;
+import de.mknblch.vpipe.model.Process;
+
+import java.util.function.Supplier;
 
 /**
  * @author mknblch
  */
-public class TestSource extends Processor<Void, GrayImage> implements VideoSource {
+public class TestSource implements Supplier<GrayImage> {
 
     private final GrayImage image = new GrayImage(new byte[]{
             0, 0, 0, 0, 0,
@@ -19,21 +20,7 @@ public class TestSource extends Processor<Void, GrayImage> implements VideoSourc
     }, 5, 5);
 
     @Override
-    public Image image() {
+    public GrayImage get() {
         return image;
-    }
-
-    @Override
-    public void close() throws Exception {
-    }
-
-    @Override
-    public GrayImage pull() {
-        return image;
-    }
-
-    @Override
-    public GrayImage compute(Void in) {
-        return null;
     }
 }

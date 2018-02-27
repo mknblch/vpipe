@@ -2,7 +2,7 @@ package de.mknblch.vpipe.processor;
 
 import de.mknblch.vpipe.model.ColorImage;
 import de.mknblch.vpipe.model.GrayImage;
-import de.mknblch.vpipe.model.Processor;
+import de.mknblch.vpipe.model.Process;
 import de.mknblch.vpipe.model.Contour;
 
 import java.util.List;
@@ -15,12 +15,12 @@ import static de.mknblch.vpipe.model.Image.I;
  */
 public class Processors {
 
-    public static Processor<GrayImage, List<Contour>> contours(int threshold) {
+    public static Process<GrayImage, List<Contour>> contours(int threshold) {
         return new ContourProcessor(threshold);
     }
 
-    public static Processor<GrayImage, GrayImage> invert() {
-        return new Processor<GrayImage, GrayImage>() {
+    public static Process<GrayImage, GrayImage> invert() {
+        return new Process<GrayImage, GrayImage>() {
             private GrayImage out;
             @Override
             public GrayImage compute(GrayImage in) {
@@ -33,16 +33,16 @@ public class Processors {
         };
     }
 
-    public static Processor<ColorImage, GrayImage> binarization(int threshold) {
+    public static Process<ColorImage, GrayImage> binarization(int threshold) {
         return new PixelProcessor.ColorToMono((r, g, b) -> (r + g + b) / 3 >= threshold ? 255 : 0);
     }
 
-    public static Processor<ColorImage, GrayImage> grayscale() {
+    public static Process<ColorImage, GrayImage> grayscale() {
         return new PixelProcessor.ColorToMono((r, g, b) -> (r + g + b) / 3);
     }
 
-    public static Processor<GrayImage, GrayImage> dilation() {
-        return new Processor<GrayImage, GrayImage>() {
+    public static Process<GrayImage, GrayImage> dilation() {
+        return new Process<GrayImage, GrayImage>() {
             private GrayImage out;
             @Override
             public GrayImage compute(GrayImage in) {
@@ -66,8 +66,8 @@ public class Processors {
         };
     }
 
-    public static Processor<GrayImage, GrayImage> erosion() {
-        return new Processor<GrayImage, GrayImage>() {
+    public static Process<GrayImage, GrayImage> erosion() {
+        return new Process<GrayImage, GrayImage>() {
             private GrayImage out;
             @Override
             public GrayImage compute(GrayImage in) {

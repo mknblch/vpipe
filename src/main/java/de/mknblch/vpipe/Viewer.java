@@ -6,13 +6,14 @@ import de.mknblch.vpipe.model.Processor;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.function.Supplier;
 
 /**
  * @author mknblch
  */
 public class Viewer extends JPanel {
 
-    private final Processor<?, ? extends Image> source;
+    private final Supplier<? extends Image> source;
     private final BufferedImageRenderer bufferedImageRenderer;
 
     private volatile boolean running = false;
@@ -20,8 +21,8 @@ public class Viewer extends JPanel {
     private int fps;
     private long n, l = System.currentTimeMillis();
 
-    public Viewer(Processor<?, ? extends de.mknblch.vpipe.model.Image> source) {
-        this.source = source;
+    public Viewer(Supplier<? extends Image> supplier) {
+        this.source = supplier;
         bufferedImageRenderer = new BufferedImageRenderer();
     }
 
@@ -48,7 +49,7 @@ public class Viewer extends JPanel {
     @Override
     public void paint(Graphics g) {
         super.paint(g);
-        final BufferedImage image = bufferedImageRenderer.render(source.pull());
+        final BufferedImage image = bufferedImageRenderer.render(source.get());
         if (null != image) {
             g.drawImage(image, 0, 0, this);
             n = System.currentTimeMillis();
@@ -59,7 +60,7 @@ public class Viewer extends JPanel {
         }
     }
 
-    public static void start(Processor<?, ? extends Image> imageProcessor) {
+    public static void start(Supplier<? extends Image> imageProcessor) {
 
         javax.swing.SwingUtilities.invokeLater(() -> {
 
