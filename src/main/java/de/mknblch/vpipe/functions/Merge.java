@@ -1,7 +1,7 @@
-package de.mknblch.vpipe.processor;
+package de.mknblch.vpipe.functions;
 
-import de.mknblch.vpipe.processor.Split.TupleThree;
-import de.mknblch.vpipe.processor.Split.TupleTwo;
+import de.mknblch.vpipe.functions.Split.TupleThree;
+import de.mknblch.vpipe.functions.Split.TupleTwo;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;

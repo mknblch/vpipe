@@ -1,4 +1,4 @@
-package de.mknblch.vpipe;
+package de.mknblch.vpipe.functions;
 
 import de.mknblch.vpipe.model.ColorImage;
 import de.mknblch.vpipe.model.Image;
@@ -6,20 +6,25 @@ import de.mknblch.vpipe.model.Image;
 import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.awt.image.*;
+import java.util.function.Function;
 
 /**
  * @author mknblch
  */
-public class BufferedImageRenderer {
+public class Renderer<I extends Image> implements Function<I, BufferedImage> {
 
     private BufferedImage out = null;
 
-    private static BufferedImage createMonochromImage(int width, int height) {
-        return new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+    @Override
+    public BufferedImage apply(I image) {
+        return render(
+                image.data(),
+                image.width(),
+                image.height(),
+                image instanceof ColorImage);
     }
 
     private static BufferedImage createColorImage(int width, int height) {
-
         final byte[] pixels = new byte[width * height * 3];
         final DataBuffer dataBuffer = new DataBufferByte(pixels, width*height, 0);
         final ComponentSampleModel smodel = new ComponentSampleModel(
@@ -46,34 +51,7 @@ public class BufferedImageRenderer {
         return new BufferedImage(cmodel, raster, false, null);
     }
 
-
-    private static BufferedImage createMono2Image(int width, int height) {
-
-        final byte[] pixels = new byte[width * height * 3];
-        final DataBuffer dataBuffer = new DataBufferByte(pixels, width*height, 0);
-        final ComponentSampleModel smodel = new ComponentSampleModel(
-                DataBuffer.TYPE_BYTE,
-                width,
-                height,
-                1,
-                width,
-                new int[]{ColorImage.RED});
-        final ComponentColorModel cmodel = new ComponentColorModel(
-                ColorSpace.getInstance(ColorSpace.CS_GRAY),
-                new int[]{8},
-                false,
-                false,
-                Transparency.OPAQUE,
-                DataBuffer.TYPE_BYTE);
-        final WritableRaster raster = Raster.createWritableRaster(
-                smodel,
-                dataBuffer,
-                null);
-
-        return new BufferedImage(cmodel, raster, false, null);
-    }
-    private static BufferedImage createMono3Image(int width, int height) {
-
+    private static BufferedImage createMonoImage(int width, int height) {
         final byte[] pixels = new byte[width * height * 3];
         final DataBuffer dataBuffer = new DataBufferByte(pixels, width*height, 0);
         final ComponentSampleModel smodel = new ComponentSampleModel(
@@ -98,21 +76,12 @@ public class BufferedImageRenderer {
         return new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
     }
 
-    public BufferedImage render(Image image) {
-        return render(
-                image.data(),
-                image.width(),
-                image.height(),
-                image instanceof ColorImage);
-    }
-
-    public BufferedImage render(byte[] data,
-                                int width, int height, boolean color) {
+    private BufferedImage render(byte[] data, int width, int height, boolean color) {
         if (null == out) {
             if (color) {
                 out = createColorImage(width, height);
             } else {
-                out = createMono3Image(width, height);
+                out = createMonoImage(width, height);
             }
         }
         final byte[] imageData = ((DataBufferByte) out
@@ -120,8 +89,6 @@ public class BufferedImageRenderer {
                 .getDataBuffer())
                 .getData();
         System.arraycopy(data, 0, imageData, 0, data.length);
-
         return out;
     }
-
 }

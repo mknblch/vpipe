@@ -1,9 +1,11 @@
-package de.mknblch.vpipe.processor;
+package de.mknblch.vpipe.functions;
 
 import de.mknblch.vpipe.model.ColorImage;
+import de.mknblch.vpipe.model.Image;
 import de.mknblch.vpipe.model.MonoImage;
 import de.mknblch.vpipe.model.Contour;
 
+import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -14,7 +16,7 @@ import static de.mknblch.vpipe.model.Image.I;
 /**
  * @author mknblch
  */
-public class Processors {
+public class Functions {
 
     /**
      * Split computation into 2 pipes
@@ -190,5 +192,12 @@ public class Processors {
                 return out;
             }
         };
+    }
+
+    /**
+     * transform Image to BufferedImage
+     */
+    public static <I extends Image> Function<I, BufferedImage> toBufferedImage() {
+        return new Renderer<>();
     }
 }

@@ -1,4 +1,4 @@
-package de.mknblch.vpipe.processor;
+package de.mknblch.vpipe.functions;
 
 import java.util.function.Function;
 

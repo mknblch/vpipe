@@ -1,10 +1,14 @@
 package de.mknblch.vpipe;
 
+
 import de.mknblch.vpipe.model.Image;
-import de.mknblch.vpipe.model.Processor;
+import de.mknblch.vpipe.functions.Renderer;
+import de.mknblch.vpipe.model.Source;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.util.function.Supplier;
 
@@ -13,31 +17,32 @@ import java.util.function.Supplier;
  */
 public class Viewer extends JPanel {
 
-    private final Supplier<? extends Image> source;
-    private final BufferedImageRenderer bufferedImageRenderer;
+    private final Supplier<BufferedImage> source;
 
     private volatile boolean running = false;
 
     private int fps;
     private long n, l = System.currentTimeMillis();
 
-    public Viewer(Supplier<? extends Image> supplier) {
+    public Viewer(Supplier<BufferedImage> supplier) {
         this.source = supplier;
-        bufferedImageRenderer = new BufferedImageRenderer();
     }
 
     public void start() {
-        System.out.println("start");
         running = true;
+
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+
+            stop();
+
+        }));
+
         new Thread(() -> {
             while (running) {
-
                 this.repaint();
                 try {
                     Thread.sleep((1000 / 20));
                 } catch (InterruptedException e) {}
-
-
             }
         }).start();
     }
@@ -49,7 +54,7 @@ public class Viewer extends JPanel {
     @Override
     public void paint(Graphics g) {
         super.paint(g);
-        final BufferedImage image = bufferedImageRenderer.render(source.get());
+        final BufferedImage image = source.get();
         if (null != image) {
             g.drawImage(image, 0, 0, this);
             n = System.currentTimeMillis();
@@ -60,12 +65,16 @@ public class Viewer extends JPanel {
         }
     }
 
-    public static void start(Supplier<? extends Image> imageProcessor) {
-
+    public static void start(Supplier<BufferedImage> source) {
         javax.swing.SwingUtilities.invokeLater(() -> {
-
-            final Viewer comp = new Viewer(imageProcessor);
+            final Viewer comp = new Viewer(source);
             final JFrame frame = new JFrame("Viewer");
+            frame.addWindowStateListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent e) {
+                    comp.stop();
+                }
+            });
             frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
             frame.getContentPane().add(comp);
             frame.getContentPane().setBackground(Color.BLACK);
@@ -74,7 +83,6 @@ public class Viewer extends JPanel {
             frame.pack();
             frame.setVisible(true);
             comp.start();
-
         });
 
     }

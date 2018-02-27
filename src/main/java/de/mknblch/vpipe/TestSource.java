@@ -1,13 +1,12 @@
 package de.mknblch.vpipe;
 
 import de.mknblch.vpipe.model.MonoImage;
-
-import java.util.function.Supplier;
+import de.mknblch.vpipe.model.Source;
 
 /**
  * @author mknblch
  */
-public class TestSource implements Supplier<MonoImage> {
+public class TestSource implements Source<MonoImage> {
 
     private final MonoImage image = new MonoImage(new byte[]{
             0, 0, 0, 0, 0,
