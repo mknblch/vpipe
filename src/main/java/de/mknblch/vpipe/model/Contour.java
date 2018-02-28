@@ -1,5 +1,8 @@
 package de.mknblch.vpipe.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Contour {
 
     public enum Direction {
@@ -18,8 +21,13 @@ public class Contour {
     public final int maxX;
     public final int minY;
     public final int maxY;
+    public final int index;
 
-    public Contour(byte[] data, int x, int y, int minX, int maxX, int minY, int maxY) {
+    public final List<Contour> children = new ArrayList<>();
+
+    private int depth = 0;
+
+    public Contour(byte[] data, int x, int y, int minX, int maxX, int minY, int maxY, int index) {
         this.data = data;
         this.x = x;
         this.y = y;
@@ -27,6 +35,26 @@ public class Contour {
         this.maxX = maxX;
         this.minY = minY;
         this.maxY = maxY;
+        this.index = index;
+    }
+
+    public boolean contains(Contour other) {
+        return other.minX >= this.minX &&
+                other.maxX <= this.maxX &&
+                other.minY >= this.minY &&
+                other.maxY <= this.maxY;
+    }
+
+    public void add(Contour child) {
+        children.add(child);
+    }
+
+    public void setDepth(int depth) {
+        this.depth = depth;
+    }
+
+    public int getDepth() {
+        return depth;
     }
 
     public void forEach(PointConsumer consumer) {

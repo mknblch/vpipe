@@ -6,6 +6,7 @@ import de.mknblch.vpipe.model.MonoImage;
 import de.mknblch.vpipe.model.Contour;
 
 import java.awt.image.BufferedImage;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -54,7 +55,7 @@ public class Functions {
      * calculate contours of a GrayImage based on a threshold
      * @param threshold a threshold between 0 and 255
      */
-    public static Function<MonoImage, List<Contour>> contours(int threshold) {
+    public static Function<MonoImage, Collection<Contour>> contours(int threshold) {
         return new ContourProcessor(threshold);
     }
 
@@ -64,10 +65,10 @@ public class Functions {
      */
     public static Function<MonoImage, MonoImage> renderContour(int threshold, int width, int height) {
         return new ContourProcessor(threshold)
-                .andThen(new Function<List<Contour>, MonoImage>() {
+                .andThen(new Function<Collection<Contour>, MonoImage>() {
                     private MonoImage out;
                     @Override
-                    public MonoImage apply(List<Contour> in) {
+                    public MonoImage apply(Collection<Contour> in) {
                         out = MonoImage.adaptTo(out, width, height);
                         out.fill(0);
                         in.forEach(c -> c.forEach((x, y) -> out.setValue(x, y, 255)));

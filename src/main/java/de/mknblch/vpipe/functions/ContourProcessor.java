@@ -3,9 +3,7 @@ package de.mknblch.vpipe.functions;
 import de.mknblch.vpipe.model.MonoImage;
 import de.mknblch.vpipe.model.Contour;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 
 import static de.mknblch.vpipe.model.Image.I;
@@ -14,7 +12,7 @@ import static de.mknblch.vpipe.model.Contour.Direction.*;
 /**
  * @author mknblch
  */
-public class ContourProcessor implements Function<MonoImage, List<Contour>> {
+public class ContourProcessor implements Function<MonoImage, Collection<Contour>> {
 
     private static final int CAPACITY_LIMIT = 640 * 480 * 4;
     private static final int MIN_CONTOUR_LENGTH = 16;
@@ -31,13 +29,14 @@ public class ContourProcessor implements Function<MonoImage, List<Contour>> {
     }
 
     @Override
-    public List<Contour> apply(MonoImage image) {
+    public Collection<Contour> apply(MonoImage image) {
         if (null == visited) {
             visited = new boolean[image.width * image.height];
         } else {
             Arrays.fill(visited, false);
         }
-        final ArrayList<Contour> contours = new ArrayList<>();
+        int index = 0;
+        final Stack<Contour> stack = new Stack<>();
         for (int i = 0; i < image.data.length - image.width - 1; i++) {
             if (visited[i]) {
                 continue;
@@ -48,17 +47,28 @@ public class ContourProcessor implements Function<MonoImage, List<Contour>> {
             }
             final int y = i / image.width;
             if ((x == 0 || threshold > (image.getValue(x - 1, y))) && threshold < (image.getValue(x, y))) {
-                final Contour c = chain4(image, i, x, y);
+                final Contour c = chain4(image, i, x, y, index++);
                 if (c == null) {
                     continue;
                 }
-                contours.add(c);
+                if (stack.isEmpty()) {
+                    stack.push(c);
+                } else {
+                    final Contour peek = stack.peek();
+                    if (peek.contains(c)) {
+                        c.setDepth(peek.getDepth());
+                        peek.add(c);
+                    } else {
+                        c.setDepth(0);
+                        stack.add(c);
+                    }
+                }
             }
         }
-        return contours;
+        return stack;
     }
 
-    private Contour chain4(MonoImage image, int i, int sx, int sy) {
+    private Contour chain4(MonoImage image, int i, int sx, int sy, int index) {
         final byte[] input = image.data;
         final int width = image.width;
         int offset = 0;
@@ -161,7 +171,8 @@ public class ContourProcessor implements Function<MonoImage, List<Contour>> {
                         minX,
                         maxX,
                         minY,
-                        maxY
+                        maxY,
+                        index
                 ) : null;
     }
 }
