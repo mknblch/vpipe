@@ -14,13 +14,13 @@ it with these functions.
 ```
     import static de.mknblch.vpipe.functions.Functions.*;
 
-    final Source<BufferedImage> pipe = new DefaultVideoSource()
+    final Source<BufferedImage> pipe = WebcamSource.choose()
             .connectTo(grayscale())
             .connectTo(gamma(30))
             .connectTo(contrast(150))
             .connectTo(renderContour(128, 640, 480))
             .connectTo(toBufferedImage());
-            
+
     Viewer.start(pipe);
 ```
 

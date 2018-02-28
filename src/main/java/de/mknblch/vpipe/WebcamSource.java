@@ -12,16 +12,12 @@ import java.util.List;
 /**
  * @author mknblch
  */
-public class DefaultVideoSource implements Source<ColorImage>, AutoCloseable {
+public class WebcamSource implements Source<ColorImage>, AutoCloseable {
 
     private final Webcam webcam;
     private final ColorImage image;
 
-    public DefaultVideoSource() {
-        this(chooseCam());
-    }
-
-    public DefaultVideoSource(Webcam webcam) {
+    public WebcamSource(Webcam webcam) {
         this.webcam = webcam;
         webcam.setViewSize(new Dimension(640, 480));
         if (!webcam.open()) {
@@ -45,7 +41,7 @@ public class DefaultVideoSource implements Source<ColorImage>, AutoCloseable {
         return image;
     }
 
-    private static Webcam chooseCam() {
+    public static WebcamSource choose() {
         Webcam webcam;
         final List<Webcam> webcams = Webcam.getWebcams();
         if (webcams.size() == 1) {
@@ -63,6 +59,7 @@ public class DefaultVideoSource implements Source<ColorImage>, AutoCloseable {
                 System.exit(0);
             }
         }
-        return webcam;
+        return new WebcamSource(webcam);
     }
+
 }
