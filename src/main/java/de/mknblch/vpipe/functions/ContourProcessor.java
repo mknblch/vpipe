@@ -24,6 +24,8 @@ public class ContourProcessor implements Function<MonoImage, List<Contour>> {
     private final int threshold;
     private boolean[] visited;
 
+    private byte[] data = new byte[INITIAL_CAPACITY];
+
     public ContourProcessor(int threshold) {
         this.threshold = threshold;
     }
@@ -59,7 +61,6 @@ public class ContourProcessor implements Function<MonoImage, List<Contour>> {
     private Contour chain4(MonoImage image, int i, int sx, int sy) {
         final byte[] input = image.data;
         final int width = image.width;
-        byte[] data = new byte[INITIAL_CAPACITY];
         int offset = 0;
         int minX = Integer.MAX_VALUE;
         int maxX = 0;
@@ -91,7 +92,7 @@ public class ContourProcessor implements Function<MonoImage, List<Contour>> {
                     }
                     break;
                 case S:
-                    if (y == image.height -1 || threshold > I(input[j])) {
+                    if (y == image.height - 1 || threshold > I(input[j])) {
                         d = E;
                         x++;
                         j++;
