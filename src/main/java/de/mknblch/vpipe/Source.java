@@ -1,4 +1,4 @@
-package de.mknblch.vpipe.model;
+package de.mknblch.vpipe;
 
 import java.util.function.Function;
 import java.util.function.Supplier;

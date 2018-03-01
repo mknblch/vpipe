@@ -1,6 +1,6 @@
 package de.mknblch.vpipe.functions;
 
-import de.mknblch.vpipe.model.Image;
+import de.mknblch.vpipe.Image;
 
 import java.awt.*;
 import java.awt.color.ColorSpace;
@@ -10,7 +10,7 @@ import java.util.function.Function;
 /**
  * @author mknblch
  */
-public class Renderer<I extends Image> implements Function<I, BufferedImage> {
+public class BufferedImageTransformer<I extends Image> implements Function<I, BufferedImage> {
 
     private BufferedImage out = null;
 

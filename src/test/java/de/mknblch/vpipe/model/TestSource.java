@@ -1,5 +1,8 @@
 package de.mknblch.vpipe.model;
 
+import de.mknblch.vpipe.Image;
+import de.mknblch.vpipe.Source;
+
 /**
  * @author mknblch
  */

@@ -1,11 +1,8 @@
 package de.mknblch.vpipe;
 
-import de.mknblch.vpipe.functions.Merge;
-import de.mknblch.vpipe.functions.PixelProcessor;
-import de.mknblch.vpipe.functions.Renderer;
-import de.mknblch.vpipe.functions.Split;
+import de.mknblch.vpipe.functions.*;
 import de.mknblch.vpipe.functions.contours.ContourProcessor;
-import de.mknblch.vpipe.model.Image;
+import de.mknblch.vpipe.functions.contours.Renderer;
 import de.mknblch.vpipe.functions.contours.Contour;
 
 import java.awt.image.BufferedImage;
@@ -13,8 +10,7 @@ import java.util.Collection;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import static de.mknblch.vpipe.model.Image.B;
-import static de.mknblch.vpipe.model.Image.I;
+import static de.mknblch.vpipe.Image.I;
 
 /**
  * @author mknblch
@@ -68,38 +64,10 @@ public class Functions {
     }
 
     /**
-     * calculate contours of a GrayImage based on a threshold and render
-     * @param threshold a threshold between 0 and 255
-     */
-    public static Function<Collection<Contour>, Image.Color> renderContour(int threshold, int width, int height) {
-        return new Function<Collection<Contour>, Image.Color>() {
-            private Image.Color out;
-
-            @Override
-            public Image.Color apply(Collection<Contour> in) {
-                out = Image.Color.adaptTo(out, width, height);
-                out.fill(0);
-                in.forEach(c -> c.forEach((x, y) -> out.setColor(x, y, 255, 0, 0)));
-                return out;
-            }
-        };
-    }
-
-    /**
      * invert a GrayImage
      */
     public static Function<Image.Gray, Image.Gray> invert() {
-        return new Function<Image.Gray, Image.Gray>() {
-            private Image.Gray out;
-            @Override
-            public Image.Gray apply(Image.Gray in) {
-                out = Image.Gray.adaptTo(out, in);
-                for (int i = 0; i < in.data.length; i++) {
-                    out.data[i] = B(Math.abs(255 - I(in, i)));
-                }
-                return out;
-            }
-        };
+        return new PixelProcessor.Gray2Gray(b -> 255 - b);
     }
 
     /**
@@ -151,62 +119,33 @@ public class Functions {
      * pixel dilation
      */
     public static Function<Image.Gray, Image.Gray> dilation() {
-        return new Function<Image.Gray, Image.Gray>() {
-            private Image.Gray out;
-            @Override
-            public Image.Gray apply(Image.Gray in) {
-                out = Image.Gray.adaptTo(out, in);
-                for (int y = 0; y < in.height; y++) {
-                    for (int x = 0; x < in.width; x++) {
-                        int max = 0;
-                        for (int ty = y - 1; ty <= y + 1; ty++) {
-                            for (int tx = x - 1; tx <= x + 1; tx++) {
-                                if (ty < 0 || tx < 0 || ty >= in.height || tx >= in.width) {
-                                    continue;
-                                }
-                                max = Math.max(max, in.getValue(tx, ty));
-                            }
-                        }
-                        out.setValue(x, y, max);
-                    }
-                }
-                return out;
-            }
-        };
+        return new Morphological.Dilation();
     }
 
     /**
      * pixel erosion
      */
     public static Function<Image.Gray, Image.Gray> erosion() {
-        return new Function<Image.Gray, Image.Gray>() {
-            private Image.Gray out;
-            @Override
-            public Image.Gray apply(Image.Gray in) {
-                out = Image.Gray.adaptTo(out, in);
-                for (int y = 0; y < in.height; y++) {
-                    for (int x = 0; x < in.width; x++) {
-                        int min = 255;
-                        for (int ty = y - 1; ty <= y + 1; ty++) {
-                            for (int tx = x - 1; tx <= x + 1; tx++) {
-                                if (ty < 0 || tx < 0 || ty >= in.height || tx >= in.width) {
-                                    continue;
-                                }
-                                min = Math.min(min, in.getValue(tx, ty));
-                            }
-                        }
-                        out.setValue(x, y, min);
-                    }
-                }
-                return out;
-            }
-        };
+        return new Morphological.Erosion();
     }
 
     /**
      * transform Image to BufferedImage
      */
     public static <I extends Image> Function<I, BufferedImage> toBufferedImage() {
-        return new Renderer<>();
+        return new BufferedImageTransformer<>();
     }
+
+    public static Function<Collection<Contour>, Image.Color> renderDepth(int width, int height) {
+        return new Renderer.Depth(width, height);
+    }
+
+    public static Function<Collection<Contour>, Image.Color> renderAll(int width, int height) {
+        return new Renderer.All(width, height);
+    }
+
+    public static Function<Collection<Contour>, Image.Color> renderBoundingBox(int width, int height) {
+        return new Renderer.BoundingBox(width, height);
+    }
+
 }

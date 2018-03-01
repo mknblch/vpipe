@@ -1,11 +1,11 @@
 package de.mknblch.vpipe.functions.contours;
 
-import de.mknblch.vpipe.model.Image;
+import de.mknblch.vpipe.Image;
 
 import java.util.*;
 import java.util.function.Function;
 
-import static de.mknblch.vpipe.model.Image.I;
+import static de.mknblch.vpipe.Image.I;
 import static de.mknblch.vpipe.functions.contours.Contour.Direction.*;
 
 /**

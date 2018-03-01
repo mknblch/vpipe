@@ -132,7 +132,6 @@ public class Contour {
                     break;
             }
         }
-//        consumer.consume(tx, ty);
     }
 
     public interface PointConsumer {

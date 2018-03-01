@@ -1,6 +1,7 @@
 package de.mknblch.vpipe.model;
 
 import de.mknblch.vpipe.Functions;
+import de.mknblch.vpipe.Source;
 import de.mknblch.vpipe.functions.contours.Contour;
 import org.junit.Test;
 

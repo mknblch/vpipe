@@ -1,8 +1,8 @@
-package de.mknblch.vpipe;
+package de.mknblch.vpipe.helper;
 
 import com.github.sarxos.webcam.Webcam;
-import de.mknblch.vpipe.model.Image;
-import de.mknblch.vpipe.model.Source;
+import de.mknblch.vpipe.Image;
+import de.mknblch.vpipe.Source;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,18 +12,18 @@ import java.util.List;
 /**
  * @author mknblch
  */
-public class WebcamSource implements Source<Image.Color>, AutoCloseable {
+public class SarxosWebcamSource implements Source<Image.Color>, AutoCloseable {
 
     private final Webcam webcam;
     private final Image.Color image;
 
-    public WebcamSource(Webcam webcam) {
+    public SarxosWebcamSource(Webcam webcam, int width, int height) {
         this.webcam = webcam;
-        webcam.setViewSize(new Dimension(640, 480));
+        webcam.setViewSize(new Dimension(width, height));
         if (!webcam.open()) {
             throw new IllegalStateException("Cannot open Webcam");
         }
-        image = new Image.Color(640, 480);
+        image = new Image.Color(width, height);
     }
 
     @Override
@@ -41,7 +41,7 @@ public class WebcamSource implements Source<Image.Color>, AutoCloseable {
         return image;
     }
 
-    public static WebcamSource choose() {
+    public static SarxosWebcamSource choose() {
         Webcam webcam;
         final List<Webcam> webcams = Webcam.getWebcams();
         if (webcams.size() == 1) {
@@ -59,7 +59,7 @@ public class WebcamSource implements Source<Image.Color>, AutoCloseable {
                 System.exit(0);
             }
         }
-        return new WebcamSource(webcam);
+        return new SarxosWebcamSource(webcam, 640, 480);
     }
 
 }
