@@ -36,7 +36,7 @@ public class ContourProcessor implements Function<MonoImage, Collection<Contour>
             Arrays.fill(visited, false);
         }
         int index = 0;
-        final Stack<Contour> stack = new Stack<>();
+        final List<Contour> contours = new ArrayList<>();
         for (int i = 0; i < image.data.length - image.width - 1; i++) {
             if (visited[i]) {
                 continue;
@@ -51,30 +51,34 @@ public class ContourProcessor implements Function<MonoImage, Collection<Contour>
                 if (c == null) {
                     continue;
                 }
-                if (stack.isEmpty()) {
-                    stack.push(c);
-                } else {
-                    final Contour peek = stack.peek();
-                    if (peek.contains(c)) {
-                        c.setDepth(peek.getDepth() + 1);
-                        peek.add(c);
-                    } else {
-                        c.setDepth(0);
-                        stack.add(c);
+                contours.add(c);
+
+                for (int j = contours.size() - 2; j >= 0; j--) {
+                    final Contour contour = contours.get(j);
+                    if (contour.contains(c)) {
+                        contour.setDepth(c.getDepth() + 1);
+                        contour.add(c);
                     }
                 }
             }
         }
 
-//        stack.forEach(c -> {
-//            if (!c.isOuter()) {
-//                System.out.println(" -> " + Arrays.toString(c.data));
-//            } else {
-//                System.out.println(Arrays.toString(c.data));
-//            }
+//        out:
+//        for (int i = contours.size() - 1; i >= 1; i--) {
+//            final Contour current = contours.get(i);
+//            for (int j = i - 1; j >= 0; j--) {
+//                final Contour sub = contours.get(j);
+//                if (current.contains(sub)) {
+//                    current.add(sub);
+//                    current.setDepth(sub.getDepth() + 1);
 //
-//        });
-        return stack;
+//                    continue out;
+//                }
+//            }
+//        }
+
+
+        return contours;
     }
 
     private Contour chain4(MonoImage image, int i, int sx, int sy, int index) {

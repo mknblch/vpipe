@@ -60,6 +60,7 @@ public class Contour {
 
     public boolean isOuter() {
         return depth % 2 == 0;
+//        return data[0] == Direction.S.v;
     }
 
     public void forEachChild(Consumer<Contour> consumer) {
