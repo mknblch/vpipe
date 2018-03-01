@@ -42,7 +42,6 @@ contours carry different properties
 - **red** : leafs
 
 ![contours](https://mknblch.github.io/videopipe/fiducial2.png)
-
 ---
 
 colorization by depth in the contour tree
