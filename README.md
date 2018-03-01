@@ -14,11 +14,12 @@ it with these functions.
 ```
     import static de.mknblch.vpipe.Functions.*;
 
-    final Source<BufferedImage> pipe = WebcamSource.choose()
+    final Source<BufferedImage> pipe = SarxosWebcamSource.choose()
             .connectTo(grayscale())
-            .connectTo(gamma(30))
-            .connectTo(contrast(150))
-            .connectTo(renderContour(128, 640, 480))
+            .connectTo(gamma(20))
+            .connectTo(contrast(2))
+            .connectTo(contours(128))
+            .connectTo(renderAll(640, 480))
             .connectTo(toBufferedImage());
 
     Viewer.start(pipe);
