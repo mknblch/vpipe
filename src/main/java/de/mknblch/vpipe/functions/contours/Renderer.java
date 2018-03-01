@@ -52,9 +52,9 @@ public class Renderer {
                     if (c.isLeaf()) {
                         image.setColor(x, y, 255, 0, 0);
                     } else if (c.isWhite()) {
-                        image.setColor(x, y, 255, 255, 255);
+                        image.setColor(x, y, 0, 255, 0);
                     } else {
-                        image.setColor(x, y, 0, 255, 255);
+                        image.setColor(x, y, 255, 255, 0);
                     }
                 });
             });
