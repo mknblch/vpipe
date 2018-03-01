@@ -2,6 +2,7 @@ package de.mknblch.vpipe.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class Contour {
 
@@ -57,8 +58,16 @@ public class Contour {
         return depth;
     }
 
+    public boolean isOuter() {
+        return depth % 2 == 0;
+    }
+
+    public void forEachChild(Consumer<Contour> consumer) {
+        children.forEach(consumer);
+    }
+
     public void forEach(PointConsumer consumer) {
-        int tx = x, ty = y + 1;
+        int tx = x, ty = y;
         for (int i = 0; i < data.length; i++) {
             consumer.consume(tx, ty);
             switch (data[i]) {
@@ -78,7 +87,7 @@ public class Contour {
                     break;
             }
         }
-        consumer.consume(tx, ty);
+//        consumer.consume(tx, ty);
     }
 
     public interface PointConsumer {

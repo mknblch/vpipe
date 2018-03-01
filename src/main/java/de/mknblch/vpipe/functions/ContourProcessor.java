@@ -15,7 +15,7 @@ import static de.mknblch.vpipe.model.Contour.Direction.*;
 public class ContourProcessor implements Function<MonoImage, Collection<Contour>> {
 
     private static final int CAPACITY_LIMIT = 640 * 480 * 4;
-    private static final int MIN_CONTOUR_LENGTH = 16;
+    private static final int MIN_CONTOUR_LENGTH = 8;
 
     public static final int INITIAL_CAPACITY = 64;
 
@@ -46,7 +46,7 @@ public class ContourProcessor implements Function<MonoImage, Collection<Contour>
                 continue;
             }
             final int y = i / image.width;
-            if ((x == 0 || threshold > (image.getValue(x - 1, y))) && threshold < (image.getValue(x, y))) {
+            if ((x == 0 || threshold > image.getValue(x - 1, y)) && threshold < image.getValue(x, y)) {
                 final Contour c = chain4(image, i, x, y, index++);
                 if (c == null) {
                     continue;
@@ -56,7 +56,7 @@ public class ContourProcessor implements Function<MonoImage, Collection<Contour>
                 } else {
                     final Contour peek = stack.peek();
                     if (peek.contains(c)) {
-                        c.setDepth(peek.getDepth());
+                        c.setDepth(peek.getDepth() + 1);
                         peek.add(c);
                     } else {
                         c.setDepth(0);
@@ -65,6 +65,15 @@ public class ContourProcessor implements Function<MonoImage, Collection<Contour>
                 }
             }
         }
+
+//        stack.forEach(c -> {
+//            if (!c.isOuter()) {
+//                System.out.println(" -> " + Arrays.toString(c.data));
+//            } else {
+//                System.out.println(Arrays.toString(c.data));
+//            }
+//
+//        });
         return stack;
     }
 
@@ -79,6 +88,7 @@ public class ContourProcessor implements Function<MonoImage, Collection<Contour>
         Contour.Direction d = S;
         int x = sx, y = sy + 1;
         int j = i + width;
+        data[offset++] = d.v;
         do {
             if (offset > CAPACITY_LIMIT) {
                 return null;
