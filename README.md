@@ -33,13 +33,23 @@ it with these functions.
 - pixel based enhancement like grayscale, gamma & contrast
 - threshold based contour extraction
 
-## Example
- 
-- **Green** : outer contour
-- **Yellow** : inner contours
-- **Red** : Leafs
+## Examples
 
-> ![contours](https://mknblch.github.io/videopipe/fiducial.png)
+Contours carry different properties 
+ 
+- **green** : outer contour
+- **yellow** : inner contours
+- **red** : leafs
+
+> ![contours](https://mknblch.github.io/videopipe/fiducial2.png)
 
 ---
 
+colorization by depth in the contour tree
+
+> ![contours](https://mknblch.github.io/videopipe/fiducial.png)
+---
+
+contour bounding boxes
+
+> ![contours](https://mknblch.github.io/videopipe/fiducial3.png)
