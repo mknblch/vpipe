@@ -1,24 +1,24 @@
 package de.mknblch.vpipe.functions;
 
-import de.mknblch.vpipe.model.MonoImage;
+import de.mknblch.vpipe.model.Image;
 
 import java.util.function.Function;
 
 /**
  * @author mknblch
  */
-public class Convolution implements Function<MonoImage, MonoImage> {
+public class Convolution implements Function<Image.Gray, Image.Gray> {
 
     private final Kernel kernel;
-    private MonoImage out;
+    private Image.Gray out;
 
     public Convolution(Kernel kernel) {
         this.kernel = kernel;
     }
 
     @Override
-    public MonoImage apply(MonoImage in) {
-        out = MonoImage.adaptTo(out, in);
+    public Image.Gray apply(Image.Gray in) {
+        out = Image.Gray.adaptTo(out, in);
         final int ow = (kernel.width - 1) / 2;
         final int oh = (kernel.height - 1) / 2;
         y:

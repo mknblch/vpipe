@@ -1,4 +1,4 @@
-package de.mknblch.vpipe.model;
+package de.mknblch.vpipe.functions.contours;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,8 +7,7 @@ import java.util.function.Consumer;
 public class Contour {
 
     public enum Direction {
-        E(0), S(1), W(2), N(3);
-
+        EAST(0), SOUTH(1), WEST(2), NORD(3);
         public final byte v;
         Direction(int v) {
             this.v = (byte) v;
@@ -23,12 +22,12 @@ public class Contour {
     public final int minY;
     public final int maxY;
     public final int index;
-
+    Contour parent;
+    int depth = 0;
     public final List<Contour> children = new ArrayList<>();
 
-    private int depth = 0;
 
-    public Contour(byte[] data, int x, int y, int minX, int maxX, int minY, int maxY, int index) {
+    Contour(byte[] data, int x, int y, int minX, int maxX, int minY, int maxY, int index) {
         this.data = data;
         this.x = x;
         this.y = y;
@@ -39,28 +38,73 @@ public class Contour {
         this.index = index;
     }
 
-    public boolean contains(Contour other) {
+    /**
+     * @param other possible child contour
+     * @return true if this contour encloses the given one
+     */
+    public boolean encloses(Contour other) {
         return other.minX >= this.minX &&
                 other.maxX <= this.maxX &&
                 other.minY >= this.minY &&
                 other.maxY <= this.maxY;
     }
 
-    public void add(Contour child) {
-        children.add(child);
+    public Contour getParent() {
+        return parent;
     }
 
-    public void setDepth(int depth) {
-        this.depth = depth;
+    public List<Contour> getChildren() {
+        return children;
     }
 
+    /**
+     * perimeter of the contour
+     * actually the count of cracks + 1 since the first
+     * crack is always SOUTH
+     * @return
+     */
+    public int perimeter() {
+        return data.length + 1;
+    }
+
+    /**
+     * depth of the node in the tree
+     * @return depth
+     */
     public int getDepth() {
         return depth;
     }
 
-    public boolean isOuter() {
+    /**
+     * leafs are nodes with parent but no children
+     * @return true if this is a lead
+     */
+    public boolean isLeaf() {
+        return parent != null && children.isEmpty();
+    }
+
+    /**
+     * @return true if the contour has no children
+     */
+    public boolean isEmpty() {
+        return children.isEmpty();
+    }
+
+    /**
+     * check whether the contour encodes a white blob on
+     * black background or black blob on white background
+     * @return true if white on black, false if black on white
+     */
+    public boolean isWhite() {
         return depth % 2 == 0;
-//        return data[0] == Direction.S.v;
+    }
+
+    /**
+     * head of the contour tree
+     * @return true if the contour has no parent
+     */
+    public boolean isHead() {
+        return parent == null;
     }
 
     public void forEachChild(Consumer<Contour> consumer) {
@@ -68,7 +112,7 @@ public class Contour {
     }
 
     public void forEach(PointConsumer consumer) {
-        int tx = x, ty = y;
+        int tx = x, ty = y + 1;
         for (int i = 0; i < data.length; i++) {
             consumer.consume(tx, ty);
             switch (data[i]) {

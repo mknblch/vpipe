@@ -1,16 +1,14 @@
 package de.mknblch.vpipe;
 
-import de.mknblch.vpipe.model.ColorImage;
-import de.mknblch.vpipe.model.Contour;
-import de.mknblch.vpipe.model.MonoImage;
+import de.mknblch.vpipe.functions.contours.Contour;
 import de.mknblch.vpipe.model.Source;
 
 import java.awt.image.BufferedImage;
 import java.util.Collection;
-import java.util.List;
 import java.util.function.Function;
 
-import static de.mknblch.vpipe.functions.Functions.*;
+import static de.mknblch.vpipe.Functions.*;
+import static de.mknblch.vpipe.model.Image.*;
 
 /**
  * @author mknblch
@@ -19,10 +17,10 @@ public class Launcher {
 
     public static void main(String[] args) {
 
-        final Function<ColorImage, Collection<Contour>> left = grayscale()
+        final Function<Color, Collection<Contour>> left = grayscale()
                 .andThen(gamma(20))
                 .andThen(contrast(2))
-                .andThen(contours(128));
+                .andThen(contours(128, 8));
 
         final Source<BufferedImage> pipe = WebcamSource.choose()
                 .connectTo(left)
@@ -32,22 +30,19 @@ public class Launcher {
         Viewer.start(pipe);
     }
 
-    static ColorImage render(Collection<Contour> contours) {
-        ColorImage image = new ColorImage(640, 480);
+    static Color render(Collection<Contour> contours) {
+        Color image = new Color(640, 480);
         contours.forEach(c -> draw(c, image));
         return image;
     }
 
-    static void draw(Contour c, ColorImage image) {
-        final boolean outer = c.isOuter();
+    static void draw(Contour c, Color image) {
+        final int d = c.getDepth();
+        int r = d * 20;
+        int g = d * 40;
+        int b = d * 90;
         c.forEach((x, y) -> {
-
-            if (outer) {
-                image.setColor(x, y, 0, 255, 0);
-            } else {
-                image.setColor(x, y, 255, 0, 0);
-            }
+            image.setColor(x, y, clip(r), clip(g), clip(b));
         });
-        c.forEachChild(c2 -> draw(c2, image));
     }
 }

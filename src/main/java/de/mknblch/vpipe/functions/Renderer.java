@@ -1,6 +1,5 @@
 package de.mknblch.vpipe.functions;
 
-import de.mknblch.vpipe.model.ColorImage;
 import de.mknblch.vpipe.model.Image;
 
 import java.awt.*;
@@ -21,7 +20,7 @@ public class Renderer<I extends Image> implements Function<I, BufferedImage> {
                 image.data(),
                 image.width(),
                 image.height(),
-                image instanceof ColorImage);
+                image instanceof Image.Color);
     }
 
     private static BufferedImage createColorImage(int width, int height) {
@@ -33,9 +32,9 @@ public class Renderer<I extends Image> implements Function<I, BufferedImage> {
                 height,
                 3,
                 width * 3,
-                new int[]{ColorImage.RED,
-                        ColorImage.GREEN,
-                        ColorImage.BLUE});
+                new int[]{Image.RED,
+                        Image.GREEN,
+                        Image.BLUE});
         final ComponentColorModel cmodel = new ComponentColorModel(
                 ColorSpace.getInstance(ColorSpace.CS_sRGB),
                 new int[]{8, 8, 8},
@@ -60,7 +59,7 @@ public class Renderer<I extends Image> implements Function<I, BufferedImage> {
                 height,
                 1,
                 width,
-                new int[]{ColorImage.RED});
+                new int[]{Image.RED});
         final ComponentColorModel cmodel = new ComponentColorModel(
                 ColorSpace.getInstance(ColorSpace.CS_GRAY),
                 new int[]{8},

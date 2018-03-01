@@ -12,7 +12,7 @@ Additionally a `Source<T>` interface exists which is just a `Supplier<T>` with s
 it with these functions. 
 
 ```
-    import static de.mknblch.vpipe.functions.Functions.*;
+    import static de.mknblch.vpipe.Functions.*;
 
     final Source<BufferedImage> pipe = WebcamSource.choose()
             .connectTo(grayscale())

@@ -1,36 +1,35 @@
-package de.mknblch.vpipe.functions;
+package de.mknblch.vpipe.functions.contours;
 
-import de.mknblch.vpipe.model.MonoImage;
-import de.mknblch.vpipe.model.Contour;
+import de.mknblch.vpipe.model.Image;
 
 import java.util.*;
 import java.util.function.Function;
 
 import static de.mknblch.vpipe.model.Image.I;
-import static de.mknblch.vpipe.model.Contour.Direction.*;
+import static de.mknblch.vpipe.functions.contours.Contour.Direction.*;
 
 /**
  * @author mknblch
  */
-public class ContourProcessor implements Function<MonoImage, Collection<Contour>> {
+public class ContourProcessor implements Function<Image.Gray, Collection<Contour>> {
 
     private static final int CAPACITY_LIMIT = 640 * 480 * 4;
-    private static final int MIN_CONTOUR_LENGTH = 8;
-
-    public static final int INITIAL_CAPACITY = 64;
+    private static final int INITIAL_CAPACITY = 64;
 
     private final int threshold;
+    private final int minPerimeter;
+    private final Buffer buffer;
     private boolean[] visited;
 
-    private byte[] data = new byte[INITIAL_CAPACITY];
-
-    public ContourProcessor(int threshold) {
+    public ContourProcessor(int threshold, int minPerimeter) {
         this.threshold = threshold;
+        this.minPerimeter = minPerimeter;
+        buffer = new Buffer();
     }
 
     @Override
-    public Collection<Contour> apply(MonoImage image) {
-        if (null == visited) {
+    public Collection<Contour> apply(Image.Gray image) {
+        if (null == visited || visited.length != image.pixels()) {
             visited = new boolean[image.width * image.height];
         } else {
             Arrays.fill(visited, false);
@@ -46,140 +45,121 @@ public class ContourProcessor implements Function<MonoImage, Collection<Contour>
                 continue;
             }
             final int y = i / image.width;
-            if ((x == 0 || threshold > image.getValue(x - 1, y)) && threshold < image.getValue(x, y)) {
+            if ((x == 0 || threshold > I(image.data[i - 1])) && threshold < I(image.data[i])) {
                 final Contour c = chain4(image, i, x, y, index++);
                 if (c == null) {
                     continue;
                 }
-                contours.add(c);
-
-                for (int j = contours.size() - 2; j >= 0; j--) {
-                    final Contour contour = contours.get(j);
-                    if (contour.contains(c)) {
-                        contour.setDepth(c.getDepth() + 1);
-                        contour.add(c);
-                    }
-                }
+                append(contours, c);
             }
         }
-
-//        out:
-//        for (int i = contours.size() - 1; i >= 1; i--) {
-//            final Contour current = contours.get(i);
-//            for (int j = i - 1; j >= 0; j--) {
-//                final Contour sub = contours.get(j);
-//                if (current.contains(sub)) {
-//                    current.add(sub);
-//                    current.setDepth(sub.getDepth() + 1);
-//
-//                    continue out;
-//                }
-//            }
-//        }
-
-
         return contours;
     }
 
-    private Contour chain4(MonoImage image, int i, int sx, int sy, int index) {
+    private boolean append(List<Contour> contours, Contour c) {
+        for (int j = contours.size() - 1; j >= 0; j--) {
+            final Contour previous = contours.get(j);
+            if (previous.encloses(c)) {
+                previous.children.add(c);
+                c.parent = previous;
+                c.depth = previous.depth + 1;
+                contours.add(c);
+                return true;
+            }
+        }
+        contours.add(c);
+        return false;
+    }
+
+    private Contour chain4(Image.Gray image, int i, int sx, int sy, int index) {
         final byte[] input = image.data;
         final int width = image.width;
-        int offset = 0;
         int minX = Integer.MAX_VALUE;
         int maxX = 0;
         int minY = Integer.MAX_VALUE;
         int maxY = 0;
-        Contour.Direction d = S;
+        Contour.Direction d = SOUTH;
         int x = sx, y = sy + 1;
         int j = i + width;
-        data[offset++] = d.v;
+        buffer.reset();
         do {
-            if (offset > CAPACITY_LIMIT) {
-                return null;
-            }
             switch (d) {
-                case E:
+                case EAST:
                     if (x == width - 1 || threshold > I(input[j - width])) {
                         visited[j] = true;
-                        d = N;
+                        d = NORD;
                         y--;
                         j -= width;
                     } else if (y == image.height - 1 || threshold > I(input[j])) {
-                        d = E;
+                        d = EAST;
                         x++;
                         j++;
                     } else {
                         visited[j] = true;
-                        d = S;
+                        d = SOUTH;
                         y++;
                         j += width;
                     }
                     break;
-                case S:
+                case SOUTH:
                     if (y == image.height - 1 || threshold > I(input[j])) {
-                        d = E;
+                        d = EAST;
                         x++;
                         j++;
                     } else if (x <= 0 || threshold > I(input[j - 1])) {
                         visited[j] = true;
-                        d = S;
+                        d = SOUTH;
                         y++;
                         j += width;
                     } else {
-                        d = W;
+                        d = WEST;
                         x--;
                         j--;
                     }
                     break;
-                case W:
+                case WEST:
                     if (x <= 0 || threshold > I(input[j - 1])) {
                         visited[j] = true;
-                        d = S;
+                        d = SOUTH;
                         y++;
                         j += width;
                     } else if (y <= 0 || threshold > I(input[j - width - 1])) {
-                        d = W;
+                        d = WEST;
                         x--;
                         j--;
                     } else {
                         visited[j] = true;
-                        d = N;
+                        d = NORD;
                         y--;
                         j -= width;
                     }
                     break;
-                case N:
+                case NORD:
                     if (y <= 0 || threshold > I(input[j - width - 1])) {
-                        d = W;
+                        d = WEST;
                         x--;
                         j--;
                     } else if (x == width - 1 || threshold > I(input[j - width])) {
                         visited[j] = true;
-                        d = N;
+                        d = NORD;
                         y--;
                         j -= width;
                     } else {
-                        d = E;
+                        d = EAST;
                         x++;
                         j++;
                     }
                     break;
             }
-            if (offset + 1 > data.length) {
-                data = Arrays.copyOf(data, offset + offset / 3);
-            }
-
-            data[offset++] = d.v;
             minX = x < minX ? x : minX;
             maxX = x > maxX ? x : maxX;
             minY = y < minY ? y : minY;
             maxY = y > maxY ? y : maxY;
+        } while (buffer.add(d) && i != j);
 
-        } while (i != j);
-
-        return offset >= MIN_CONTOUR_LENGTH ?
+        return buffer.offset >= minPerimeter ?
                 new Contour(
-                        Arrays.copyOf(data, offset),
+                        buffer.get(),
                         sx,
                         sy,
                         minX,
@@ -188,5 +168,28 @@ public class ContourProcessor implements Function<MonoImage, Collection<Contour>
                         maxY,
                         index
                 ) : null;
+    }
+
+
+    private static class Buffer {
+
+        byte[] data = new byte[INITIAL_CAPACITY];
+        int offset;
+
+        public boolean add(Contour.Direction crack) {
+            if (offset + 1 > data.length) {
+                data = Arrays.copyOf(data, offset + offset / 3);
+            }
+            data[offset++] = crack.v;
+            return offset < CAPACITY_LIMIT;
+        }
+
+        byte[] get() {
+            return Arrays.copyOf(data, offset);
+        }
+
+        void reset() {
+            offset = 0;
+        }
     }
 }

@@ -1,7 +1,7 @@
 package de.mknblch.vpipe;
 
 import com.github.sarxos.webcam.Webcam;
-import de.mknblch.vpipe.model.ColorImage;
+import de.mknblch.vpipe.model.Image;
 import de.mknblch.vpipe.model.Source;
 
 import javax.swing.*;
@@ -12,10 +12,10 @@ import java.util.List;
 /**
  * @author mknblch
  */
-public class WebcamSource implements Source<ColorImage>, AutoCloseable {
+public class WebcamSource implements Source<Image.Color>, AutoCloseable {
 
     private final Webcam webcam;
-    private final ColorImage image;
+    private final Image.Color image;
 
     public WebcamSource(Webcam webcam) {
         this.webcam = webcam;
@@ -23,7 +23,7 @@ public class WebcamSource implements Source<ColorImage>, AutoCloseable {
         if (!webcam.open()) {
             throw new IllegalStateException("Cannot open Webcam");
         }
-        image = new ColorImage(640, 480);
+        image = new Image.Color(640, 480);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class WebcamSource implements Source<ColorImage>, AutoCloseable {
     }
 
     @Override
-    public ColorImage get() {
+    public Image.Color get() {
         final DataBufferByte buffer = (DataBufferByte) webcam
                 .getImage()
                 .getRaster()

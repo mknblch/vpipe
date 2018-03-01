@@ -1,13 +1,15 @@
-package de.mknblch.vpipe.functions;
+package de.mknblch.vpipe;
 
-import de.mknblch.vpipe.model.ColorImage;
+import de.mknblch.vpipe.functions.Merge;
+import de.mknblch.vpipe.functions.PixelProcessor;
+import de.mknblch.vpipe.functions.Renderer;
+import de.mknblch.vpipe.functions.Split;
+import de.mknblch.vpipe.functions.contours.ContourProcessor;
 import de.mknblch.vpipe.model.Image;
-import de.mknblch.vpipe.model.MonoImage;
-import de.mknblch.vpipe.model.Contour;
+import de.mknblch.vpipe.functions.contours.Contour;
 
 import java.awt.image.BufferedImage;
 import java.util.Collection;
-import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -51,41 +53,47 @@ public class Functions {
         return new Merge.MergeThree<>(mergeFunction);
     }
 
+
+    public static Function<Image.Gray, Collection<Contour>> contours(int threshold) {
+        return contours(threshold, 8);
+    }
+
     /**
      * calculate contours of a GrayImage based on a threshold
      * @param threshold a threshold between 0 and 255
+     * @param minPerimeter minimum contour length
      */
-    public static Function<MonoImage, Collection<Contour>> contours(int threshold) {
-        return new ContourProcessor(threshold);
+    public static Function<Image.Gray, Collection<Contour>> contours(int threshold, int minPerimeter) {
+        return new ContourProcessor(threshold, minPerimeter);
     }
 
     /**
      * calculate contours of a GrayImage based on a threshold and render
      * @param threshold a threshold between 0 and 255
      */
-    public static Function<MonoImage, MonoImage> renderContour(int threshold, int width, int height) {
-        return new ContourProcessor(threshold)
-                .andThen(new Function<Collection<Contour>, MonoImage>() {
-                    private MonoImage out;
-                    @Override
-                    public MonoImage apply(Collection<Contour> in) {
-                        out = MonoImage.adaptTo(out, width, height);
-                        out.fill(0);
-                        in.forEach(c -> c.forEach((x, y) -> out.setValue(x, y, 255)));
-                        return out;
-                    }
-                });
+    public static Function<Collection<Contour>, Image.Color> renderContour(int threshold, int width, int height) {
+        return new Function<Collection<Contour>, Image.Color>() {
+            private Image.Color out;
+
+            @Override
+            public Image.Color apply(Collection<Contour> in) {
+                out = Image.Color.adaptTo(out, width, height);
+                out.fill(0);
+                in.forEach(c -> c.forEach((x, y) -> out.setColor(x, y, 255, 0, 0)));
+                return out;
+            }
+        };
     }
 
     /**
      * invert a GrayImage
      */
-    public static Function<MonoImage, MonoImage> invert() {
-        return new Function<MonoImage, MonoImage>() {
-            private MonoImage out;
+    public static Function<Image.Gray, Image.Gray> invert() {
+        return new Function<Image.Gray, Image.Gray>() {
+            private Image.Gray out;
             @Override
-            public MonoImage apply(MonoImage in) {
-                out = MonoImage.adaptTo(out, in);
+            public Image.Gray apply(Image.Gray in) {
+                out = Image.Gray.adaptTo(out, in);
                 for (int i = 0; i < in.data.length; i++) {
                     out.data[i] = B(Math.abs(255 - I(in, i)));
                 }
@@ -95,59 +103,59 @@ public class Functions {
     }
 
     /**
-     * ColorImage binarization based on rgb-mean
+     * Image.ColorImage binarization based on rgb-mean
      * @param threshold
      */
-    public static Function<ColorImage, MonoImage> binarization(int threshold) {
-        return new PixelProcessor.ColorToMono((r, g, b) -> (r + g + b) / 3 >= threshold ? 255 : 0);
+    public static Function<Image.Color, Image.Gray> binarization(int threshold) {
+        return new PixelProcessor.Color2Gray((r, g, b) -> (r + g + b) / 3 >= threshold ? 255 : 0);
     }
 
     /**
      * Mean RGB
      */
-    public static Function<ColorImage, MonoImage> grayscale() {
-        return new PixelProcessor.ColorToMono((r, g, b) -> (r + g + b) / 3);
+    public static Function<Image.Color, Image.Gray> grayscale() {
+        return new PixelProcessor.Color2Gray((r, g, b) -> (r + g + b) / 3);
     }
 
     /**
      * gamma
      * @param a -255 - 255
      */
-    public static Function<MonoImage, MonoImage> gamma(int a) {
-        return new PixelProcessor.Mono(b -> b + a);
+    public static Function<Image.Gray, Image.Gray> gamma(int a) {
+        return new PixelProcessor.Gray2Gray(b -> b + a);
     }
 
     /**
      * raise contrast
      * @param f factor
      */
-    public static Function<MonoImage, MonoImage> contrast(double f) {
-        return new PixelProcessor.Mono(b -> (int)((b - 128) * f) + 128);
+    public static Function<Image.Gray, Image.Gray> contrast(double f) {
+        return new PixelProcessor.Gray2Gray(b -> (int)((b - 128) * f) + 128);
     }
 
     /**
      * closing operation
      */
-    public static Function<MonoImage, MonoImage> closing() {
+    public static Function<Image.Gray, Image.Gray> closing() {
         return dilation().andThen(erosion());
     }
 
     /**
      * opening operation
      */
-    public static Function<MonoImage, MonoImage> opening() {
+    public static Function<Image.Gray, Image.Gray> opening() {
         return erosion().andThen(dilation());
     }
 
     /**
      * pixel dilation
      */
-    public static Function<MonoImage, MonoImage> dilation() {
-        return new Function<MonoImage, MonoImage>() {
-            private MonoImage out;
+    public static Function<Image.Gray, Image.Gray> dilation() {
+        return new Function<Image.Gray, Image.Gray>() {
+            private Image.Gray out;
             @Override
-            public MonoImage apply(MonoImage in) {
-                out = MonoImage.adaptTo(out, in);
+            public Image.Gray apply(Image.Gray in) {
+                out = Image.Gray.adaptTo(out, in);
                 for (int y = 0; y < in.height; y++) {
                     for (int x = 0; x < in.width; x++) {
                         int max = 0;
@@ -170,12 +178,12 @@ public class Functions {
     /**
      * pixel erosion
      */
-    public static Function<MonoImage, MonoImage> erosion() {
-        return new Function<MonoImage, MonoImage>() {
-            private MonoImage out;
+    public static Function<Image.Gray, Image.Gray> erosion() {
+        return new Function<Image.Gray, Image.Gray>() {
+            private Image.Gray out;
             @Override
-            public MonoImage apply(MonoImage in) {
-                out = MonoImage.adaptTo(out, in);
+            public Image.Gray apply(Image.Gray in) {
+                out = Image.Gray.adaptTo(out, in);
                 for (int y = 0; y < in.height; y++) {
                     for (int x = 0; x < in.width; x++) {
                         int min = 255;
