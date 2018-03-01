@@ -32,3 +32,14 @@ it with these functions.
 - Delation / Erosion
 - pixel based enhancement like grayscale, gamma & contrast
 - threshold based contour extraction
+
+## Example
+ 
+- **Green** : outer contour
+- **Yellow** : inner contours
+- **Red** : Leafs
+
+> ![contours](https://mknblch.github.io/videopipe/fiducial.png)
+
+---
+

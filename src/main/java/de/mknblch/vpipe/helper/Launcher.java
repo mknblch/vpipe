@@ -17,8 +17,9 @@ public class Launcher {
                 .connectTo(grayscale())
                 .connectTo(gamma(20))
                 .connectTo(contrast(2))
+                .connectTo(invert())
                 .connectTo(contours(128))
-                .connectTo(renderAll(640, 480))
+                .connectTo(renderBoundingBox(640, 480))
                 .connectTo(toBufferedImage());
 
         Viewer.start(pipe);
