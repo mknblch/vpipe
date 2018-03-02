@@ -7,10 +7,9 @@ import de.mknblch.vpipe.functions.contours.Contour;
 
 import java.awt.image.BufferedImage;
 import java.util.Collection;
+import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-
-import static de.mknblch.vpipe.Image.I;
 
 /**
  * @author mknblch
@@ -50,7 +49,7 @@ public class Functions {
     }
 
 
-    public static Function<Image.Gray, Collection<Contour>> contours(int threshold) {
+    public static Function<Image.Gray, List<Contour>> contours(int threshold) {
         return contours(threshold, 8);
     }
 
@@ -59,7 +58,7 @@ public class Functions {
      * @param threshold a threshold between 0 and 255
      * @param minPerimeter minimum contour length
      */
-    public static Function<Image.Gray, Collection<Contour>> contours(int threshold, int minPerimeter) {
+    public static Function<Image.Gray, List<Contour>> contours(int threshold, int minPerimeter) {
         return new ContourProcessor(threshold, minPerimeter);
     }
 
@@ -136,15 +135,15 @@ public class Functions {
         return new BufferedImageTransformer<>();
     }
 
-    public static Function<Collection<Contour>, Image.Color> renderDepth(int width, int height) {
+    public static Function<List<Contour>, Image.Color> renderDepth(int width, int height) {
         return new Renderer.Depth(width, height);
     }
 
-    public static Function<Collection<Contour>, Image.Color> renderAll(int width, int height) {
+    public static Function<List<Contour>, Image.Color> renderAll(int width, int height) {
         return new Renderer.All(width, height);
     }
 
-    public static Function<Collection<Contour>, Image.Color> renderBoundingBox(int width, int height) {
+    public static Function<List<Contour>, Image.Color> renderBoundingBox(int width, int height) {
         return new Renderer.BoundingBox(width, height);
     }
 

@@ -3,6 +3,7 @@ package de.mknblch.vpipe.functions.contours;
 import de.mknblch.vpipe.Image;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Function;
 
 import static de.mknblch.vpipe.Image.clip;
@@ -12,7 +13,7 @@ import static de.mknblch.vpipe.Image.clip;
  */
 public class Renderer {
 
-    public static class Depth implements Function<Collection<Contour>, Image.Color> {
+    public static class Depth implements Function<List<Contour>, Image.Color> {
 
         private final Image.Color image;
 
@@ -21,7 +22,7 @@ public class Renderer {
         }
 
         @Override
-        public Image.Color apply(Collection<Contour> contours) {
+        public Image.Color apply(List<Contour> contours) {
             image.fill(0);
             contours.forEach(c -> {
                 final int d = c.getDepth();
@@ -36,7 +37,7 @@ public class Renderer {
         }
     }
 
-    public static class All implements Function<Collection<Contour>, Image.Color> {
+    public static class All implements Function<List<Contour>, Image.Color> {
 
         private final Image.Color image;
 
@@ -45,7 +46,7 @@ public class Renderer {
         }
 
         @Override
-        public Image.Color apply(Collection<Contour> contours) {
+        public Image.Color apply(List<Contour> contours) {
             image.fill(0);
             contours.forEach(c -> {
                 c.forEach((x, y) -> {
@@ -62,7 +63,7 @@ public class Renderer {
         }
     }
 
-    public static class BoundingBox implements Function<Collection<Contour>, Image.Color> {
+    public static class BoundingBox implements Function<List<Contour>, Image.Color> {
 
         private final Image.Color image;
 
@@ -71,7 +72,7 @@ public class Renderer {
         }
 
         @Override
-        public Image.Color apply(Collection<Contour> contours) {
+        public Image.Color apply(List<Contour> contours) {
             image.fill(0);
             contours.forEach(c -> {
                 draw(c, image);

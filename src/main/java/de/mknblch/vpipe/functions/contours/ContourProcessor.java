@@ -11,7 +11,7 @@ import static de.mknblch.vpipe.functions.contours.Contour.Direction.*;
 /**
  * @author mknblch
  */
-public class ContourProcessor implements Function<Image.Gray, Collection<Contour>> {
+public class ContourProcessor implements Function<Image.Gray, List<Contour>> {
 
     private static final int CAPACITY_LIMIT = 640 * 480 * 4;
     private static final int INITIAL_CAPACITY = 64;
@@ -28,7 +28,7 @@ public class ContourProcessor implements Function<Image.Gray, Collection<Contour
     }
 
     @Override
-    public Collection<Contour> apply(Image.Gray image) {
+    public List<Contour> apply(Image.Gray image) {
         if (null == visited || visited.length != image.pixels()) {
             visited = new boolean[image.width * image.height];
         } else {

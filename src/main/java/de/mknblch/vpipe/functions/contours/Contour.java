@@ -112,6 +112,7 @@ public class Contour {
     }
 
     public void forEach(PointConsumer consumer) {
+        consumer.consume(x, y);
         int tx = x, ty = y + 1;
         for (int i = 0; i < data.length; i++) {
             consumer.consume(tx, ty);

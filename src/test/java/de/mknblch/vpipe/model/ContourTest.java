@@ -6,6 +6,7 @@ import de.mknblch.vpipe.functions.contours.Contour;
 import org.junit.Test;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  *  0   0   0   0   0
@@ -22,19 +23,13 @@ public class ContourTest {
     @Test
     public void test() throws Exception {
 
-        final Source<Collection<Contour>> source = new TestSource()
-                .connectTo(Functions.contours(128, 1));
-
-        final Collection<Contour> contours = source.get();
-
-        contours.forEach(c -> {
+        new TestSource()
+                .connectTo(Functions.contours(128, 1))
+                .get().forEach(c -> {
 
             System.out.println("c.perimeter() = " + c.perimeter());
-
             System.out.println(c.x + "," + c.y);
-
-            c.forEach((x, y) -> System.out.println(" (" + x + ","  + y + ")"));
-
+            c.forEach((x, y) -> System.out.println(" (" + x + "," + y + ")"));
         });
 
     }
