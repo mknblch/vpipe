@@ -63,7 +63,7 @@ public class Viewer extends JPanel {
                     comp.stop();
                 }
             });
-            frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+            frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE); // TODO
             frame.getContentPane().add(comp);
             frame.getContentPane().setBackground(Color.BLACK);
             frame.setPreferredSize(new java.awt.Dimension(640, 480));
