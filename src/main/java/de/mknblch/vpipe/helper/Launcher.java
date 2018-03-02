@@ -1,6 +1,7 @@
 package de.mknblch.vpipe.helper;
 
 import de.mknblch.vpipe.Source;
+import de.mknblch.vpipe.functions.contours.Renderer;
 
 import java.awt.image.BufferedImage;
 
@@ -17,9 +18,8 @@ public class Launcher {
                 .connectTo(grayscale())
                 .connectTo(gamma(20))
                 .connectTo(contrast(2))
-                .connectTo(invert())
                 .connectTo(contours(128))
-                .connectTo(renderBoundingBox(640, 480))
+                .connectTo(new Renderer.Hash(640, 480))
                 .connectTo(toBufferedImage());
 
         Viewer.start(pipe);

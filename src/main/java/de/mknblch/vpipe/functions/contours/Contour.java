@@ -22,9 +22,11 @@ public class Contour {
     public final int minY;
     public final int maxY;
     public final int index;
+    public final List<Contour> children = new ArrayList<>();
+
     Contour parent;
     int depth = 0;
-    public final List<Contour> children = new ArrayList<>();
+    int hash;
 
 
     Contour(byte[] data, int x, int y, int minX, int maxX, int minY, int maxY, int index) {

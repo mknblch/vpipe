@@ -53,7 +53,27 @@ public class ContourProcessor implements Function<Image.Gray, List<Contour>> {
                 append(contours, c);
             }
         }
+
+        hash(contours);
+
         return contours;
+    }
+
+    private void hash(List<Contour> contours) {
+        for (Contour contour : contours) {
+            contour.hash = hash(contour);
+        }
+    }
+
+    private int hash(Contour contour) {
+        if (contour.isLeaf()) {
+            return 1;
+        }
+        int[] sum = {1};
+        contour.forEachChild(c -> {
+            sum[0] += hash(c);
+        });
+        return sum[0] << 4;
     }
 
     private boolean append(List<Contour> contours, Contour c) {

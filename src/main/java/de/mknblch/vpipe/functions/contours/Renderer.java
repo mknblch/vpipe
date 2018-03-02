@@ -92,4 +92,34 @@ public class Renderer {
             }
         }
     }
+
+    public static class Hash implements Function<List<Contour>, Image.Color> {
+
+        private final Image.Color image;
+
+        public Hash(int width, int height) {
+            image = new Image.Color(width, height);
+        }
+
+        @Override
+        public Image.Color apply(List<Contour> contours) {
+            image.fill(0);
+            contours.forEach(c -> {
+                draw(c, image);
+            });
+            return image;
+        }
+
+        private static void draw(Contour c, Image.Color image) {
+            final int d = c.hash;
+            int r = Image.red(d  *12);
+            int g = Image.green(d * 2);
+            int b = Image.blue(d);
+            for (int x = c.minX; x < c.maxX; x++) {
+                for (int y = c.minY; y < c.maxY; y++) {
+                    image.setColor(x, y, r, g, b);
+                }
+            }
+        }
+    }
 }
