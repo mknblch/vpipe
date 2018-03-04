@@ -104,8 +104,7 @@ public abstract class Renderer<I> implements Function<I, BufferedImage> {
             in.forEach(c -> {
                 final int d = c.getLevel();
                 setColor(d * 20, d * 40, d * 90);
-//                graphics.drawRect(c.minX, c.minY, c.width(), c.height());
-                graphics.drawPolygon(c.polygon);
+                graphics.drawRect(c.minX, c.minY, c.width(), c.height());
             });
         }
     }

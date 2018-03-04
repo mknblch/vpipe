@@ -2,7 +2,6 @@ package de.mknblch.vpipe.functions.contours;
 
 import de.mknblch.vpipe.Image;
 
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 import java.util.function.Function;
@@ -18,8 +17,6 @@ public class ContourProcessor implements Function<Image.Gray, List<Contour>> {
     private static final int CAPACITY_LIMIT = 640 * 480 * 4;
     private static final int INITIAL_CAPACITY = 64;
 
-    public static final int P = 11;
-
     private final int threshold;
     private final int minPerimeter;
     private final Buffer buffer;
@@ -34,7 +31,7 @@ public class ContourProcessor implements Function<Image.Gray, List<Contour>> {
     @Override
     public List<Contour> apply(Image.Gray image) {
         if (null == visited || visited.length != image.pixels()) {
-            visited = new boolean[image.width * image.height];
+            visited = new boolean[(image.width + 1) * (image.height + 1)];
         } else {
             Arrays.fill(visited, false);
         }
@@ -63,7 +60,7 @@ public class ContourProcessor implements Function<Image.Gray, List<Contour>> {
     private boolean append(List<Contour> contours, Contour c) {
         for (int j = contours.size() - 1; j >= 0; j--) {
             final Contour previous = contours.get(j);
-            if (previous.encloses(c)) {
+            if (previous.approximateContains(c)) {
                 previous.children.add(c);
                 c.parent = previous;
                 c.level = previous.level + 1;
@@ -89,7 +86,6 @@ public class ContourProcessor implements Function<Image.Gray, List<Contour>> {
         x = xl = sx;
         y = yl = sy;
         buffer.reset();
-        Polygon polygon = new Polygon();
         do {
             switch (d) {
                 case E:
@@ -166,7 +162,6 @@ public class ContourProcessor implements Function<Image.Gray, List<Contour>> {
             a += xl * y - x * yl;
             yl = y;
             xl = x;
-            polygon.addPoint(x, y);
         } while (buffer.add(d) && i != j);
         a += xl * sy - sx * yl;
         return buffer.offset >= minPerimeter ?
@@ -179,8 +174,7 @@ public class ContourProcessor implements Function<Image.Gray, List<Contour>> {
                         minY,
                         maxY,
                         a,
-                        id,
-                        polygon) : null;
+                        id) : null;
     }
 
     private static class Buffer {

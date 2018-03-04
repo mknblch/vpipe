@@ -28,13 +28,11 @@ public class Contour {
     public final int signedArea;
     public final List<Contour> children = new ArrayList<>();
 
-    public final Polygon polygon;
-
     Contour parent;
     int level;
 
 
-    Contour(byte[] data, int x, int y, int minX, int maxX, int minY, int maxY, int signedArea, int id, Polygon polygon) {
+    Contour(byte[] data, int x, int y, int minX, int maxX, int minY, int maxY, int signedArea, int id) {
         this.data = data;
         this.x = x;
         this.y = y;
@@ -44,17 +42,13 @@ public class Contour {
         this.maxY = maxY;
         this.signedArea = signedArea;
         this.id = id;
-        this.polygon = polygon;
     }
 
     /**
      * @param other possible child contour
      * @return true if this contour encloses the given one
      */
-    public boolean encloses(Contour other) {
-//        final Polygon polygon = this.toPolygon();
-//        return polygon.contains(other.minX, other.minY) &&
-//                polygon.contains(other.maxX, other.maxY);
+    public boolean approximateContains(Contour other) {
         return other.isWhite() != isWhite() &&
                 other.minX >= this.minX &&
                 other.maxX <= this.maxX &&
@@ -134,8 +128,8 @@ public class Contour {
     }
 
     public Polygon toPolygon() {
-//        final Polygon polygon = new Polygon();
-//        forEach((x, y) -> polygon.addPoint(x, y));
+        final Polygon polygon = new Polygon();
+        forEach(polygon::addPoint);
         return polygon;
     }
 
