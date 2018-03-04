@@ -35,11 +35,7 @@ it with these functions.
 
 ## Examples
 
-contours carry different properties 
- 
-- **green** : outer contour
-- **yellow** : inner contours
-- **red** : leafs
+contours with different properties
 
 ![contours](https://mknblch.github.io/videopipe/fiducial2.png)
 ---
@@ -47,6 +43,8 @@ contours carry different properties
 colorization by depth in the contour tree
 
 ![contours](https://mknblch.github.io/videopipe/fiducial.png)
+
+![contours](https://mknblch.github.io/videopipe/fiducial4.png)
 ---
 
 contour bounding boxes
