@@ -2,7 +2,9 @@ package de.mknblch.vpipe.functions.contours;
 
 import de.mknblch.vpipe.Image;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 import java.util.function.Function;
 
 import static de.mknblch.vpipe.Image.I;
@@ -73,7 +75,7 @@ public class ContourProcessor implements Function<Image.Gray, List<Contour>> {
         return false;
     }
 
-    private Contour chain4(Image.Gray image, int i, int sx, int sy, int index) {
+    private Contour chain4(Image.Gray image, int i, int sx, int sy, int id) {
         final byte[] input = image.data;
         final int width = image.width;
         int minX = Integer.MAX_VALUE;
@@ -81,9 +83,13 @@ public class ContourProcessor implements Function<Image.Gray, List<Contour>> {
         int minY = Integer.MAX_VALUE;
         int maxY = 0;
         Contour.Direction d = S;
-        int x = sx, y = sy + 1;
         int j = i + width;
+        int a = 0;
+        int x, xl, y, yl;
+        x = xl = sx;
+        y = yl = sy;
         buffer.reset();
+        Polygon polygon = new Polygon();
         do {
             switch (d) {
                 case E:
@@ -157,8 +163,12 @@ public class ContourProcessor implements Function<Image.Gray, List<Contour>> {
             maxX = x > maxX ? x : maxX;
             minY = y < minY ? y : minY;
             maxY = y > maxY ? y : maxY;
+            a += xl * y - x * yl;
+            yl = y;
+            xl = x;
+            polygon.addPoint(x, y);
         } while (buffer.add(d) && i != j);
-
+        a += xl * sy - sx * yl;
         return buffer.offset >= minPerimeter ?
                 new Contour(
                         buffer.get(),
@@ -168,10 +178,10 @@ public class ContourProcessor implements Function<Image.Gray, List<Contour>> {
                         maxX,
                         minY,
                         maxY,
-                        index
-                ) : null;
+                        a,
+                        id,
+                        polygon) : null;
     }
-
 
     private static class Buffer {
 

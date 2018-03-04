@@ -1,5 +1,6 @@
 package de.mknblch.vpipe.functions.contours;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -23,14 +24,17 @@ public class Contour {
     public final int maxX;
     public final int minY;
     public final int maxY;
-    public final int index;
+    public final int id;
+    public final int signedArea;
     public final List<Contour> children = new ArrayList<>();
 
+    public final Polygon polygon;
+
     Contour parent;
-    int level = 0;
+    int level;
 
 
-    Contour(byte[] data, int x, int y, int minX, int maxX, int minY, int maxY, int index) {
+    Contour(byte[] data, int x, int y, int minX, int maxX, int minY, int maxY, int signedArea, int id, Polygon polygon) {
         this.data = data;
         this.x = x;
         this.y = y;
@@ -38,7 +42,9 @@ public class Contour {
         this.maxX = maxX;
         this.minY = minY;
         this.maxY = maxY;
-        this.index = index;
+        this.signedArea = signedArea;
+        this.id = id;
+        this.polygon = polygon;
     }
 
     /**
@@ -46,7 +52,11 @@ public class Contour {
      * @return true if this contour encloses the given one
      */
     public boolean encloses(Contour other) {
-        return other.minX >= this.minX &&
+//        final Polygon polygon = this.toPolygon();
+//        return polygon.contains(other.minX, other.minY) &&
+//                polygon.contains(other.maxX, other.maxY);
+        return other.isWhite() != isWhite() &&
+                other.minX >= this.minX &&
                 other.maxX <= this.maxX &&
                 other.minY >= this.minY &&
                 other.maxY <= this.maxY;
@@ -83,6 +93,10 @@ public class Contour {
         return Math.atan2(by - cy, bx - cx);
     }
 
+    public int getArea() {
+        return Math.abs(signedArea);
+    }
+
     public int width() {
         return maxX - minX;
     }
@@ -117,6 +131,12 @@ public class Contour {
             d = Math.max(d, child.getMaxLevel());
         }
         return d + 1;
+    }
+
+    public Polygon toPolygon() {
+//        final Polygon polygon = new Polygon();
+//        forEach((x, y) -> polygon.addPoint(x, y));
+        return polygon;
     }
 
     public int getDepth() {
@@ -158,7 +178,7 @@ public class Contour {
      * @return true if white on black, false if black on white
      */
     public boolean isWhite() {
-        return level % 2 == 0;
+        return signedArea < 0;
     }
 
     /**

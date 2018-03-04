@@ -104,7 +104,8 @@ public abstract class Renderer<I> implements Function<I, BufferedImage> {
             in.forEach(c -> {
                 final int d = c.getLevel();
                 setColor(d * 20, d * 40, d * 90);
-                graphics.drawRect(c.minX, c.minY, c.width(), c.height());
+//                graphics.drawRect(c.minX, c.minY, c.width(), c.height());
+                graphics.drawPolygon(c.polygon);
             });
         }
     }
@@ -139,6 +140,30 @@ public abstract class Renderer<I> implements Function<I, BufferedImage> {
                     graphics.drawLine(c.cx(), c.cy(), tx, ty);
 
                 }
+            });
+        }
+    }
+    public static class Children extends Renderer<List<Contour>> {
+
+
+        public Children(int width, int height) {
+            super(width, height);
+        }
+
+        @Override
+        void render(List<Contour> in, Graphics2D graphics) {
+            clear();
+            in.forEach(c -> {
+
+                final int d = c.getLevel() + 1;
+                setColor(d * 20, d * 40, d * 90);
+
+                c.forEachChild(child -> {
+                    graphics.drawLine(c.x, c.y, child.x, child.y);
+                });
+                c.forEach((x, y) -> {
+                    graphics.drawLine(x, y, x, y);
+                });
             });
         }
     }
