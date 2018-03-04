@@ -6,8 +6,10 @@ import java.util.function.Consumer;
 
 public class Contour {
 
+    private static final int P = 11;
+
     public enum Direction {
-        EAST(0), SOUTH(1), WEST(2), NORD(3);
+        E(0), S(1), W(2), N(3);
         public final byte v;
         Direction(int v) {
             this.v = (byte) v;
@@ -25,8 +27,7 @@ public class Contour {
     public final List<Contour> children = new ArrayList<>();
 
     Contour parent;
-    int depth = 0;
-    int hash;
+    int level = 0;
 
 
     Contour(byte[] data, int x, int y, int minX, int maxX, int minY, int maxY, int index) {
@@ -59,6 +60,36 @@ public class Contour {
         return children;
     }
 
+    public int cx() {
+        return minX + (maxX - minX) / 2;
+    }
+
+    public int cy() {
+        return minY + (maxY - minY) / 2;
+    }
+
+    public double getAngle() {
+        if (children.isEmpty()) {
+            return .0;
+        }
+        final int cx = cx();
+        final int cy = cy();
+        int bx = cx;
+        int by = cy;
+        for (Contour child : children) {
+            by += cy - child.cy();
+            bx += cx - child.cx();
+        }
+        return Math.atan2(by - cy, bx - cx);
+    }
+
+    public int width() {
+        return maxX - minX;
+    }
+
+    public int height() {
+        return maxY - minY;
+    }
     /**
      * perimeter of the contour
      * actually the count of cracks + 1 since the first
@@ -73,8 +104,37 @@ public class Contour {
      * depth of the node in the tree
      * @return depth
      */
+    public int getLevel() {
+        return level;
+    }
+
+    public int getMaxLevel() {
+        if (children.isEmpty()) {
+            return 0;
+        }
+        int d = 0;
+        for (Contour child : children) {
+            d = Math.max(d, child.getMaxLevel());
+        }
+        return d + 1;
+    }
+
     public int getDepth() {
-        return depth;
+        if (null == parent) {
+            return 0;
+        }
+        return parent.getDepth() + 1;
+    }
+
+    public int hash() {
+        if (isLeaf()) {
+            return P;
+        }
+        int[] sum = {P};
+        forEachChild(c -> {
+            sum[0] += c.hash();
+        });
+            return sum[0] * P;
     }
 
     /**
@@ -98,7 +158,7 @@ public class Contour {
      * @return true if white on black, false if black on white
      */
     public boolean isWhite() {
-        return depth % 2 == 0;
+        return level % 2 == 0;
     }
 
     /**

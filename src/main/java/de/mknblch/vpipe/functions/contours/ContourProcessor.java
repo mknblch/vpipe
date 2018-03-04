@@ -16,6 +16,8 @@ public class ContourProcessor implements Function<Image.Gray, List<Contour>> {
     private static final int CAPACITY_LIMIT = 640 * 480 * 4;
     private static final int INITIAL_CAPACITY = 64;
 
+    public static final int P = 11;
+
     private final int threshold;
     private final int minPerimeter;
     private final Buffer buffer;
@@ -53,27 +55,7 @@ public class ContourProcessor implements Function<Image.Gray, List<Contour>> {
                 append(contours, c);
             }
         }
-
-        hash(contours);
-
         return contours;
-    }
-
-    private void hash(List<Contour> contours) {
-        for (Contour contour : contours) {
-            contour.hash = hash(contour);
-        }
-    }
-
-    private int hash(Contour contour) {
-        if (contour.isLeaf()) {
-            return 1;
-        }
-        int[] sum = {1};
-        contour.forEachChild(c -> {
-            sum[0] += hash(c);
-        });
-        return sum[0] << 4;
     }
 
     private boolean append(List<Contour> contours, Contour c) {
@@ -82,7 +64,7 @@ public class ContourProcessor implements Function<Image.Gray, List<Contour>> {
             if (previous.encloses(c)) {
                 previous.children.add(c);
                 c.parent = previous;
-                c.depth = previous.depth + 1;
+                c.level = previous.level + 1;
                 contours.add(c);
                 return true;
             }
@@ -98,74 +80,74 @@ public class ContourProcessor implements Function<Image.Gray, List<Contour>> {
         int maxX = 0;
         int minY = Integer.MAX_VALUE;
         int maxY = 0;
-        Contour.Direction d = SOUTH;
+        Contour.Direction d = S;
         int x = sx, y = sy + 1;
         int j = i + width;
         buffer.reset();
         do {
             switch (d) {
-                case EAST:
+                case E:
                     if (x == width - 1 || threshold > I(input[j - width])) {
                         visited[j] = true;
-                        d = NORD;
+                        d = N;
                         y--;
                         j -= width;
                     } else if (y == image.height - 1 || threshold > I(input[j])) {
-                        d = EAST;
+                        d = E;
                         x++;
                         j++;
                     } else {
                         visited[j] = true;
-                        d = SOUTH;
+                        d = S;
                         y++;
                         j += width;
                     }
                     break;
-                case SOUTH:
+                case S:
                     if (y == image.height - 1 || threshold > I(input[j])) {
-                        d = EAST;
+                        d = E;
                         x++;
                         j++;
                     } else if (x <= 0 || threshold > I(input[j - 1])) {
                         visited[j] = true;
-                        d = SOUTH;
+                        d = S;
                         y++;
                         j += width;
                     } else {
-                        d = WEST;
+                        d = Contour.Direction.W;
                         x--;
                         j--;
                     }
                     break;
-                case WEST:
+                case W:
                     if (x <= 0 || threshold > I(input[j - 1])) {
                         visited[j] = true;
-                        d = SOUTH;
+                        d = S;
                         y++;
                         j += width;
                     } else if (y <= 0 || threshold > I(input[j - width - 1])) {
-                        d = WEST;
+                        d = Contour.Direction.W;
                         x--;
                         j--;
                     } else {
                         visited[j] = true;
-                        d = NORD;
+                        d = N;
                         y--;
                         j -= width;
                     }
                     break;
-                case NORD:
+                case N:
                     if (y <= 0 || threshold > I(input[j - width - 1])) {
-                        d = WEST;
+                        d = Contour.Direction.W;
                         x--;
                         j--;
                     } else if (x == width - 1 || threshold > I(input[j - width])) {
                         visited[j] = true;
-                        d = NORD;
+                        d = N;
                         y--;
                         j -= width;
                     } else {
-                        d = EAST;
+                        d = E;
                         x++;
                         j++;
                     }

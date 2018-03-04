@@ -16,11 +16,10 @@ public class Launcher {
 
         final Source<BufferedImage> pipe = SarxosWebcamSource.choose()
                 .connectTo(grayscale())
-                .connectTo(gamma(20))
-                .connectTo(contrast(2))
+//                .connectTo(gamma(20))
+                .connectTo(contrast(10))
                 .connectTo(contours(128))
-                .connectTo(new Renderer.Hash(640, 480))
-                .connectTo(toBufferedImage());
+                .connectTo(renderAll(640, 480));
 
         Viewer.start(pipe);
     }

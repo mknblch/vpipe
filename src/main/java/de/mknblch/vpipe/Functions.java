@@ -135,16 +135,20 @@ public class Functions {
         return new BufferedImageTransformer<>();
     }
 
-    public static Function<List<Contour>, Image.Color> renderDepth(int width, int height) {
+    public static Function<List<Contour>, BufferedImage> renderDepth(int width, int height) {
         return new Renderer.Depth(width, height);
     }
 
-    public static Function<List<Contour>, Image.Color> renderAll(int width, int height) {
+    public static Function<List<Contour>, BufferedImage> renderAll(int width, int height) {
         return new Renderer.All(width, height);
     }
 
-    public static Function<List<Contour>, Image.Color> renderBoundingBox(int width, int height) {
+    public static Function<List<Contour>, BufferedImage> renderBoundingBox(int width, int height) {
         return new Renderer.BoundingBox(width, height);
+    }
+
+    public static Function<List<Contour>, BufferedImage> renderHashes(int width, int height, int... hashes) {
+        return new Renderer.Hash(width, height, hashes);
     }
 
 }

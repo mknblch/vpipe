@@ -1,8 +1,8 @@
 package de.mknblch.vpipe.functions.contours;
 
-import de.mknblch.vpipe.Image;
-
-import java.util.Collection;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
@@ -11,115 +11,135 @@ import static de.mknblch.vpipe.Image.clip;
 /**
  * @author mknblch
  */
-public class Renderer {
+public abstract class Renderer<I> implements Function<I, BufferedImage> {
 
-    public static class Depth implements Function<List<Contour>, Image.Color> {
+    protected final BufferedImage image;
+    protected final Graphics2D graphics;
+    protected final int width;
+    protected final int height;
 
-        private final Image.Color image;
+    public Renderer(int width, int height) {
+        this.width = width;
+        this.height = height;
+        image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        graphics = image.createGraphics();
+        graphics.setBackground(Color.BLACK);
+    }
+
+    protected void clear() {
+        graphics.clearRect(0, 0, width, height);
+    }
+
+    protected void setColor(int r, int g, int b) {
+        graphics.setColor(new Color(clip(r) & 0xFF, clip(g) & 0xFF, clip(b) & 0xFF));
+    }
+
+    @Override
+    public BufferedImage apply(I i) {
+        render(i, graphics);
+        return image;
+    }
+
+    abstract void render(I in, Graphics2D graphics);
+
+    public static class Depth extends Renderer<List<Contour>> {
 
         public Depth(int width, int height) {
-            image = new Image.Color(width, height);
+            super(width, height);
         }
 
         @Override
-        public Image.Color apply(List<Contour> contours) {
-            image.fill(0);
+        void render(List<Contour> contours, Graphics2D graphics) {
+            clear();
             contours.forEach(c -> {
-                final int d = c.getDepth();
-                int r = d * 20;
-                int g = d * 40;
-                int b = d * 90;
+                final int d = c.getLevel();
+                setColor(d * 20, d * 40, d * 90);
                 c.forEach((x, y) -> {
-                    image.setColor(x, y, clip(r), clip(g), clip(b));
+                    graphics.drawRect(x, y, 1, 1);
                 });
             });
-            return image;
         }
     }
 
-    public static class All implements Function<List<Contour>, Image.Color> {
-
-        private final Image.Color image;
+    public static class All extends Renderer<List<Contour>> {
 
         public All(int width, int height) {
-            image = new Image.Color(width, height);
+            super(width, height);
         }
 
         @Override
-        public Image.Color apply(List<Contour> contours) {
-            image.fill(0);
-            contours.forEach(c -> {
+        void render(List<Contour> in, Graphics2D graphics) {
+            clear();
+            in.forEach(c -> {
+                if (c.isLeaf()) {
+                    setColor(255, 0, 0);
+                } else if (c.isWhite()) {
+                    setColor(0, 255, 0);
+                } else {
+                    setColor(255, 255, 0);
+                }
                 c.forEach((x, y) -> {
-                    if (c.isLeaf()) {
-                        image.setColor(x, y, 255, 0, 0);
-                    } else if (c.isWhite()) {
-                        image.setColor(x, y, 0, 255, 0);
-                    } else {
-                        image.setColor(x, y, 255, 255, 0);
-                    }
+                    graphics.drawLine(x, y, x, y);
                 });
+                if (c.getMaxLevel() < 2) {
+                    return;
+                }
+                final double angle = c.getAngle();
+                int tx = (int) (Math.cos(angle) * 50 + c.cx());
+                int ty = (int) (Math.sin(angle) * 50 + c.cy());
+                graphics.drawLine(c.cx(), c.cy(), tx, ty);
             });
-            return image;
         }
     }
 
-    public static class BoundingBox implements Function<List<Contour>, Image.Color> {
-
-        private final Image.Color image;
+    public static class BoundingBox extends Renderer<List<Contour>> {
 
         public BoundingBox(int width, int height) {
-            image = new Image.Color(width, height);
+            super(width, height);
         }
 
         @Override
-        public Image.Color apply(List<Contour> contours) {
-            image.fill(0);
-            contours.forEach(c -> {
-                draw(c, image);
+        void render(List<Contour> in, Graphics2D graphics) {
+            clear();
+            in.forEach(c -> {
+                final int d = c.getLevel();
+                setColor(d * 20, d * 40, d * 90);
+                graphics.drawRect(c.minX, c.minY, c.width(), c.height());
             });
-            return image;
-        }
-
-        private static void draw(Contour c, Image.Color image) {
-            final int d = c.getDepth();
-            int r = d * 20;
-            int g = d * 40;
-            int b = d * 90;
-            for (int x = c.minX; x < c.maxX; x++) {
-                for (int y = c.minY; y < c.maxY; y++) {
-                    image.setColor(x, y, r, g, b);
-                }
-            }
         }
     }
 
-    public static class Hash implements Function<List<Contour>, Image.Color> {
+    public static class Hash extends Renderer<List<Contour>> {
 
-        private final Image.Color image;
+        private final int[] hashes;
 
-        public Hash(int width, int height) {
-            image = new Image.Color(width, height);
+        public Hash(int width, int height, int... hashes) {
+            super(width, height);
+            this.hashes = hashes;
+            Arrays.sort(hashes);
         }
 
         @Override
-        public Image.Color apply(List<Contour> contours) {
-            image.fill(0);
-            contours.forEach(c -> {
-                draw(c, image);
-            });
-            return image;
-        }
-
-        private static void draw(Contour c, Image.Color image) {
-            final int d = c.hash;
-            int r = Image.red(d  *12);
-            int g = Image.green(d * 2);
-            int b = Image.blue(d);
-            for (int x = c.minX; x < c.maxX; x++) {
-                for (int y = c.minY; y < c.maxY; y++) {
-                    image.setColor(x, y, r, g, b);
+        void render(List<Contour> in, Graphics2D graphics) {
+            clear();
+            in.forEach(c -> {
+                if (c.getDepth() < 2) {
+                    return;
                 }
-            }
+                final int d = c.getDepth();
+                if (Arrays.binarySearch(hashes, c.hash()) >= 0) {
+                    setColor(d * 80, d * 40, d * 20);
+                    c.forEach((x, y) -> {
+                        graphics.drawLine(x, y, x, y);
+                    });
+
+                    final double angle = c.getAngle();
+                    int tx = (int) (Math.cos(angle) * 50 + c.cx());
+                    int ty = (int) (Math.sin(angle) * 50 + c.cy());
+                    graphics.drawLine(c.cx(), c.cy(), tx, ty);
+
+                }
+            });
         }
     }
 }
