@@ -33,11 +33,7 @@ public class SarxosWebcamSource implements Source<Image.Color>, AutoCloseable {
 
     @Override
     public Image.Color get() {
-        final DataBufferByte buffer = (DataBufferByte) webcam
-                .getImage()
-                .getRaster()
-                .getDataBuffer();
-        System.arraycopy(buffer.getData(), 0, image.data, 0, image.data.length);
+        webcam.getImageBytes().get(image.data);
         return image;
     }
 
