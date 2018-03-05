@@ -148,7 +148,7 @@ public class Contour {
         forEachChild(c -> {
             sum[0] += c.hash();
         });
-            return sum[0] * P;
+        return sum[0] * P;
     }
 
     /**
