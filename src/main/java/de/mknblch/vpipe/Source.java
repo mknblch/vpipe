@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 public interface Source<T> extends Supplier<T> {
 
     default <O> Source<O> connectTo(Function<T, O> processor) {
-        return () -> processor.apply(get());
+        return () -> processor.apply(Source.this.get());
     }
 
     static <I, O> Source<O> build(Supplier<I> supplier, Function<I, O> function) {

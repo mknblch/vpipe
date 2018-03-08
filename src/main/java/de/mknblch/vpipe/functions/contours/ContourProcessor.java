@@ -62,6 +62,8 @@ public class ContourProcessor implements Function<Image.Gray, List<Contour>> {
             final Contour previous = contours.get(j);
             if (previous.approximateContains(c)) {
                 previous.children.add(c);
+                previous.dx += previous.cx() - c.cx();
+                previous.dy += previous.cy() - c.cy();
                 c.parent = previous;
                 c.level = previous.level + 1;
                 contours.add(c);
@@ -198,4 +200,20 @@ public class ContourProcessor implements Function<Image.Gray, List<Contour>> {
             offset = 0;
         }
     }
+
+    public static class Info implements Function<List<Contour>, List<Contour>> {
+
+        @Override
+        public List<Contour> apply(List<Contour> contours) {
+
+            final int sum = contours.stream()
+                    .mapToInt(Contour::perimeter)
+                    .sum();
+
+            System.out.println(contours.size() + " = " + sum);
+
+            return contours;
+        }
+    }
+
 }

@@ -28,6 +28,7 @@ public class Contour {
     public final int signedArea;
     public final List<Contour> children = new ArrayList<>();
 
+    int dx, dy;
     Contour parent;
     int level;
 
@@ -76,15 +77,7 @@ public class Contour {
         if (children.isEmpty()) {
             return .0;
         }
-        final int cx = cx();
-        final int cy = cy();
-        int bx = cx;
-        int by = cy;
-        for (Contour child : children) {
-            by += cy - child.cy();
-            bx += cx - child.cx();
-        }
-        return Math.atan2(by - cy, bx - cx);
+        return Math.atan2(dy - cy(), dx - cx());
     }
 
     public int getArea() {
