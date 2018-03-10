@@ -21,16 +21,12 @@ public class Launcher {
                 .connectTo(grayscale())
                 .connectTo(gamma(20))
                 .connectTo(contrast(10))
-                .connectTo(contours(200))
+                .connectTo(contours(128))
+                .connectTo(new ContourProcessor.Filter(
+                        c -> c.perimeter() > 20_000
+                ))
                 .connectTo(new ContourProcessor.Info())
                 .connectTo(renderAll(640, 480));
-//                .connectTo(renderBoundingBox(640, 480));
-//                .connectTo(renderAll(640, 480));
-
-//        final Source<BufferedImage> pipe = new ImageSource(Paths.get("C:/Users/mk/dev/contours/docs/test.png"))
-//                .connectTo(grayscale())
-//                .connectTo(contours(128))
-//                .connectTo(new Renderer.Children(640, 480));
 
         Viewer.start(pipe);
     }

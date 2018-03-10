@@ -5,6 +5,7 @@ import de.mknblch.vpipe.Image;
 import java.util.*;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static de.mknblch.vpipe.Image.I;
 import static de.mknblch.vpipe.functions.contours.Contour.Direction.*;
@@ -212,6 +213,22 @@ public class ContourProcessor implements Function<Image.Gray, List<Contour>> {
 
             System.out.println(contours.size() + " = " + sum);
 
+            return contours;
+        }
+    }
+
+
+    public static class Filter implements Function<List<Contour>, List<Contour>> {
+
+        private final Predicate<Contour> filter;
+
+        public Filter(Predicate<Contour> filter) {
+            this.filter = filter;
+        }
+
+        @Override
+        public List<Contour> apply(List<Contour> contours) {
+            contours.removeIf(filter);
             return contours;
         }
     }

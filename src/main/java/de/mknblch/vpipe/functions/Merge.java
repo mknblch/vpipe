@@ -1,8 +1,5 @@
 package de.mknblch.vpipe.functions;
 
-import de.mknblch.vpipe.functions.Split.TupleThree;
-import de.mknblch.vpipe.functions.Split.TupleTwo;
-
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -54,6 +51,4 @@ public class Merge {
             return mergeFunction.apply(in.getLeft(), in.getMiddle(), in.getRight());
         }
     }
-
-
 }

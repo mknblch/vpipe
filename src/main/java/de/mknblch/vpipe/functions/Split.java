@@ -13,48 +13,6 @@ public class Split {
         throw new UnsupportedOperationException("no instantiation allowed");
     }
 
-    public static class TupleTwo<L, R> {
-        private final L left;
-        private final R right;
-
-        public TupleTwo(L left, R right) {
-            this.left = left;
-            this.right = right;
-        }
-
-        public L getLeft() {
-            return left;
-        }
-
-        public R getRight() {
-            return right;
-        }
-    }
-
-    public static class TupleThree<L, M, R> {
-        private final L left;
-        private final M middle;
-        private final R right;
-
-        public TupleThree(L left, M middle, R right) {
-            this.left = left;
-            this.middle = middle;
-            this.right = right;
-        }
-
-        public L getLeft() {
-            return left;
-        }
-
-        public M getMiddle() {
-            return middle;
-        }
-
-        public R getRight() {
-            return right;
-        }
-    }
-
     public static class SplitTwo<I, L, R> implements Function<I, TupleTwo<L, R>> {
         private final Function<I, L> leftProcessor;
         private final Function<I, R> rightProcessor;

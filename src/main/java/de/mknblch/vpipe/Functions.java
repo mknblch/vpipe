@@ -20,7 +20,7 @@ public class Functions {
      * Split computation into 2 pipes
      * @author Jiří Kraml (jkraml@avantgarde-labs.de)
      */
-    public static <I, L, R> Function<I, Split.TupleTwo<L, R>> split(Function<I, L> leftProcessor, Function<I, R> rightProcessor) {
+    public static <I, L, R> Function<I, TupleTwo<L, R>> split(Function<I, L> leftProcessor, Function<I, R> rightProcessor) {
         return new Split.SplitTwo<>(leftProcessor, rightProcessor);
     }
 
@@ -28,7 +28,7 @@ public class Functions {
      * Split computation into 3 pipes
      * @author Jiří Kraml (jkraml@avantgarde-labs.de)
      */
-    public static <I, L, M, R> Function<I, Split.TupleThree<L, M, R>> split(Function<I, L> leftProcessor, Function<I, M> middleProcessor, Function<I, R> rightProcessor) {
+    public static <I, L, M, R> Function<I, TupleThree<L, M, R>> split(Function<I, L> leftProcessor, Function<I, M> middleProcessor, Function<I, R> rightProcessor) {
         return new Split.SplitThree<>(leftProcessor, middleProcessor, rightProcessor);
     }
 
@@ -36,7 +36,7 @@ public class Functions {
      * Merge 2 pipes
      * @author Jiří Kraml (jkraml@avantgarde-labs.de)
      */
-    public static <L, R, O> Function<Split.TupleTwo<L, R>, O> merge(BiFunction<L, R, O> mergeFunction) {
+    public static <L, R, O> Function<TupleTwo<L, R>, O> merge(BiFunction<L, R, O> mergeFunction) {
         return new Merge.MergeTwo<>(mergeFunction);
     }
 
@@ -44,7 +44,7 @@ public class Functions {
      * Merge 3 pipes
      * @author Jiří Kraml (jkraml@avantgarde-labs.de)
      */
-    public static <L, M, R, O> Function<Split.TupleThree<L, M, R>, O> merge(Merge.TriFunction<L, M, R, O> mergeFunction) {
+    public static <L, M, R, O> Function<TupleThree<L, M, R>, O> merge(Merge.TriFunction<L, M, R, O> mergeFunction) {
         return new Merge.MergeThree<>(mergeFunction);
     }
 

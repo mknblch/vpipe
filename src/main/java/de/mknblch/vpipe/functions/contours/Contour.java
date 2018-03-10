@@ -77,7 +77,7 @@ public class Contour {
         if (children.isEmpty()) {
             return .0;
         }
-        return Math.atan2(dy - cy(), dx - cx());
+        return Math.atan2(dy, dx);
     }
 
     public int getArea() {
