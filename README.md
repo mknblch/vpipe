@@ -7,7 +7,7 @@ point where contours can be extracted flawlessly. Though it is not limited to im
 ## Usage
 
 A processing unit is nothing more then a `java.util.function.Function<I, O>` which itself can be composed
-to a full processing pipeline using nothing more then its built-in methods `compose(..)` and `andThen(..)`.
+to a full processing pipeline using its built-in methods `compose(..)` and `andThen(..)`.
 Additionally a `Source<T>` interface exists which is just a `Supplier<T>` with some helper methods to chain 
 it with these functions. 
 
@@ -27,11 +27,12 @@ it with these functions.
 
 **(incomplete) list of built-in functions**:
 
-- Linear Convolution with all sorts of kernels
+- Convolution
 - signal split into parallel processing chains (by [jkraml](https://github.com/jkraml)) 
 - Delation / Erosion
 - pixel based enhancement like grayscale, gamma & contrast
 - threshold based contour extraction
+- some visualizers
 
 ## Examples
 

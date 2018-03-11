@@ -5,7 +5,6 @@ import de.mknblch.vpipe.Image;
 import java.util.*;
 import java.util.List;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 import static de.mknblch.vpipe.Image.I;
 import static de.mknblch.vpipe.functions.contours.Contour.Direction.*;
@@ -19,13 +18,13 @@ public class ContourProcessor implements Function<Image.Gray, List<Contour>> {
     private static final int INITIAL_CAPACITY = 64;
 
     private final int threshold;
-    private final int minPerimeter;
+    private final Filter filter;
     private final Buffer buffer;
     private boolean[] visited;
 
-    public ContourProcessor(int threshold, int minPerimeter) {
+    public ContourProcessor(int threshold, Filter filter) {
         this.threshold = threshold;
-        this.minPerimeter = minPerimeter;
+        this.filter = filter;
         buffer = new Buffer();
     }
 
@@ -167,7 +166,7 @@ public class ContourProcessor implements Function<Image.Gray, List<Contour>> {
             xl = x;
         } while (buffer.add(d) && i != j);
         a += xl * sy - sx * yl;
-        return buffer.offset >= minPerimeter ?
+        return filter.test(buffer.offset + 1, a, minX, minY, maxX, maxY) ?
                 new Contour(
                         buffer.get(),
                         sx,
@@ -178,6 +177,11 @@ public class ContourProcessor implements Function<Image.Gray, List<Contour>> {
                         maxY,
                         a,
                         id) : null;
+    }
+
+    public interface Filter {
+
+        boolean test(int perimeter, int area, int x0, int y0, int x1, int y1);
     }
 
     private static class Buffer {
@@ -199,37 +203,6 @@ public class ContourProcessor implements Function<Image.Gray, List<Contour>> {
 
         void reset() {
             offset = 0;
-        }
-    }
-
-    public static class Info implements Function<List<Contour>, List<Contour>> {
-
-        @Override
-        public List<Contour> apply(List<Contour> contours) {
-
-            final int sum = contours.stream()
-                    .mapToInt(Contour::perimeter)
-                    .sum();
-
-            System.out.println(contours.size() + " = " + sum);
-
-            return contours;
-        }
-    }
-
-
-    public static class Filter implements Function<List<Contour>, List<Contour>> {
-
-        private final Predicate<Contour> filter;
-
-        public Filter(Predicate<Contour> filter) {
-            this.filter = filter;
-        }
-
-        @Override
-        public List<Contour> apply(List<Contour> contours) {
-            contours.removeIf(filter);
-            return contours;
         }
     }
 

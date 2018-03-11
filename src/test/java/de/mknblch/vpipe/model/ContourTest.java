@@ -24,7 +24,7 @@ public class ContourTest {
     public void test() throws Exception {
 
         new TestSource()
-                .connectTo(Functions.contours(128, 1))
+                .connectTo(Functions.contours(128, (perimeter, area, x0, y0, x1, y1) -> true))
                 .get().forEach(c -> {
 
             System.out.println("c.perimeter() = " + c.perimeter());

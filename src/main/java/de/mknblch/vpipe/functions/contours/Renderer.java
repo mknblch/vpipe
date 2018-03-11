@@ -1,5 +1,7 @@
 package de.mknblch.vpipe.functions.contours;
 
+import de.mknblch.vpipe.Image;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
@@ -142,8 +144,8 @@ public abstract class Renderer<I> implements Function<I, BufferedImage> {
             });
         }
     }
-    public static class Children extends Renderer<List<Contour>> {
 
+    public static class Children extends Renderer<List<Contour>> {
 
         public Children(int width, int height) {
             super(width, height);
@@ -164,6 +166,29 @@ public abstract class Renderer<I> implements Function<I, BufferedImage> {
                     graphics.drawLine(x, y, x, y);
                 });
             });
+        }
+    }
+
+    public static class Native implements Function<List<Contour>, Image.Color> {
+
+        private Image.Color image;
+
+        private final int width;
+        private final int height;
+
+        public Native(int width, int height) {
+            this.width = width;
+            this.height = height;
+        }
+
+        @Override
+        public Image.Color apply(List<Contour> contours) {
+            image = Image.Color.adaptTo(image, width, height);
+            image.fill(0);
+            contours.forEach(c -> {
+                c.forEach((x, y) -> image.setColor(x, y, 100, clip(c.perimeter()), 100));
+            });
+            return image;
         }
     }
 }

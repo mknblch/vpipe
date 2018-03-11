@@ -91,6 +91,7 @@ public class Contour {
     public int height() {
         return maxY - minY;
     }
+
     /**
      * perimeter of the contour
      * actually the count of cracks + 1 since the first
@@ -181,10 +182,8 @@ public class Contour {
     }
 
     public void forEach(PointConsumer consumer) {
-        consumer.consume(x, y);
-        int tx = x, ty = y + 1;
+        int tx = x, ty = y;
         for (int i = 0; i < data.length; i++) {
-            consumer.consume(tx, ty);
             switch (data[i]) {
                 case 0:
                     tx++;
@@ -201,6 +200,7 @@ public class Contour {
                 default:
                     break;
             }
+            consumer.consume(tx, ty);
         }
     }
 

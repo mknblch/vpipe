@@ -1,6 +1,7 @@
 package de.mknblch.vpipe;
 
 import java.util.Arrays;
+import java.util.concurrent.Executors;
 
 import static java.util.Objects.requireNonNull;
 
@@ -139,9 +140,15 @@ public abstract class Image {
 
         public void setColor(int x, int y, int r, int g, int b) {
             final int o = (y * width + x) * 3;
-            data[o] = (byte) r;
-            data[o + 1] = (byte) g;
-            data[o + 2] = (byte) b;
+            try {
+                data[o] = (byte) r;
+                data[o + 1] = (byte) g;
+                data[o + 2] = (byte) b;
+
+            } catch (Exception e) {
+                System.out.println(x + "," + y);
+                throw e;
+            }
         }
 
         public void setColor(int x, int y, int color, int value) {

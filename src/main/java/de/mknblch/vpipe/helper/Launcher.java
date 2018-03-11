@@ -22,11 +22,12 @@ public class Launcher {
                 .connectTo(gamma(20))
                 .connectTo(contrast(10))
                 .connectTo(contours(128))
-                .connectTo(new ContourProcessor.Filter(
-                        c -> c.perimeter() > 20_000
-                ))
-                .connectTo(new ContourProcessor.Info())
-                .connectTo(renderAll(640, 480));
+//                .connectTo(info())
+//                .connectTo(renderAll(640, 480));
+                .connectTo(new Renderer.Native(640, 480))
+                .connectTo(toBufferedImage());
+
+//                .connectTo(renderAll(640, 480));
 
         Viewer.start(pipe);
     }

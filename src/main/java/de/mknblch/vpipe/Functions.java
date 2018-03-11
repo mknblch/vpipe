@@ -4,12 +4,16 @@ import de.mknblch.vpipe.functions.*;
 import de.mknblch.vpipe.functions.contours.ContourProcessor;
 import de.mknblch.vpipe.functions.contours.Renderer;
 import de.mknblch.vpipe.functions.contours.Contour;
+import de.mknblch.vpipe.helper.StepTimer;
+import de.mknblch.vpipe.helper.Timer;
 
 import java.awt.image.BufferedImage;
-import java.util.Collection;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * @author mknblch
@@ -50,16 +54,39 @@ public class Functions {
 
 
     public static Function<Image.Gray, List<Contour>> contours(int threshold) {
-        return contours(threshold, 8);
+        return contours(threshold, (perimeter, area, x0, y0, x1, y1) -> Math.abs(area) > 10 && Math.abs(area) < 20_000);
     }
 
     /**
      * calculate contours of a GrayImage based on a threshold
      * @param threshold a threshold between 0 and 255
-     * @param minPerimeter minimum contour length
      */
-    public static Function<Image.Gray, List<Contour>> contours(int threshold, int minPerimeter) {
-        return new ContourProcessor(threshold, minPerimeter);
+    public static Function<Image.Gray, List<Contour>> contours(int threshold, ContourProcessor.Filter filter) {
+        return new ContourProcessor(threshold, filter);
+    }
+
+    public static Function<List<Contour>, List<Contour>> removeIf(Predicate<Contour> predicate) {
+        return contours -> {
+            contours.removeIf(predicate);
+            return contours;
+        };
+    }
+
+    public static Function<List<Contour>, List<Contour>> info(Consumer<List<Contour>> consumer) {
+        return contours -> {
+            consumer.accept(contours);
+            return contours;
+        };
+    }
+
+    public static Function<List<Contour>, List<Contour>> info() {
+        return info(l -> {
+            System.out.printf("%d contours with perimeter %d%n", l.size(), l.stream().mapToInt(Contour::perimeter).sum());
+        });
+    }
+
+    public static <I, O> Function<I, O> timer(Function<I, O> function) {
+        return new Timer<>(function, 20);
     }
 
     /**
