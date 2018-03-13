@@ -160,11 +160,11 @@ public abstract class Renderer<I> implements Function<I, BufferedImage> {
                 setColor(d * 20, d * 40, d * 90);
 
                 c.forEachChild(child -> {
-                    graphics.drawLine(c.x, c.y, child.x, child.y);
+                    graphics.drawLine(c.cx(), c.cy(), child.cx(), child.cy());
                 });
-                c.forEach((x, y) -> {
-                    graphics.drawLine(x, y, x, y);
-                });
+//                c.forEach((x, y) -> {
+//                    graphics.drawLine(x, y, x, y);
+//                });
             });
         }
     }
@@ -186,7 +186,10 @@ public abstract class Renderer<I> implements Function<I, BufferedImage> {
             image = Image.Color.adaptTo(image, width, height);
             image.fill(0);
             contours.forEach(c -> {
-                c.forEach((x, y) -> image.setColor(x, y, 100, clip(c.perimeter()), 100));
+                c.forEach((x, y) -> {
+                    final byte p = clip(c.perimeter());
+                    image.setColor(x, y, 0, p, p);
+                });
             });
             return image;
         }
