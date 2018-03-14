@@ -57,7 +57,17 @@ public class Kernels {
                     -1, -1, 24, -1, -1,
                     -1, -1, -1, -1, -1,
                     -1, -1, -1, -1, -1,
-            }, 10. / 25
+            }
+    );
+
+    public static final Convolution.Kernel ADAPT = new Convolution.Kernel(
+            new double[]{
+                    -1, -1, -1, -1, -1,
+                    -1, -1, -1, -1, -1,
+                    -1, -1, 30, -1, -1,
+                    -1, -1, -1, -1, -1,
+                    -1, -1, -1, -1, -1,
+            }
     );
 
     public static final Convolution.Kernel SOBEL_TD = new Convolution.Kernel(

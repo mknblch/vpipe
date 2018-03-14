@@ -74,6 +74,7 @@ public class PixelProcessor {
         @Override
         public Image.Gray apply(Image.Color in) {
             out = Image.Gray.adaptTo(out, in);
+            out.fill(0);
             final int pixels = in.data.length;
             for (int i = 0; i < pixels; i += 3) {
                 final int v = function.apply(

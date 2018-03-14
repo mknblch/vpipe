@@ -154,17 +154,24 @@ public abstract class Renderer<I> implements Function<I, BufferedImage> {
         @Override
         void render(List<Contour> in, Graphics2D graphics) {
             clear();
+            setColor(255, 255, 255);
             in.forEach(c -> {
-
-                final int d = c.getLevel() + 1;
-                setColor(d * 20, d * 40, d * 90);
 
                 c.forEachChild(child -> {
                     graphics.drawLine(c.cx(), c.cy(), child.cx(), child.cy());
                 });
-//                c.forEach((x, y) -> {
-//                    graphics.drawLine(x, y, x, y);
-//                });
+
+                if (c.getDepth() == 2) {
+                    graphics.drawString(String.valueOf(c.hash()), c.x, c.y - 10);
+                }
+                if (!c.isLeaf()) {
+                    return;
+                }
+                c.forEach((x, y) -> {
+                    graphics.drawLine(x, y, x, y);
+                });
+
+//                graphics.drawString("" + c.id, c.x - 10, c.y - 2);
             });
         }
     }

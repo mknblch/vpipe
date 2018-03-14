@@ -8,6 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.DataBufferByte;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author mknblch
@@ -38,24 +39,45 @@ public class SarxosWebcamSource implements Source<Image.Color>, AutoCloseable {
     }
 
     public static SarxosWebcamSource choose() {
+        return choose(null);
+    }
+
+    public static SarxosWebcamSource choose(String name) {
         Webcam webcam;
         final List<Webcam> webcams = Webcam.getWebcams();
         if (webcams.size() == 1) {
-            webcam = webcams.get(0);
-        } else {
-            final Object[] array = webcams.toArray();
-            webcam = (Webcam) JOptionPane.showInputDialog(null,
-                    "Choose cam",
-                    "Cam:",
-                    JOptionPane.QUESTION_MESSAGE,
-                    null,
-                    array,
-                    array[0]);
-            if (null == webcam) {
-                System.exit(0);
+            return new SarxosWebcamSource(webcams.get(0), 640, 480);
+        }
+
+        if ((webcam = find(webcams, name)) != null) {
+            return new SarxosWebcamSource(webcam, 640, 480);
+        }
+
+        final Object[] array = webcams.toArray();
+        webcam = (Webcam) JOptionPane.showInputDialog(null,
+                "Choose cam",
+                "Cam:",
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                array,
+                array[0]);
+        if (null == webcam) {
+            System.exit(0);
+        }
+
+        return new SarxosWebcamSource(webcam, 640, 480);
+    }
+
+    private static Webcam find(List<Webcam> webcams, String name) {
+        if (null == name) {
+            return null;
+        }
+        for (Webcam webcam : webcams) {
+            if (webcam.getName().toLowerCase().contains(name.toLowerCase())) {
+                return webcam;
             }
         }
-        return new SarxosWebcamSource(webcam, 640, 480);
+        return null;
     }
 
 }

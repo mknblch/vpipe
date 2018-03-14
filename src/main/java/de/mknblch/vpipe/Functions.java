@@ -155,6 +155,10 @@ public class Functions {
         return new Morphological.Erosion();
     }
 
+    public static Function<Image.Gray, Image.Gray> convolution(Convolution.Kernel kernel) {
+        return new Convolution(kernel);
+    }
+
     /**
      * transform Image to BufferedImage
      */

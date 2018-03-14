@@ -19,6 +19,7 @@ public class Convolution implements Function<Image.Gray, Image.Gray> {
     @Override
     public Image.Gray apply(Image.Gray in) {
         out = Image.Gray.adaptTo(out, in);
+        out.fill(0);
         final int ow = (kernel.width - 1) / 2;
         final int oh = (kernel.height - 1) / 2;
         y:
