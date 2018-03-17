@@ -2,6 +2,7 @@ package de.mknblch.vpipe.functions.contours;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -17,14 +18,15 @@ public class Contour {
         }
     }
 
-    public final byte[] data;
+    private final byte[] data;
+    public final int index;
+    public final int length;
     public final int x;
     public final int y;
     public final int minX;
     public final int maxX;
     public final int minY;
     public final int maxY;
-    public final int id;
     public final int signedArea;
     public final List<Contour> children = new ArrayList<>();
 
@@ -33,8 +35,19 @@ public class Contour {
     int level;
 
 
-    Contour(byte[] data, int x, int y, int minX, int maxX, int minY, int maxY, int signedArea, int id) {
+    Contour(byte[] data,
+            int index,
+            int length,
+            int x,
+            int y,
+            int minX,
+            int maxX,
+            int minY,
+            int maxY,
+            int signedArea) {
         this.data = data;
+        this.index = index;
+        this.length = length;
         this.x = x;
         this.y = y;
         this.minX = minX;
@@ -42,7 +55,6 @@ public class Contour {
         this.minY = minY;
         this.maxY = maxY;
         this.signedArea = signedArea;
-        this.id = id;
     }
 
     /**
@@ -183,8 +195,8 @@ public class Contour {
 
     public void forEach(PointConsumer consumer) {
         int tx = x, ty = y;
-        for (int i = 0; i < data.length; i++) {
-            switch (data[i]) {
+        for (int i = 0; i < length; i++) {
+            switch (data[i + index]) {
                 case 0:
                     tx++;
                     break;
@@ -206,5 +218,78 @@ public class Contour {
 
     public interface PointConsumer {
         void consume(int x, int y);
+    }
+
+    public interface Filter {
+        boolean test(int perimeter, int signedArea, int x0, int y0, int x1, int y1);
+    }
+
+    public static class Builder {
+
+        private byte[] data;
+        private int offset;
+        private final Filter filter;
+        private int index;
+        private int minX;
+        private int maxX;
+        private int minY;
+        private int maxY;
+        private int signedArea;
+        private int lx, ly;
+        private int sx, sy;
+
+        public Builder(Filter filter, int initialCapacity) {
+            this.filter = filter;
+            data = new byte[initialCapacity];
+        }
+
+        public void reset() {
+            offset = 0;
+        }
+
+        public int create(int sx, int sy) {
+            index = offset;
+            signedArea = 0;
+            minX = Integer.MAX_VALUE;
+            maxX = 0;
+            minY = Integer.MAX_VALUE;
+            maxY = 0;
+            this.sx = lx = sx;
+            this.sy = ly = sy;
+            return index;
+        }
+
+        public void add(byte crack, int x, int y) {
+            minX = x < minX ? x : minX;
+            maxX = x > maxX ? x : maxX;
+            minY = y < minY ? y : minY;
+            maxY = y > maxY ? y : maxY;
+            if (offset + 1 > data.length) {
+                data = Arrays.copyOf(data, offset + offset / 3);
+            }
+            data[offset++] = crack;
+            signedArea += lx * y - x * ly;
+            lx = x;
+            ly = y;
+        }
+
+        public boolean test() {
+            return filter.test(offset - index, signedArea, minX, minY, maxX, maxY);
+        }
+
+        public Contour build() {
+            return test() ? new Contour(
+                    data,
+                    index,
+                    offset - index,
+                    sx,
+                    sy,
+                    minX,
+                    maxX,
+                    minY,
+                    maxY,
+                    signedArea
+            ) : null;
+        }
     }
 }

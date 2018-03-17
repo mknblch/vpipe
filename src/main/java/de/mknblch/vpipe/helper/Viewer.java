@@ -6,6 +6,7 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -17,12 +18,15 @@ public class Viewer extends JPanel {
 
     private volatile boolean running = false;
 
-    private int fps;
-    private long n, l = System.currentTimeMillis();
+    private long fps;
+
+    private ExecutionTimer<BufferedImage, BufferedImage> timer;
 
     public Viewer(Supplier<BufferedImage> supplier) {
         this.source = supplier;
         Runtime.getRuntime().addShutdownHook(new Thread(this::stop));
+        timer = new ExecutionTimer<BufferedImage, BufferedImage>(Function.identity(), 20)
+                .withListener((function, duration) -> fps = 1000 / duration);
     }
 
     public void start() {
@@ -31,6 +35,9 @@ public class Viewer extends JPanel {
         new Thread(() -> {
             while (running) {
                 this.repaint();
+                try {
+                    Thread.sleep(20);
+                } catch (InterruptedException ignored) {}
             }
         }).start();
     }
@@ -42,12 +49,9 @@ public class Viewer extends JPanel {
     @Override
     public void paint(Graphics g) {
         super.paint(g);
-        final BufferedImage image = source.get();
+        final BufferedImage image = timer.apply(source.get());
         if (null != image) {
             g.drawImage(image, 0, 0, this);
-            n = System.currentTimeMillis();
-            fps = (int) (1000 / (n - l + 1));
-            l = n;
             g.setColor(Color.GREEN);
             g.drawString("FPS: " + fps, 10, 20);
         }

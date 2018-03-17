@@ -1,14 +1,12 @@
 package de.mknblch.vpipe;
 
 import de.mknblch.vpipe.functions.*;
-import de.mknblch.vpipe.functions.contours.ContourProcessor;
+import de.mknblch.vpipe.functions.contours.Chain4;
 import de.mknblch.vpipe.functions.contours.Renderer;
 import de.mknblch.vpipe.functions.contours.Contour;
-import de.mknblch.vpipe.helper.StepTimer;
-import de.mknblch.vpipe.helper.Timer;
+import de.mknblch.vpipe.helper.ExecutionTimer;
 
 import java.awt.image.BufferedImage;
-import java.nio.file.Files;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -54,15 +52,15 @@ public class Functions {
 
 
     public static Function<Image.Gray, List<Contour>> contours(int threshold) {
-        return contours(threshold, (perimeter, area, x0, y0, x1, y1) -> Math.abs(area) > 10 && Math.abs(area) < 20_000);
+        return contours(threshold, (perimeter, area, x0, y0, x1, y1) -> true);
     }
 
     /**
      * calculate contours of a GrayImage based on a threshold
      * @param threshold a threshold between 0 and 255
      */
-    public static Function<Image.Gray, List<Contour>> contours(int threshold, ContourProcessor.Filter filter) {
-        return new ContourProcessor(threshold, filter);
+    public static Function<Image.Gray, List<Contour>> contours(int threshold, Contour.Filter filter) {
+        return new Chain4(threshold, filter);
     }
 
     public static Function<List<Contour>, List<Contour>> removeIf(Predicate<Contour> predicate) {
@@ -86,7 +84,7 @@ public class Functions {
     }
 
     public static <I, O> Function<I, O> timer(Function<I, O> function) {
-        return new Timer<>(function, 20);
+        return new ExecutionTimer<>(function, 20);
     }
 
     /**
