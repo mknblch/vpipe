@@ -20,22 +20,17 @@ public class Launcher {
     public static void main(String[] args) throws IOException {
 
 //        final Source<BufferedImage> pipe = new ImageSource(Paths.get("C:\\Users\\mk\\dev\\contours\\docs\\direction.png"))
-
-        Function<Image.Color, BufferedImage> func =
-                timer(
-                        grayscale()
-                                .andThen(timer(convolution(Kernels.ADAPT)))
-                                .andThen(timer(erosion()))
-                                .andThen(dilation())
-                                .andThen(contrast(2))
-                                .andThen(contours(128, (perimeter, signedArea, x0, y0, x1, y1) -> Math.abs(signedArea) > 10))
-                                .andThen(new Renderer.Children(640, 480))
-                );
-
         final Source<BufferedImage> pipe = SarxosWebcamSource.choose("logitech")
-                .connectTo(func);
+                .connectTo(grayscale())
+                .connectTo(convolution(Kernels.ADAPT))
+                .connectTo(erosion())
+                .connectTo(dilation())
+                .connectTo(contrast(2))
+                .connectTo(contours(128, (perimeter, signedArea, x0, y0, x1, y1) -> Math.abs(signedArea) > 10))
+                .connectTo(new Renderer.Children(640, 480));
 
         Viewer.start(pipe);
+
     }
 
 

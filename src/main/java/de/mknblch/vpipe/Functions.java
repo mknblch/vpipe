@@ -4,7 +4,7 @@ import de.mknblch.vpipe.functions.*;
 import de.mknblch.vpipe.functions.contours.Chain4;
 import de.mknblch.vpipe.functions.contours.Renderer;
 import de.mknblch.vpipe.functions.contours.Contour;
-import de.mknblch.vpipe.helper.ExecutionTimer;
+import de.mknblch.vpipe.functions.ExecutionTimer;
 
 import java.awt.image.BufferedImage;
 import java.util.List;
@@ -83,8 +83,12 @@ public class Functions {
         });
     }
 
-    public static <I, O> Function<I, O> timer(Function<I, O> function) {
-        return new ExecutionTimer<>(function, 20);
+    public static <I, O> Function<I, O> timer(Function<I, O> func) {
+        return new ExecutionTimer<>(func, (duration) -> {
+            System.out.printf("%s ~%s%n",
+                    func.getClass().getSimpleName(),
+                    String.format("%d.%04ds (%d fps)", (duration / 1000) % 60, duration, 1000 / duration));
+        }, 20);
     }
 
     /**
