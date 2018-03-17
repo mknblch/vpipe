@@ -19,8 +19,7 @@ public class Launcher {
 
     public static void main(String[] args) throws IOException {
 
-//        final Source<BufferedImage> pipe = new ImageSource(Paths.get("C:\\Users\\mk\\dev\\contours\\docs\\direction.png"))
-        final Source<BufferedImage> pipe = SarxosWebcamSource.choose("logitech")
+        final Source<BufferedImage> pipe = SarxosWebcamSource.choose()
                 .connectTo(grayscale())
                 .connectTo(convolution(Kernels.ADAPT))
                 .connectTo(erosion())

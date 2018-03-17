@@ -15,6 +15,7 @@ public class Viewer extends JPanel {
     private final Supplier<BufferedImage> source;
     private BufferedImage image;
     private volatile boolean running = false;
+    private volatile boolean stopped = false;
 
     public Viewer(Supplier<BufferedImage> supplier) {
         this.source = supplier;
@@ -27,11 +28,13 @@ public class Viewer extends JPanel {
                 image = source.get();
                 this.repaint(20);
             }
+            stopped = true;
         }).start();
     }
 
     public void stop() {
         running = false;
+        while (!stopped) { }
         System.exit(0);
     }
 

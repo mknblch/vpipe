@@ -1,6 +1,5 @@
 package de.mknblch.vpipe.functions;
 
-import java.io.PrintStream;
 import java.util.function.Function;
 import java.util.function.LongConsumer;
 
