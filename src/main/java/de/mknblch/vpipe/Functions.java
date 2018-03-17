@@ -111,6 +111,28 @@ public class Functions {
         return new PixelProcessor.Color2Gray((r, g, b) -> (r + g + b) / 3);
     }
 
+
+    /**
+     * red
+     */
+    public static Function<Image.Color, Image.Gray> red() {
+        return new PixelProcessor.Color2Gray((r, g, b) -> r);
+    }
+
+    /**
+     * red
+     */
+    public static Function<Image.Color, Image.Gray> green() {
+        return new PixelProcessor.Color2Gray((r, g, b) -> g);
+    }
+
+    /**
+     * red
+     */
+    public static Function<Image.Color, Image.Gray> blue() {
+        return new PixelProcessor.Color2Gray((r, g, b) -> b);
+    }
+
     /**
      * gamma
      * @param a -255 - 255
