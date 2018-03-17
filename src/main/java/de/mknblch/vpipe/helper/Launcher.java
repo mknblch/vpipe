@@ -22,10 +22,10 @@ public class Launcher {
         final Source<BufferedImage> pipe = SarxosWebcamSource.choose("logitech")
                 .connectTo(grayscale())
                 .connectTo(convolution(Kernels.ADAPT))
-                .connectTo(erosion())
-                .connectTo(dilation())
+//                .connectTo(erosion())
+//                .connectTo(dilation())
 //                .connectTo(gamma(30))
-//                .connectTo(contrast(2))
+                .connectTo(contrast(2))
                 .connectTo(contours(128, (perimeter, area, x0, y0, x1, y1) -> Math.abs(area) > 10))
 //                .connectTo(info())
                 .connectTo(new Renderer.Children(640, 480));

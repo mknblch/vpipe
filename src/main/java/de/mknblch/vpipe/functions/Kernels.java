@@ -62,9 +62,17 @@ public class Kernels {
 
     public static final Convolution.Kernel ADAPT = new Convolution.Kernel(
             new double[]{
+                    -1, -1, -1,
+                    -1, 9, -1,
+                    -1, -1, -1,
+            }
+    );
+
+    public static final Convolution.Kernel ADAPT_5x5 = new Convolution.Kernel(
+            new double[]{
                     -1, -1, -1, -1, -1,
                     -1, -1, -1, -1, -1,
-                    -1, -1, 30, -1, -1,
+                    -1, -1, 25, -1, -1,
                     -1, -1, -1, -1, -1,
                     -1, -1, -1, -1, -1,
             }
