@@ -99,11 +99,18 @@ public class Functions {
     }
 
     /**
-     * Image.ColorImage binarization based on rgb-mean
+     * Color binarization based on rgb-mean
      * @param threshold
      */
-    public static Function<Image.Color, Image.Gray> binarization(int threshold) {
+    public static Function<Image.Color, Image.Gray> binarization_rgb(int threshold) {
         return new PixelProcessor.Color2Gray((r, g, b) -> (r + g + b) / 3 >= threshold ? 255 : 0);
+    }
+    /**
+     * Gray binarization
+     * @param threshold
+     */
+    public static Function<Image.Gray, Image.Gray> binarization(int threshold) {
+        return new PixelProcessor.Gray2Gray(p -> p > threshold ? 255 :0);
     }
 
     /**

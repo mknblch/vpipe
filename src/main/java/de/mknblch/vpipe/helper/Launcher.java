@@ -19,14 +19,16 @@ public class Launcher {
 
     public static void main(String[] args) throws IOException {
 
-        final Source<BufferedImage> pipe = SarxosWebcamSource.choose()
+        final Source<BufferedImage> pipe = SarxosWebcamSource.choose("logitech")
                 .connectTo(grayscale())
                 .connectTo(convolution(Kernels.ADAPT))
-                .connectTo(erosion())
-                .connectTo(dilation())
+//                .connectTo(dilation())
+                .connectTo(closing())
                 .connectTo(contrast(2))
-                .connectTo(contours(128, (perimeter, signedArea, x0, y0, x1, y1) -> Math.abs(signedArea) > 10))
-                .connectTo(new Renderer.Children(640, 480));
+                .connectTo(binarization(128))
+//                .connectTo(contours(128, (perimeter, signedArea, x0, y0, x1, y1) -> Math.abs(signedArea) > 10))
+//                .connectTo(new Renderer.Children(640, 480));
+                .connectTo(toBufferedImage());
 
         Viewer.start(pipe);
 
