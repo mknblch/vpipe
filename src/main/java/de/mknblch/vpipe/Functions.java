@@ -13,6 +13,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import static de.mknblch.vpipe.Image.clip;
+
 /**
  * @author mknblch
  */
@@ -120,7 +122,26 @@ public class Functions {
         return new PixelProcessor.Color2Gray((r, g, b) -> (r + g + b) / 3);
     }
 
+    /**
+     * Mean RGB
+     */
+    public static Function<Image.Color, Image.Gray> grayscale(double rf, double gf, double bf) {
+        return new PixelProcessor.Color2Gray((r, g, b) -> clip((r * rf) + (g * gf) + (b * bf)) / 3);
+    }
 
+    /**
+     * luminosity
+     */
+    public static Function<Image.Color, Image.Gray> grayLuminosity() {
+        return grayscale(0.21, 0.72, 0.07);
+    }
+
+    /**
+     * red
+     */
+    public static Function<Image.Gray, Image.Color> color(PixelProcessor.ColorPixelFunction function) {
+        return new PixelProcessor.Gray2Color(function);
+    }
     /**
      * red
      */

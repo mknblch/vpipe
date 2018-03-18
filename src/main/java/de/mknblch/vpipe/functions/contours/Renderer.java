@@ -8,6 +8,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
+import static de.mknblch.vpipe.Image.GREEN;
+import static de.mknblch.vpipe.Image.RED;
 import static de.mknblch.vpipe.Image.clip;
 
 /**
@@ -170,8 +172,6 @@ public abstract class Renderer<I> implements Function<I, BufferedImage> {
                 c.forEach((x, y) -> {
                     graphics.drawLine(x, y, x, y);
                 });
-
-//                graphics.drawString("" + c.id, c.x - 10, c.y - 2);
             });
         }
     }
@@ -194,10 +194,47 @@ public abstract class Renderer<I> implements Function<I, BufferedImage> {
             image.fill(0);
             contours.forEach(c -> {
                 c.forEach((x, y) -> {
-                    final byte p = clip(c.perimeter());
-                    image.setColor(x, y, 0, p, p);
+                    if (c.isLeaf()) {
+                        image.setColor(x, y, 255, 0, 0);
+                    } else {
+                        image.setColor(x, y, 0, 200, 255);
+                    }
                 });
             });
+            return image;
+        }
+    }
+    public static class Colorize implements Function<List<Contour>, Image.Color> {
+
+        private Image.Color image;
+
+        private final int width;
+        private final int height;
+
+        private final Contour.PointConsumer consumer;
+
+        public Colorize(int width, int height, int color) {
+            this.width = width;
+            this.height = height;
+
+            switch (color) {
+                case RED:
+                    consumer = (x, y) -> image.setColor(x, y, 255, 0, 0);
+                    break;
+                case GREEN:
+                    consumer = (x, y) -> image.setColor(x, y, 0, 255, 0);
+                    break;
+                default:
+                    consumer = (x, y) -> image.setColor(x, y, 0, 0, 255);
+                    break;
+            }
+        }
+
+        @Override
+        public Image.Color apply(List<Contour> contours) {
+            image = Image.Color.adaptTo(image, width, height);
+            image.fill(0);
+            contours.forEach(c -> c.forEach(consumer));
             return image;
         }
     }

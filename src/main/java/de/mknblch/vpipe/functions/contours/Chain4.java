@@ -9,8 +9,8 @@ import java.util.function.Function;
 
 import static de.mknblch.vpipe.Image.I;
 import static de.mknblch.vpipe.functions.contours.Contour.Direction.E;
-import static de.mknblch.vpipe.functions.contours.Contour.Direction.N;
 import static de.mknblch.vpipe.functions.contours.Contour.Direction.S;
+import static de.mknblch.vpipe.functions.contours.Contour.Direction.N;
 
 /**
  * @author mknblch
@@ -29,6 +29,8 @@ public class Chain4 implements Function<Image.Gray, List<Contour>> {
     private int j;
     private int x;
     private int y;
+    private final List<Contour> contours = new ArrayList<>();
+
 
     public Chain4(int threshold) {
         this(threshold, (perimeter, signedArea, x0, y0, x1, y1) -> true);
@@ -42,7 +44,6 @@ public class Chain4 implements Function<Image.Gray, List<Contour>> {
         builder = new Contour.Builder(contourFilter, initialCapacity);
         this.threshold = threshold;
     }
-
     @Override
     public List<Contour> apply(Image.Gray image) {
         this.input = image.data;
@@ -52,8 +53,8 @@ public class Chain4 implements Function<Image.Gray, List<Contour>> {
             visited = new boolean[(image.width + 1) * (image.height + 1)];
         }
         Arrays.fill(visited, false);
+        contours.clear();
         builder.reset();
-        final List<Contour> contours = new ArrayList<>();
         for (int i = 0; i < image.data.length - image.width - 1; i++) {
             if (visited[i]) {
                 continue;

@@ -4,8 +4,10 @@ import de.mknblch.vpipe.Image;
 import de.mknblch.vpipe.Source;
 
 import javax.imageio.ImageIO;
+import javax.imageio.stream.FileImageInputStream;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -17,14 +19,12 @@ import java.nio.file.StandardOpenOption;
  */
 public class ImageSource implements Source<Image.Color> {
 
-    private final Path path;
-    private final BufferedImage bufferedImage;
     private final Image.Color colorImage;
 
     public ImageSource(Path path) throws IOException {
-        this.path = path;
+        final BufferedImage bufferedImage;
         try (InputStream inputStream = Files.newInputStream(path, StandardOpenOption.READ)) {
-            bufferedImage = ImageIO.read(inputStream);
+            bufferedImage = convert(ImageIO.read(inputStream));
         }
         colorImage = new Image.Color(bufferedImage.getWidth(), bufferedImage.getHeight());
 
@@ -32,6 +32,21 @@ public class ImageSource implements Source<Image.Color> {
                 .getRaster()
                 .getDataBuffer();
         System.arraycopy(buffer.getData(), 0, colorImage.data, 0, colorImage.data.length);
+    }
+
+    public ImageSource(InputStream inputStream) throws IOException {
+        final BufferedImage bufferedImage = convert(ImageIO.read(inputStream));
+        colorImage = new Image.Color(bufferedImage.getWidth(), bufferedImage.getHeight());
+        final DataBufferByte buffer = (DataBufferByte) bufferedImage
+                .getRaster()
+                .getDataBuffer();
+        System.arraycopy(buffer.getData(), 0, colorImage.data, 0, colorImage.data.length);
+    }
+
+    private static BufferedImage convert(BufferedImage in) {
+        BufferedImage temp = new BufferedImage(in.getWidth(), in.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+        temp.getGraphics().drawImage(in, 0, 0, null);
+        return temp;
     }
 
     @Override

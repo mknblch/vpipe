@@ -12,6 +12,7 @@ import static de.mknblch.vpipe.Image.I;
  */
 public class PixelProcessor {
 
+    @FunctionalInterface
     public interface ColorPixelFunction {
         int apply(int r, int g, int b);
     }
@@ -82,6 +83,31 @@ public class PixelProcessor {
                         I(in, i + Image.Color.GREEN),
                         I(in, i + Image.Color.BLUE));
                 out.setValue(i / 3, v);
+            }
+            return out;
+        }
+    }
+
+    public static class Gray2Color implements Function<Image.Gray, Image.Color> {
+
+        private Image.Color out = null;
+        private final ColorPixelFunction function;
+
+        public Gray2Color(ColorPixelFunction function) {
+            this.function = function;
+        }
+
+        @Override
+        public Image.Color apply(Image.Gray in) {
+            out = Image.Color.adaptTo(out, in);
+            final int pixels = in.data.length;
+            for (int i = 0; i < pixels; i ++) {
+                final int v = in.getValue(i);
+                final int r = function.apply(v, v, v);
+                final int i3 = i * 3;
+                out.setColor(i3, Image.Color.RED, Image.Color.red(r));
+                out.setColor(i3, Image.Color.GREEN, Image.Color.green(r));
+                out.setColor(i3, Image.Color.BLUE, Image.Color.blue(r));
             }
             return out;
         }

@@ -10,9 +10,9 @@ import static java.util.Objects.requireNonNull;
  */
 public abstract class Image {
 
-    public static int RED = 0;
-    public static int GREEN = 1;
-    public static int BLUE = 2;
+    public static final int RED = 0;
+    public static final int GREEN = 1;
+    public static final int BLUE = 2;
 
     public final byte[] data;
     public final int width;
@@ -127,7 +127,7 @@ public abstract class Image {
         }
 
         public int getColor(int index, int color) {
-            return data[index + color] & 0xFF;
+            return data[index * 3 + color] & 0xFF;
         }
 
         public int getColor(int x, int y, int color) {
@@ -140,19 +140,15 @@ public abstract class Image {
 
         public void setColor(int x, int y, int r, int g, int b) {
             final int o = (y * width + x) * 3;
-            try {
-                data[o] = (byte) r;
-                data[o + 1] = (byte) g;
-                data[o + 2] = (byte) b;
-
-            } catch (Exception e) {
-                System.out.println(x + "," + y);
-                throw e;
-            }
+            data[o] = (byte) r;
+            data[o + 1] = (byte) g;
+            data[o + 2] = (byte) b;
         }
 
-        public void setColor(int x, int y, int color, int value) {
-            data[(y * width + x) * 3 + color] = (byte) value;
+        public void setColor(int offset, int r, int g, int b) {
+            data[offset] = (byte) r;
+            data[offset + 1] = (byte) g;
+            data[offset + 2] = (byte) b;
         }
 
         public static Color adaptTo(Color current, Image template) {
@@ -188,6 +184,10 @@ public abstract class Image {
             this(new byte[width * height], width, height);
         }
 
+        public int getValue(int index) {
+            return data[index] & 0xFF;
+        }
+
         public int getValue(int x, int y) {
             return data[y * width + x] & 0xFF;
         }
@@ -202,56 +202,6 @@ public abstract class Image {
 
         public void setValue(int x, int y, byte value) {
             data[y * width + x] = value;
-        }
-
-        public Gray plus(Image image) {
-            if (!dimensionEqual(this, image)) {
-                throw new IllegalArgumentException(
-                        "Wrong dimensions: " + image.width + "x" + image.height + " + " +
-                                width + "x" + height
-                );
-            }
-            final Gray out = new Gray(image);
-            for (int i = 0; i < data.length; i++) {
-                out.data[i] = clip(I(this, i) + I(image, i));
-            }
-            return out;
-        }
-
-        public Gray minus(Image image) {
-            if (!dimensionEqual(this, image)) {
-                throw new IllegalArgumentException(
-                        "Wrong dimensions: " + image.width + "x" + image.height + " - " +
-                                width + "x" + height
-                );
-            }
-            final Gray out = new Gray(image);
-            for (int i = 0; i < data.length; i++) {
-                out.data[i] = clip(I(this, i) - I(image, i));
-            }
-            return out;
-        }
-
-        public Gray mul(Image image) {
-            if (!dimensionEqual(this, image)) {
-                throw new IllegalArgumentException(
-                        "Wrong dimensions: " + image.width + "x" + image.height + " * " +
-                                width + "x" + height
-                );
-            }
-            final Gray out = new Gray(image);
-            for (int i = 0; i < data.length; i++) {
-                out.data[i] = clip(I(this, i) * I(image, i));
-            }
-            return out;
-        }
-
-        public Image mul(double f) {
-            final Gray out = new Gray(this);
-            for (int i = 0; i < data.length; i++) {
-                out.data[i] = clip(I(this, i) * f);
-            }
-            return out;
         }
 
         public static Gray adaptTo(Gray current, Image template) {

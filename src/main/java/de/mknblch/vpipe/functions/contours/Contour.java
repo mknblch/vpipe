@@ -194,7 +194,8 @@ public class Contour {
     }
 
     public void forEach(PointConsumer consumer) {
-        int tx = x, ty = y;
+        int tx = x, ty = y + 1;
+        consumer.consume(tx, ty);
         for (int i = 0; i < length; i++) {
             switch (data[i + index]) {
                 case 0:
@@ -273,23 +274,20 @@ public class Contour {
             ly = y;
         }
 
-        public boolean test() {
-            return filter.test(offset - index, signedArea, minX, minY, maxX, maxY);
-        }
-
         public Contour build() {
-            return test() ? new Contour(
-                    data,
-                    index,
-                    offset - index,
-                    sx,
-                    sy,
-                    minX,
-                    maxX,
-                    minY,
-                    maxY,
-                    signedArea
-            ) : null;
+            return filter.test(offset - index, signedArea, minX, minY, maxX, maxY) ?
+                    new Contour(
+                            data,
+                            index,
+                            offset - index,
+                            sx,
+                            sy,
+                            minX,
+                            maxX,
+                            minY,
+                            maxY,
+                            signedArea
+                    ) : null;
         }
     }
 }
