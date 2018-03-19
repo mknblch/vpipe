@@ -20,7 +20,6 @@ public class Chain4 implements Function<Image.Gray, List<Contour>> {
     private final Contour.Builder builder;
 
     private final int threshold;
-
     private Contour.Direction d;
     private boolean[] visited;
     private byte[] input;
@@ -30,7 +29,6 @@ public class Chain4 implements Function<Image.Gray, List<Contour>> {
     private int x;
     private int y;
     private final List<Contour> contours = new ArrayList<>();
-
 
     public Chain4(int threshold) {
         this(threshold, (perimeter, signedArea, x0, y0, x1, y1) -> true);
@@ -69,27 +67,10 @@ public class Chain4 implements Function<Image.Gray, List<Contour>> {
                 if (c == null) {
                     continue;
                 }
-                append(contours, c);
+                contours.add(c);
             }
         }
         return contours;
-    }
-
-    private boolean append(List<Contour> contours, Contour c) {
-        for (int j = contours.size() - 1; j >= 0; j--) {
-            final Contour previous = contours.get(j);
-            if (previous.approximateContains(c)) {
-                previous.children.add(c);
-                previous.dx += previous.cx() - c.cx();
-                previous.dy += previous.cy() - c.cy();
-                c.parent = previous;
-                c.level = previous.level + 1;
-                contours.add(c);
-                return true;
-            }
-        }
-        contours.add(c);
-        return false;
     }
 
     private Contour chain4(int i, int sx, int sy) {

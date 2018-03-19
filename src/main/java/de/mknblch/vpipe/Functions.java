@@ -2,6 +2,7 @@ package de.mknblch.vpipe;
 
 import de.mknblch.vpipe.functions.*;
 import de.mknblch.vpipe.functions.contours.Chain4;
+import de.mknblch.vpipe.functions.contours.Grouping;
 import de.mknblch.vpipe.functions.contours.Renderer;
 import de.mknblch.vpipe.functions.contours.Contour;
 import de.mknblch.vpipe.functions.ExecutionTimer;
@@ -62,7 +63,7 @@ public class Functions {
      * @param threshold a threshold between 0 and 255
      */
     public static Function<Image.Gray, List<Contour>> contours(int threshold, Contour.Filter filter) {
-        return new Chain4(threshold, filter);
+        return new Chain4(threshold, filter).andThen(new Grouping());
     }
 
     public static Function<List<Contour>, List<Contour>> removeIf(Predicate<Contour> predicate) {

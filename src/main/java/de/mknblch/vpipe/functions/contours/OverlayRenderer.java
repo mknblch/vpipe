@@ -18,7 +18,6 @@ import java.util.function.Function;
 /**
  * @author mknblch
  */
-
 public class OverlayRenderer extends Renderer<Tuple.Two<Image.Color, List<Contour>>> {
 
     private final Map<Integer, Overlay> hashImageMap;

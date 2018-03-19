@@ -57,18 +57,6 @@ public class Contour {
         this.signedArea = signedArea;
     }
 
-    /**
-     * @param other possible child contour
-     * @return true if this contour encloses the given one
-     */
-    public boolean approximateContains(Contour other) {
-        return other.isWhite() != isWhite() &&
-                other.minX >= this.minX &&
-                other.maxX <= this.maxX &&
-                other.minY >= this.minY &&
-                other.maxY <= this.maxY;
-    }
-
     public Contour getParent() {
         return parent;
     }
@@ -217,14 +205,42 @@ public class Contour {
         }
     }
 
+    /**
+     * get copy of the crack data
+     */
+    public byte[] getData() {
+        return Arrays.copyOfRange(data, index, index + length);
+    }
+
+    /**
+     * consumer interface for point iteration
+     */
     public interface PointConsumer {
         void consume(int x, int y);
     }
 
+    /**
+     * basic contour filter interface
+     */
     public interface Filter {
+
+        /**
+         * test if the contour should be added to the result list or nor
+         * @param perimeter perimeter of the contour
+         * @param signedArea signed area (if <0 it an inner contour, outer contour otherwise)
+         * @param x0 top left x ordinate
+         * @param y0 top left y ordinate
+         * @param x1 bottom right x ordinate
+         * @param y1 bottom right x ordinate
+         * @return true if the contour is allowed, false otherwise
+         */
         boolean test(int perimeter, int signedArea, int x0, int y0, int x1, int y1);
     }
 
+    /**
+     * The builder instantiates and grows the data array where all cracks are saved.
+     * It also evaluates some properties like the bounding box or area of the blob.
+     */
     public static class Builder {
 
         private byte[] data;
@@ -239,16 +255,28 @@ public class Contour {
         private int lx, ly;
         private int sx, sy;
 
-        public Builder(Filter filter, int initialCapacity) {
+        /**
+         * @param filter contour filter
+         * @param initialCapacity initial data capacity (grows by 1/3 if full)
+         */
+        Builder(Filter filter, int initialCapacity) {
             this.filter = filter;
             data = new byte[initialCapacity];
         }
 
-        public void reset() {
+        /**
+         * Reset the builder which invalidates the current data
+         */
+        void reset() {
             offset = 0;
         }
 
-        public int create(int sx, int sy) {
+        /**
+         * creates a new contour
+         * @param sx start x ordinate
+         * @param sy start y ordinate
+         */
+        void create(int sx, int sy) {
             index = offset;
             signedArea = 0;
             minX = Integer.MAX_VALUE;
@@ -257,10 +285,15 @@ public class Contour {
             maxY = 0;
             this.sx = lx = sx;
             this.sy = ly = sy;
-            return index;
         }
 
-        public void add(byte crack, int x, int y) {
+        /**
+         * add a data point
+         * @param crack a {@link Contour.Direction} encoding the walk direction
+         * @param x current x ordinate
+         * @param y current y ordinate
+         */
+        void add(byte crack, int x, int y) {
             minX = x < minX ? x : minX;
             maxX = x > maxX ? x : maxX;
             minY = y < minY ? y : minY;
@@ -274,9 +307,16 @@ public class Contour {
             ly = y;
         }
 
-        public Contour build() {
-            return filter.test(offset - index, signedArea, minX, minY, maxX, maxY) ?
-                    new Contour(
+        /**
+         * test if the current contour satisfies the filter
+         * @return true if the contour is allows, false otherwise
+         */
+        boolean test() {
+            return filter.test(offset - index, signedArea, minX, minY, maxX, maxY);
+        }
+
+        Contour build() {
+            return new Contour(
                             data,
                             index,
                             offset - index,
@@ -286,8 +326,7 @@ public class Contour {
                             maxX,
                             minY,
                             maxY,
-                            signedArea
-                    ) : null;
+                            signedArea);
         }
     }
 }
