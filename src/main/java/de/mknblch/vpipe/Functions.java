@@ -24,7 +24,7 @@ public class Functions {
      * Split computation into 2 pipes
      * @author Jiří Kraml (jkraml@avantgarde-labs.de)
      */
-    public static <I, L, R> Function<I, TupleTwo<L, R>> split(Function<I, L> leftProcessor, Function<I, R> rightProcessor) {
+    public static <I, L, R> Function<I, Tuple.Two<L, R>> split(Function<I, L> leftProcessor, Function<I, R> rightProcessor) {
         return new Split.SplitTwo<>(leftProcessor, rightProcessor);
     }
 
@@ -32,7 +32,7 @@ public class Functions {
      * Split computation into 3 pipes
      * @author Jiří Kraml (jkraml@avantgarde-labs.de)
      */
-    public static <I, L, M, R> Function<I, TupleThree<L, M, R>> split(Function<I, L> leftProcessor, Function<I, M> middleProcessor, Function<I, R> rightProcessor) {
+    public static <I, L, M, R> Function<I, Tuple.Three<L, M, R>> split(Function<I, L> leftProcessor, Function<I, M> middleProcessor, Function<I, R> rightProcessor) {
         return new Split.SplitThree<>(leftProcessor, middleProcessor, rightProcessor);
     }
 
@@ -40,7 +40,7 @@ public class Functions {
      * Merge 2 pipes
      * @author Jiří Kraml (jkraml@avantgarde-labs.de)
      */
-    public static <L, R, O> Function<TupleTwo<L, R>, O> merge(BiFunction<L, R, O> mergeFunction) {
+    public static <L, R, O> Function<Tuple.Two<L, R>, O> merge(BiFunction<L, R, O> mergeFunction) {
         return new Merge.MergeTwo<>(mergeFunction);
     }
 
@@ -48,7 +48,7 @@ public class Functions {
      * Merge 3 pipes
      * @author Jiří Kraml (jkraml@avantgarde-labs.de)
      */
-    public static <L, M, R, O> Function<TupleThree<L, M, R>, O> merge(Merge.TriFunction<L, M, R, O> mergeFunction) {
+    public static <L, M, R, O> Function<Tuple.Three<L, M, R>, O> merge(Merge.TriFunction<L, M, R, O> mergeFunction) {
         return new Merge.MergeThree<>(mergeFunction);
     }
 
@@ -215,7 +215,7 @@ public class Functions {
      * transform Image to BufferedImage
      */
     public static <I extends Image> Function<I, BufferedImage> toBufferedImage() {
-        return new BufferedImageTransformer<>();
+        return new BufferedImageConverter<>();
     }
 
     public static Function<List<Contour>, BufferedImage> renderDepth(int width, int height) {
@@ -228,10 +228,6 @@ public class Functions {
 
     public static Function<List<Contour>, BufferedImage> renderBoundingBox(int width, int height) {
         return new Renderer.BoundingBox(width, height);
-    }
-
-    public static Function<List<Contour>, BufferedImage> renderHashes(int width, int height, int... hashes) {
-        return new Renderer.Hash(width, height, hashes);
     }
 
 }

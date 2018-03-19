@@ -10,7 +10,7 @@ import java.util.function.Function;
 /**
  * @author mknblch
  */
-public class BufferedImageTransformer<I extends Image> implements Function<I, BufferedImage> {
+public class BufferedImageConverter<I extends Image> implements Function<I, BufferedImage> {
 
     private BufferedImage out = null;
 
@@ -25,8 +25,8 @@ public class BufferedImageTransformer<I extends Image> implements Function<I, Bu
 
     private static BufferedImage createColorImage(int width, int height) {
         final byte[] pixels = new byte[width * height * 3];
-        final DataBuffer dataBuffer = new DataBufferByte(pixels, width*height, 0);
-        final ComponentSampleModel smodel = new ComponentSampleModel(
+        final DataBuffer dataBuffer = new DataBufferByte(pixels, width * height, 0);
+        final ComponentSampleModel sampleModel = new ComponentSampleModel(
                 DataBuffer.TYPE_BYTE,
                 width,
                 height,
@@ -35,7 +35,7 @@ public class BufferedImageTransformer<I extends Image> implements Function<I, Bu
                 new int[]{Image.RED,
                         Image.GREEN,
                         Image.BLUE});
-        final ComponentColorModel cmodel = new ComponentColorModel(
+        final ComponentColorModel colorModel = new ComponentColorModel(
                 ColorSpace.getInstance(ColorSpace.CS_sRGB),
                 new int[]{8, 8, 8},
                 false,
@@ -43,35 +43,13 @@ public class BufferedImageTransformer<I extends Image> implements Function<I, Bu
                 Transparency.OPAQUE,
                 DataBuffer.TYPE_BYTE);
         final WritableRaster raster = Raster.createWritableRaster(
-                smodel,
+                sampleModel,
                 dataBuffer,
                 null);
-
-        return new BufferedImage(cmodel, raster, false, null);
+        return new BufferedImage(colorModel, raster, false, null);
     }
 
     private static BufferedImage createMonoImage(int width, int height) {
-        final byte[] pixels = new byte[width * height * 3];
-        final DataBuffer dataBuffer = new DataBufferByte(pixels, width*height, 0);
-        final ComponentSampleModel smodel = new ComponentSampleModel(
-                DataBuffer.TYPE_BYTE,
-                width,
-                height,
-                1,
-                width,
-                new int[]{Image.RED});
-        final ComponentColorModel cmodel = new ComponentColorModel(
-                ColorSpace.getInstance(ColorSpace.CS_GRAY),
-                new int[]{8},
-                false,
-                false,
-                Transparency.OPAQUE,
-                DataBuffer.TYPE_BYTE);
-        final WritableRaster raster = Raster.createWritableRaster(
-                smodel,
-                dataBuffer,
-                null);
-
         return new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
     }
 

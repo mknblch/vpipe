@@ -3,13 +3,18 @@ package de.mknblch.vpipe.model;
 import de.mknblch.vpipe.Image;
 import de.mknblch.vpipe.Images;
 import de.mknblch.vpipe.Source;
+import de.mknblch.vpipe.functions.contours.Contour;
+import de.mknblch.vpipe.functions.contours.OverlayRenderer;
 import de.mknblch.vpipe.functions.contours.Renderer;
 import de.mknblch.vpipe.helper.ImageSource;
 import de.mknblch.vpipe.helper.SarxosWebcamSource;
 import de.mknblch.vpipe.helper.Viewer;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
 import java.util.function.Function;
 
 import static de.mknblch.vpipe.Functions.*;
@@ -22,7 +27,8 @@ public class Examples {
 
     public static void main(String[] args) throws IOException {
 
-        splitRGB();
+        imageOverlay();
+//        splitRGB();
     }
 
     public static void testContours() throws IOException {
@@ -55,17 +61,36 @@ public class Examples {
         Viewer.start(bufferedImageSource);
     }
 
-    public static void splitProcessing() {
+    public static void contourOverlay() {
 
         final Function<Image.Color, Image.Color> colorColorFunction =
-                grayscale(0.299, 0.587, 0.114)
+                grayscale(0.0299, 0.587, 0.114)
                 .andThen(contours(128))
-                .andThen(new Renderer.Native(640, 480));
+                .andThen(new Renderer.Colorize(640, 480));
 
         final Source<BufferedImage> bufferedImageSource = SarxosWebcamSource.choose()
                 .connectTo(split(colorColorFunction, Function.identity()))
                 .connectTo(merge((a, b) -> Images.add(a, b)))
                 .connectTo(toBufferedImage());
+
+        Viewer.start(bufferedImageSource);
+    }
+
+    public static void imageOverlay() throws IOException {
+
+        final HashMap<Integer, OverlayRenderer.Overlay> map = new HashMap<>();
+        map.put(19239, new OverlayRenderer.Overlay(
+                Examples.class.getClassLoader().getResourceAsStream("19239.jpg")));
+        map.put(14399, new OverlayRenderer.Overlay(
+                Examples.class.getClassLoader().getResourceAsStream("14399.png")));
+
+        final Function<Image.Color, List<Contour>> contourFun = grayscale()
+                .andThen(contrast(1.5))
+                .andThen(contours(90));
+
+        final Source<BufferedImage> bufferedImageSource = SarxosWebcamSource.choose()
+                .connectTo(split(Function.identity(), contourFun))
+                .connectTo(new OverlayRenderer(640, 480, map));
 
         Viewer.start(bufferedImageSource);
     }
@@ -76,15 +101,15 @@ public class Examples {
 
         final Function<Image.Color, Image.Color> left = red()
                 .andThen(contours(threshold))
-                .andThen(new Renderer.Colorize(640, 480, Image.RED));
+                .andThen(new Renderer.Colorize(640, 480, 255, 0, 0));
 
         final Function<Image.Color, Image.Color> mid = green()
                 .andThen(contours(threshold))
-                .andThen(new Renderer.Colorize(640, 480, Image.GREEN));
+                .andThen(new Renderer.Colorize(640, 480, 0, 255, 0));
 
         final Function<Image.Color, Image.Color> right = blue()
                 .andThen(contours(threshold))
-                .andThen(new Renderer.Colorize(640, 480, Image.BLUE));
+                .andThen(new Renderer.Colorize(640, 480, 0, 0, 255));
 
         final Source<BufferedImage> bufferedImageSource = SarxosWebcamSource.choose()
                 .connectTo(split(left, mid, right))

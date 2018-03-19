@@ -1,15 +1,16 @@
 package de.mknblch.vpipe.functions.contours;
 
+import de.mknblch.vpipe.Functions;
 import de.mknblch.vpipe.Image;
+import de.mknblch.vpipe.functions.Tuple;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
-import static de.mknblch.vpipe.Image.GREEN;
-import static de.mknblch.vpipe.Image.RED;
 import static de.mknblch.vpipe.Image.clip;
 
 /**
@@ -27,6 +28,10 @@ public abstract class Renderer<I> implements Function<I, BufferedImage> {
         this.height = height;
         image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         graphics = image.createGraphics();
+        init(graphics);
+    }
+
+    protected void init(Graphics2D graphics) {
         graphics.setBackground(Color.BLACK);
     }
 
@@ -113,40 +118,6 @@ public abstract class Renderer<I> implements Function<I, BufferedImage> {
         }
     }
 
-    public static class Hash extends Renderer<List<Contour>> {
-
-        private final int[] hashes;
-
-        public Hash(int width, int height, int... hashes) {
-            super(width, height);
-            this.hashes = hashes;
-            Arrays.sort(hashes);
-        }
-
-        @Override
-        void render(List<Contour> in, Graphics2D graphics) {
-            clear();
-            in.forEach(c -> {
-                if (c.getDepth() < 2) {
-                    return;
-                }
-                final int d = c.getDepth();
-                if (Arrays.binarySearch(hashes, c.hash()) >= 0) {
-                    setColor(d * 80, d * 40, d * 20);
-                    c.forEach((x, y) -> {
-                        graphics.drawLine(x, y, x, y);
-                    });
-
-                    final double angle = c.getAngle();
-                    int tx = (int) (Math.cos(angle) * 50 + c.cx());
-                    int ty = (int) (Math.sin(angle) * 50 + c.cy());
-                    graphics.drawLine(c.cx(), c.cy(), tx, ty);
-
-                }
-            });
-        }
-    }
-
     public static class Children extends Renderer<List<Contour>> {
 
         public Children(int width, int height) {
@@ -158,82 +129,39 @@ public abstract class Renderer<I> implements Function<I, BufferedImage> {
             clear();
             setColor(255, 255, 255);
             in.forEach(c -> {
-
-                c.forEachChild(child -> {
-                    graphics.drawLine(c.cx(), c.cy(), child.cx(), child.cy());
-                });
-
+                c.forEachChild(child -> graphics.drawLine(c.cx(), c.cy(), child.cx(), child.cy()));
                 if (c.getDepth() == 2) {
                     graphics.drawString(String.valueOf(c.hash()), c.x, c.y - 10);
                 }
                 if (!c.isLeaf()) {
                     return;
                 }
-                c.forEach((x, y) -> {
-                    graphics.drawLine(x, y, x, y);
-                });
+                c.forEach((x, y) -> graphics.drawLine(x, y, x, y));
             });
         }
     }
 
-    public static class Native implements Function<List<Contour>, Image.Color> {
-
-        private Image.Color image;
-
-        private final int width;
-        private final int height;
-
-        public Native(int width, int height) {
-            this.width = width;
-            this.height = height;
-        }
-
-        @Override
-        public Image.Color apply(List<Contour> contours) {
-            image = Image.Color.adaptTo(image, width, height);
-            image.fill(0);
-            contours.forEach(c -> {
-                c.forEach((x, y) -> {
-                    if (c.isLeaf()) {
-                        image.setColor(x, y, 255, 0, 0);
-                    } else {
-                        image.setColor(x, y, 0, 200, 255);
-                    }
-                });
-            });
-            return image;
-        }
-    }
     public static class Colorize implements Function<List<Contour>, Image.Color> {
 
         private Image.Color image;
-
         private final int width;
         private final int height;
-
         private final Contour.PointConsumer consumer;
 
-        public Colorize(int width, int height, int color) {
+        public Colorize(int width, int height) {
+            this(width, height, 255, 255, 255);
+        }
+
+        public Colorize(int width, int height, int r, int g, int b) {
             this.width = width;
             this.height = height;
+            consumer = (x, y) -> image.setColor(x, y, r, g, b);
 
-            switch (color) {
-                case RED:
-                    consumer = (x, y) -> image.setColor(x, y, 255, 0, 0);
-                    break;
-                case GREEN:
-                    consumer = (x, y) -> image.setColor(x, y, 0, 255, 0);
-                    break;
-                default:
-                    consumer = (x, y) -> image.setColor(x, y, 0, 0, 255);
-                    break;
-            }
         }
 
         @Override
         public Image.Color apply(List<Contour> contours) {
-            image = Image.Color.adaptTo(image, width, height);
-            image.fill(0);
+            image = Image.Color.adaptTo(image, width, height).fill(0);
             contours.forEach(c -> c.forEach(consumer));
             return image;
         }

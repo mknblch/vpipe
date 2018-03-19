@@ -78,11 +78,11 @@ public class Contour {
     }
 
     public int cx() {
-        return minX + (maxX - minX) / 2;
+        return minX + width() / 2;
     }
 
     public int cy() {
-        return minY + (maxY - minY) / 2;
+        return minY + height() / 2;
     }
 
     public double getAngle() {

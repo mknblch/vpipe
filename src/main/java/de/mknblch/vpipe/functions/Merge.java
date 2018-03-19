@@ -20,7 +20,7 @@ public class Merge {
         O apply(L left, M middle, R right);
     }
 
-    public static class MergeTwo<L, R, O> implements Function<TupleTwo<L, R>, O> {
+    public static class MergeTwo<L, R, O> implements Function<Tuple.Two<L, R>, O> {
 
         private final BiFunction<L, R, O> mergeFunktion;
 
@@ -31,12 +31,12 @@ public class Merge {
         }
 
         @Override
-        public O apply(TupleTwo<L, R> in) {
+        public O apply(Tuple.Two<L, R> in) {
             return mergeFunktion.apply(in.getLeft(), in.getRight());
         }
     }
 
-    public static class MergeThree<L, M, R, O> implements Function<TupleThree<L, M, R>, O> {
+    public static class MergeThree<L, M, R, O> implements Function<Tuple.Three<L, M, R>, O> {
 
         private final TriFunction<L, M, R, O> mergeFunction;
 
@@ -47,7 +47,7 @@ public class Merge {
         }
 
         @Override
-        public O apply(TupleThree<L, M, R> in) {
+        public O apply(Tuple.Three<L, M, R> in) {
             return mergeFunction.apply(in.getLeft(), in.getMiddle(), in.getRight());
         }
     }

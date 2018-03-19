@@ -7,13 +7,11 @@ import static java.util.Objects.requireNonNull;
 /**
  * @author Jiří Kraml (jkraml@avantgarde-labs.de)
  */
-public class Split {
+public final class Split {
 
-    private Split() {
-        throw new UnsupportedOperationException("no instantiation allowed");
-    }
+    private Split() {}
 
-    public static class SplitTwo<I, L, R> implements Function<I, TupleTwo<L, R>> {
+    public static class SplitTwo<I, L, R> implements Function<I, Tuple.Two<L, R>> {
         private final Function<I, L> leftProcessor;
         private final Function<I, R> rightProcessor;
 
@@ -26,15 +24,15 @@ public class Split {
         }
 
         @Override
-        public TupleTwo<L, R> apply(I in) {
-            return new TupleTwo<>(
+        public Tuple.Two<L, R> apply(I in) {
+            return Tuple.from(
                     leftProcessor.apply(in),
                     rightProcessor.apply(in)
             );
         }
     }
 
-    public static class SplitThree<I, L, M, R> implements Function<I, TupleThree<L, M, R>> {
+    public static class SplitThree<I, L, M, R> implements Function<I, Tuple.Three<L, M, R>> {
         private final Function<I, L> leftProcessor;
         private final Function<I, M> middleProcessor;
         private final Function<I, R> rightProcessor;
@@ -50,8 +48,8 @@ public class Split {
         }
 
         @Override
-        public TupleThree<L, M, R> apply(I in) {
-            return new TupleThree<>(
+        public Tuple.Three<L, M, R> apply(I in) {
+            return Tuple.from(
                     leftProcessor.apply(in),
                     middleProcessor.apply(in),
                     rightProcessor.apply(in)

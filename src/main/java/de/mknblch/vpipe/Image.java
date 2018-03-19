@@ -1,14 +1,13 @@
 package de.mknblch.vpipe;
 
 import java.util.Arrays;
-import java.util.concurrent.Executors;
 
 import static java.util.Objects.requireNonNull;
 
 /**
  * @author mknblch
  */
-public abstract class Image {
+public abstract class Image<T extends Image<T>> {
 
     public static final int RED = 0;
     public static final int GREEN = 1;
@@ -42,14 +41,6 @@ public abstract class Image {
 
     public int length() {
         return data.length;
-    }
-
-    public void fill(int v) {
-        Arrays.fill(data, (byte) v);
-    }
-
-    public void setValue(int offset, int value) {
-        data[offset] = (byte) value;
     }
 
     public static int I(byte v) {
@@ -126,6 +117,16 @@ public abstract class Image {
             super(data, width, height);
         }
 
+        public Color fill(int value) {
+            Arrays.fill(data, (byte) value);
+            return this;
+        }
+
+        public Color setValue(int offset, int value) {
+            data[offset] = (byte) value;
+            return this;
+        }
+
         public int getColor(int index, int color) {
             return data[index * 3 + color] & 0xFF;
         }
@@ -134,21 +135,24 @@ public abstract class Image {
             return data[y * width * 3 + x * 3 + color] & 0xFF;
         }
 
-        public void setColor(int index, int color, int value) {
+        public Color setColor(int index, int color, int value) {
             data[index * 3 + color] = (byte) value;
+            return this;
         }
 
-        public void setColor(int x, int y, int r, int g, int b) {
+        public Color setColor(int x, int y, int r, int g, int b) {
             final int o = (y * width + x) * 3;
             data[o] = (byte) r;
             data[o + 1] = (byte) g;
             data[o + 2] = (byte) b;
+            return this;
         }
 
-        public void setColor(int offset, int r, int g, int b) {
+        public Color setColor(int offset, int r, int g, int b) {
             data[offset] = (byte) r;
             data[offset + 1] = (byte) g;
             data[offset + 2] = (byte) b;
+            return this;
         }
 
         public static Color adaptTo(Color current, Image template) {
@@ -164,7 +168,6 @@ public abstract class Image {
             }
             return current;
         }
-
     }
 
     /**
@@ -184,6 +187,11 @@ public abstract class Image {
             this(new byte[width * height], width, height);
         }
 
+        public Gray fill(int value) {
+            Arrays.fill(data, (byte) value);
+            return this;
+        }
+
         public int getValue(int index) {
             return data[index] & 0xFF;
         }
@@ -196,12 +204,19 @@ public abstract class Image {
             return x < 0 || x >= width || y < 0 || y >= height ? defaultValue : data[y * width + x] & 0xFF;
         }
 
-        public void setValue(int x, int y, int iValue) {
-            setValue(x, y, Image.clip(iValue));
+        public Gray setValue(int offset, int value) {
+            data[offset] = (byte) value;
+            return this;
         }
 
-        public void setValue(int x, int y, byte value) {
+        public Gray setValue(int x, int y, int iValue) {
+            setValue(x, y, Image.clip(iValue));
+            return this;
+        }
+
+        public Gray setValue(int x, int y, byte value) {
             data[y * width + x] = value;
+            return this;
         }
 
         public static Gray adaptTo(Gray current, Image template) {
