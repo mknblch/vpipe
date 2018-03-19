@@ -1,4 +1,6 @@
-package de.mknblch.vpipe;
+package de.mknblch.vpipe.functions;
+
+import de.mknblch.vpipe.Image;
 
 import static de.mknblch.vpipe.Image.*;
 import static de.mknblch.vpipe.Image.BLUE;
@@ -8,7 +10,7 @@ import static de.mknblch.vpipe.Image.BLUE;
  */
 public class Images {
 
-    public static Image.Gray add(Image.Gray a, Image.Gray b) {
+    public static Gray add(Gray a, Gray b) {
         Image.dimensionEqual(a, b);
         final Image.Gray out = new Image.Gray(a);
         for (int i = 0; i < out.pixels(); i++) {

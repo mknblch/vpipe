@@ -3,7 +3,6 @@ package de.mknblch.vpipe.functions.contours;
 import de.mknblch.vpipe.Functions;
 import de.mknblch.vpipe.Image;
 import de.mknblch.vpipe.functions.Tuple;
-import sun.misc.IOUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.*;

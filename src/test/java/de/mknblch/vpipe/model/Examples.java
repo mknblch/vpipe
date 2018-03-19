@@ -1,7 +1,7 @@
 package de.mknblch.vpipe.model;
 
 import de.mknblch.vpipe.Image;
-import de.mknblch.vpipe.Images;
+import de.mknblch.vpipe.functions.Images;
 import de.mknblch.vpipe.Source;
 import de.mknblch.vpipe.functions.contours.Contour;
 import de.mknblch.vpipe.functions.contours.OverlayRenderer;
@@ -10,7 +10,6 @@ import de.mknblch.vpipe.helper.ImageSource;
 import de.mknblch.vpipe.helper.SarxosWebcamSource;
 import de.mknblch.vpipe.helper.Viewer;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.HashMap;
