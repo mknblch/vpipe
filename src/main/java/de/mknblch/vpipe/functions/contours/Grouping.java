@@ -15,7 +15,7 @@ public class Grouping implements Function<List<Contour>, List<Contour>> {
     private final BiPredicate<Contour, Contour> predicate;
 
     public Grouping() {
-        this(false, false);
+        this(true, false);
     }
 
     public Grouping(boolean exactGrouping, boolean excludeChildren) {
