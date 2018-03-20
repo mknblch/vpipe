@@ -1,8 +1,10 @@
 package de.mknblch.vpipe.model;
 
 import de.mknblch.vpipe.Image;
+import de.mknblch.vpipe.functions.Convolution;
 import de.mknblch.vpipe.functions.Images;
 import de.mknblch.vpipe.Source;
+import de.mknblch.vpipe.functions.Kernels;
 import de.mknblch.vpipe.functions.contours.Contour;
 import de.mknblch.vpipe.functions.contours.OverlayRenderer;
 import de.mknblch.vpipe.functions.contours.Renderer;
@@ -26,13 +28,27 @@ public class Examples {
 
     public static void main(String[] args) throws IOException {
 
-        imageOverlay();
+        testContours2();
+//        drawContoursBox();
+//        drawContoursChildren();
+//        drawContoursAll();
+//        contourOverlay();
 //        splitRGB();
+//        imageOverlay();
     }
 
     public static void testContours() throws IOException {
         final Source<BufferedImage> bufferedImageSource =
                 new ImageSource(Examples.class.getClassLoader().getResourceAsStream("test.png"))
+                        .connectTo(grayscale())
+                        .connectTo(contours(128))
+                        .connectTo(new Renderer.All(640, 480));
+        Viewer.start(bufferedImageSource);
+    }
+
+    public static void testContours2() throws IOException {
+        final Source<BufferedImage> bufferedImageSource =
+                new ImageSource(Examples.class.getClassLoader().getResourceAsStream("sub.png"))
                         .connectTo(grayscale())
                         .connectTo(contours(128))
                         .connectTo(new Renderer.All(640, 480));
@@ -52,7 +68,23 @@ public class Examples {
         Viewer.start(bufferedImageSource);
     }
 
-    public static void drawContours() {
+    public static void drawContoursBox() {
+        final Source<BufferedImage> bufferedImageSource = SarxosWebcamSource.choose()
+                .connectTo(grayLuminosity())
+                .connectTo(contours(128))
+                .connectTo(new Renderer.BoundingBox(640, 480));
+        Viewer.start(bufferedImageSource);
+    }
+
+    public static void drawContoursChildren() {
+        final Source<BufferedImage> bufferedImageSource = SarxosWebcamSource.choose()
+                .connectTo(grayLuminosity())
+                .connectTo(contours(90))
+                .connectTo(new Renderer.Children(640, 480));
+        Viewer.start(bufferedImageSource);
+    }
+
+    public static void drawContoursAll() {
         final Source<BufferedImage> bufferedImageSource = SarxosWebcamSource.choose()
                 .connectTo(grayLuminosity())
                 .connectTo(contours(128))
@@ -60,12 +92,24 @@ public class Examples {
         Viewer.start(bufferedImageSource);
     }
 
+    public static void drawContoursColorize() {
+        final Source<BufferedImage> bufferedImageSource = SarxosWebcamSource.choose()
+                .connectTo(grayLuminosity())
+                .connectTo(contours(128))
+                .connectTo(new Renderer.Colorize(640, 480, 0, 255, 0))
+                .connectTo(toBufferedImage());
+        Viewer.start(bufferedImageSource);
+    }
+
     public static void contourOverlay() {
 
         final Function<Image.Color, Image.Color> colorColorFunction =
+//                grayscale()
+//                        .andThen(new Convolution(Kernels.ADAPT))
+//                        .andThen(contrast(1.3))
                 grayscale(0.0299, 0.587, 0.114)
-                .andThen(contours(128))
-                .andThen(new Renderer.Colorize(640, 480));
+                        .andThen(contours(128))
+                        .andThen(new Renderer.Colorize(640, 480, 0, 255, 100));
 
         final Source<BufferedImage> bufferedImageSource = SarxosWebcamSource.choose()
                 .connectTo(split(colorColorFunction, Function.identity()))

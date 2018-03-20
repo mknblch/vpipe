@@ -55,7 +55,7 @@ public class Functions {
 
 
     public static Function<Image.Gray, List<Contour>> contours(int threshold) {
-        return contours(threshold, (perimeter, area, x0, y0, x1, y1) -> true);
+        return contours(threshold, (perimeter, area, x0, y0, x1, y1) -> Math.abs(area) > 5);
     }
 
     /**

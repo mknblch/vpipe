@@ -13,6 +13,12 @@ import static de.mknblch.vpipe.functions.contours.Contour.Direction.S;
 import static de.mknblch.vpipe.functions.contours.Contour.Direction.N;
 
 /**
+ * Crack-code based image segmentation.
+ *
+ * The processor scans an image for values which exceed
+ * the threshold and starts to crawl around the blob until
+ * it reaches it's origin. During this process
+ *
  * @author mknblch
  */
 public class Chain4 implements Function<Image.Gray, List<Contour>> {
@@ -35,13 +41,14 @@ public class Chain4 implements Function<Image.Gray, List<Contour>> {
     }
 
     public Chain4(int threshold, Contour.Filter contourFilter) {
-        this(threshold, contourFilter, 640 * 480 * 4);
+        this(threshold, contourFilter, 800 * 600 * 4);
     }
 
     public Chain4(int threshold, Contour.Filter contourFilter, int initialCapacity) {
         builder = new Contour.Builder(contourFilter, initialCapacity);
         this.threshold = threshold;
     }
+
     @Override
     public List<Contour> apply(Image.Gray image) {
         this.input = image.data;
@@ -64,10 +71,9 @@ public class Chain4 implements Function<Image.Gray, List<Contour>> {
             final int sy = i / image.width;
             if ((sx == 0 || threshold > I(image.data[i - 1])) && threshold < I(image.data[i])) {
                 final Contour c = chain4(i, sx, sy);
-                if (c == null) {
-                    continue;
+                if (builder.test()) {
+                    contours.add(c);
                 }
-                contours.add(c);
             }
         }
         return contours;
