@@ -7,9 +7,6 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class Contour {
-
-    private static final int P = 11;
-
     public enum Direction {
         E(0), S(1), W(2), N(3);
         public final byte v;
@@ -26,7 +23,7 @@ public class Contour {
     int dx, dy;
     Contour parent;
     int level;
-    int hash;
+    int hash = -1;
 
     public final int x;
     public final int y;
@@ -176,14 +173,7 @@ public class Contour {
      * @return
      */
     public int hash() {
-        if (isLeaf()) {
-            return P;
-        }
-        int[] sum = {P};
-        forEachChild(c -> {
-            sum[0] += c.hash();
-        });
-        return sum[0] * P;
+        return hash;
     }
 
     /**

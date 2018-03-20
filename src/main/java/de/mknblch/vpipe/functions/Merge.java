@@ -5,21 +5,21 @@ import java.util.function.Function;
 
 import static java.util.Objects.requireNonNull;
 
-
 /**
  * @author Jiří Kraml (jkraml@avantgarde-labs.de)
  */
 public class Merge {
-
-    private Merge() {
-        throw new UnsupportedOperationException("no instantiation allowed");
-    }
 
     @FunctionalInterface
     public interface TriFunction<L, M, R, O> {
         O apply(L left, M middle, R right);
     }
 
+    private Merge() {}
+
+    /**
+     * merge a 2Tuple (emitted by splitter)
+     */
     public static class MergeTwo<L, R, O> implements Function<Tuple.Two<L, R>, O> {
 
         private final BiFunction<L, R, O> mergeFunktion;
@@ -36,6 +36,9 @@ public class Merge {
         }
     }
 
+    /**
+     * merge a 3Tuple (emitted by splitter)
+     */
     public static class MergeThree<L, M, R, O> implements Function<Tuple.Three<L, M, R>, O> {
 
         private final TriFunction<L, M, R, O> mergeFunction;

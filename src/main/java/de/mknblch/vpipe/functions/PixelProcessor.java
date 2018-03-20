@@ -17,6 +17,11 @@ public class PixelProcessor {
         int apply(int r, int g, int b);
     }
 
+    private PixelProcessor() {}
+
+    /**
+     * pixel value based gray to gray image transformer
+     */
     public static class Gray2Gray implements Function<Image.Gray, Image.Gray> {
 
         private final IntUnaryOperator function;
@@ -37,6 +42,9 @@ public class PixelProcessor {
         }
     }
 
+    /**
+     * pixel value based color to color image transformer
+     */
     public static class Color2Color implements Function<Image.Color, Image.Color> {
 
         private Image.Color out = null;
@@ -63,6 +71,10 @@ public class PixelProcessor {
         }
     }
 
+
+    /**
+     * pixel value based color to gray image transformer
+     */
     public static class Color2Gray implements Function<Image.Color, Image.Gray> {
 
         private Image.Gray out = null;
@@ -88,6 +100,10 @@ public class PixelProcessor {
         }
     }
 
+
+    /**
+     * pixel value based gray to color image transformer
+     */
     public static class Gray2Color implements Function<Image.Gray, Image.Color> {
 
         private Image.Color out = null;

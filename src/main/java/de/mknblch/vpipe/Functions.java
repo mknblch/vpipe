@@ -1,10 +1,7 @@
 package de.mknblch.vpipe;
 
 import de.mknblch.vpipe.functions.*;
-import de.mknblch.vpipe.functions.contours.Chain4;
-import de.mknblch.vpipe.functions.contours.Grouping;
-import de.mknblch.vpipe.functions.contours.Renderer;
-import de.mknblch.vpipe.functions.contours.Contour;
+import de.mknblch.vpipe.functions.contours.*;
 import de.mknblch.vpipe.functions.ExecutionTimer;
 
 import java.awt.image.BufferedImage;
@@ -26,7 +23,7 @@ public class Functions {
      * @author Jiří Kraml (jkraml@avantgarde-labs.de)
      */
     public static <I, L, R> Function<I, Tuple.Two<L, R>> split(Function<I, L> leftProcessor, Function<I, R> rightProcessor) {
-        return new Split.SplitTwo<>(leftProcessor, rightProcessor);
+        return new Splitter.SplitTwo<>(leftProcessor, rightProcessor);
     }
 
     /**
@@ -34,7 +31,7 @@ public class Functions {
      * @author Jiří Kraml (jkraml@avantgarde-labs.de)
      */
     public static <I, L, M, R> Function<I, Tuple.Three<L, M, R>> split(Function<I, L> leftProcessor, Function<I, M> middleProcessor, Function<I, R> rightProcessor) {
-        return new Split.SplitThree<>(leftProcessor, middleProcessor, rightProcessor);
+        return new Splitter.SplitThree<>(leftProcessor, middleProcessor, rightProcessor);
     }
 
     /**
@@ -53,17 +50,24 @@ public class Functions {
         return new Merge.MergeThree<>(mergeFunction);
     }
 
-
+    /**
+     * create contour processor using a simple filter
+     * @param threshold activation threshold
+     * @return contour processor
+     */
     public static Function<Image.Gray, List<Contour>> contours(int threshold) {
         return contours(threshold, (perimeter, area, x0, y0, x1, y1) -> Math.abs(area) > 5);
     }
 
     /**
-     * calculate contours of a GrayImage based on a threshold
+     * calculate contours of a GrayImage based on a threshold. Also
+     * groups contours and assigns a (maybe) unique hash
+     *
      * @param threshold a threshold between 0 and 255
+     * @return a contour processort
      */
     public static Function<Image.Gray, List<Contour>> contours(int threshold, Contour.Filter filter) {
-        return new Chain4(threshold, filter).andThen(new Grouping());
+        return new Chain4(threshold, filter).andThen(new Grouping()).andThen(new Hashing(11));
     }
 
     public static Function<List<Contour>, List<Contour>> removeIf(Predicate<Contour> predicate) {
@@ -99,6 +103,10 @@ public class Functions {
         });
     }
 
+    /**
+     * encapsulate a function into an {@link ExecutionTimer} for
+     * evaluating its computation duration
+     */
     public static <I, O> Function<I, O> timer(Function<I, O> func) {
         return new ExecutionTimer<>(func, (duration) -> {
             System.out.printf("%s ~%s%n",
@@ -186,8 +194,8 @@ public class Functions {
     }
 
     /**
-     * raise contrast
-     * @param f factor
+     * contrast
+     * @param f contrast factor
      */
     public static Function<Image.Gray, Image.Gray> contrast(double f) {
         return new PixelProcessor.Gray2Gray(b -> (int)((b - 128) * f) + 128);
@@ -221,6 +229,10 @@ public class Functions {
         return new Morphological.Erosion();
     }
 
+    /**
+     * spatial convolution
+     * @param kernel a convolution kernel
+     */
     public static Function<Image.Gray, Image.Gray> convolution(Convolution.Kernel kernel) {
         return new Convolution(kernel);
     }
@@ -232,14 +244,23 @@ public class Functions {
         return new BufferedImageConverter<>();
     }
 
+    /**
+     * render contours and colorize by contour depth
+     */
     public static Function<List<Contour>, BufferedImage> renderDepth(int width, int height) {
         return new Renderer.Depth(width, height);
     }
 
+    /**
+     * render contour and visualize some of its properties
+     */
     public static Function<List<Contour>, BufferedImage> renderAll(int width, int height) {
         return new Renderer.All(width, height);
     }
 
+    /**
+     * render minimal enclosing bounding box of each contour
+     */
     public static Function<List<Contour>, BufferedImage> renderBoundingBox(int width, int height) {
         return new Renderer.BoundingBox(width, height);
     }

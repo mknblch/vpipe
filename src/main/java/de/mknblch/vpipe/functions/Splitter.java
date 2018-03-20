@@ -7,10 +7,14 @@ import static java.util.Objects.requireNonNull;
 /**
  * @author Jiří Kraml (jkraml@avantgarde-labs.de)
  */
-public final class Split {
+public final class Splitter {
 
-    private Split() {}
+    private Splitter() {}
 
+    /**
+     * split computation by evaluating the input
+     * value with each sub processor.
+     */
     public static class SplitTwo<I, L, R> implements Function<I, Tuple.Two<L, R>> {
         private final Function<I, L> leftProcessor;
         private final Function<I, R> rightProcessor;
@@ -32,6 +36,10 @@ public final class Split {
         }
     }
 
+    /**
+     * split computation by evaluating the input
+     * value with each sub processor.
+     */
     public static class SplitThree<I, L, M, R> implements Function<I, Tuple.Three<L, M, R>> {
         private final Function<I, L> leftProcessor;
         private final Function<I, M> middleProcessor;

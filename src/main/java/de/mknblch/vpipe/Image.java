@@ -7,7 +7,7 @@ import static java.util.Objects.requireNonNull;
 /**
  * @author mknblch
  */
-public abstract class Image<T extends Image<T>> {
+public abstract class Image {
 
     public static final int RED = 0;
     public static final int GREEN = 1;
@@ -55,6 +55,9 @@ public abstract class Image<T extends Image<T>> {
         return (byte) v;
     }
 
+    /**
+     * clip value to something from 0 to 255
+     */
     public static byte clip(double v) {
         return v > 255 ? (byte) 255 : (v < 0 ? 0 : (byte) v);
     }

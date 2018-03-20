@@ -28,7 +28,8 @@ public class Examples {
 
     public static void main(String[] args) throws IOException {
 
-        luminosity();
+        imageConvolution();
+//        luminosity();
 //        testContours();
 //        drawContoursBox();
 //        drawContoursChildren();
@@ -42,6 +43,17 @@ public class Examples {
     public static void luminosity() {
         final Source<BufferedImage> bufferedImageSource = SarxosWebcamSource.choose()
                 .connectTo(grayLuminosity())
+                .connectTo(contrast(2))
+                .connectTo(toBufferedImage());
+        Viewer.start(bufferedImageSource);
+    }
+
+
+
+    public static void imageConvolution() {
+        final Source<BufferedImage> bufferedImageSource = SarxosWebcamSource.choose()
+                .connectTo(grayLuminosity())
+                .connectTo(convolution(Kernels.HIGHPASS))
                 .connectTo(toBufferedImage());
         Viewer.start(bufferedImageSource);
     }
