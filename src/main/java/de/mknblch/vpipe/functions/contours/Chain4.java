@@ -15,14 +15,16 @@ import static de.mknblch.vpipe.functions.contours.Contour.Direction.N;
 /**
  * Crack-code based image segmentation.
  *
- * The processor scans an image for values which exceed
- * the threshold and starts to crawl around the blob until
- * it reaches it's origin. During this process
+ * The processor scans an image for values which exceec the
+ * threshold and starts to crawl around the blob until it
+ * reaches it's origin. During this process properties like
+ * perimeter, bounding box and signed area are computed.
  *
  * @author mknblch
  */
 public class Chain4 implements Function<Image.Gray, List<Contour>> {
 
+    private final Contour.Filter contourFilter;
     private final Contour.Builder builder;
 
     private final int threshold;
@@ -34,6 +36,7 @@ public class Chain4 implements Function<Image.Gray, List<Contour>> {
     private int j;
     private int x;
     private int y;
+
     private final List<Contour> contours = new ArrayList<>();
 
     public Chain4(int threshold) {
@@ -45,7 +48,8 @@ public class Chain4 implements Function<Image.Gray, List<Contour>> {
     }
 
     public Chain4(int threshold, Contour.Filter contourFilter, int initialCapacity) {
-        builder = new Contour.Builder(contourFilter, initialCapacity);
+        this.contourFilter = contourFilter;
+        builder = new Contour.Builder(initialCapacity);
         this.threshold = threshold;
     }
 
@@ -54,8 +58,9 @@ public class Chain4 implements Function<Image.Gray, List<Contour>> {
         this.input = image.data;
         this.width = image.width;
         this.height = image.height;
-        if (null == visited || visited.length < image.pixels()) {
-            visited = new boolean[(image.width + 1) * (image.height + 1)];
+        final int length = image.length();
+        if (null == visited || visited.length < length) {
+            visited = new boolean[length];
         }
         Arrays.fill(visited, false);
         contours.clear();
@@ -71,7 +76,7 @@ public class Chain4 implements Function<Image.Gray, List<Contour>> {
             final int sy = i / image.width;
             if ((sx == 0 || threshold > I(image.data[i - 1])) && threshold < I(image.data[i])) {
                 final Contour c = chain4(i, sx, sy);
-                if (builder.test()) {
+                if (contourFilter.test(c.perimeter(), c.signedArea, c.minX, c.minY, c.maxX, c.maxY)) {
                     contours.add(c);
                 }
             }

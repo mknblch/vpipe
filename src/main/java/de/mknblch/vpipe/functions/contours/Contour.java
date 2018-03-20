@@ -18,9 +18,11 @@ public class Contour {
         }
     }
 
+//    private final Contour[] contours;
     private final byte[] data;
-    public final int index;
-    public final int length;
+    private final int offset;
+    private final int length;
+
     public final int x;
     public final int y;
     public final int minX;
@@ -28,6 +30,7 @@ public class Contour {
     public final int minY;
     public final int maxY;
     public final int signedArea;
+
     public final List<Contour> children = new ArrayList<>();
 
     int dx, dy;
@@ -36,7 +39,7 @@ public class Contour {
 
 
     Contour(byte[] data,
-            int index,
+            int offset,
             int length,
             int x,
             int y,
@@ -46,7 +49,7 @@ public class Contour {
             int maxY,
             int signedArea) {
         this.data = data;
-        this.index = index;
+        this.offset = offset;
         this.length = length;
         this.x = x;
         this.y = y;
@@ -185,7 +188,7 @@ public class Contour {
         int tx = x, ty = y + 1;
         consumer.consume(tx, ty);
         for (int i = 0; i < length; i++) {
-            switch (data[i + index]) {
+            switch (data[i + offset]) {
                 case 0:
                     tx++;
                     break;
@@ -209,7 +212,7 @@ public class Contour {
      * get copy of the crack data
      */
     public byte[] getData() {
-        return Arrays.copyOfRange(data, index, index + length);
+        return Arrays.copyOfRange(data, offset, offset + length);
     }
 
     /**
@@ -245,7 +248,6 @@ public class Contour {
 
         private byte[] data;
         private int offset;
-        private final Filter filter;
         private int index;
         private int minX;
         private int maxX;
@@ -256,11 +258,9 @@ public class Contour {
         private int sx, sy;
 
         /**
-         * @param filter contour filter
          * @param initialCapacity initial data capacity (grows by 1/3 if full)
          */
-        Builder(Filter filter, int initialCapacity) {
-            this.filter = filter;
+        Builder(int initialCapacity) {
             data = new byte[initialCapacity];
         }
 
@@ -305,14 +305,6 @@ public class Contour {
             signedArea += lx * y - x * ly;
             lx = x;
             ly = y;
-        }
-
-        /**
-         * test if the current contour satisfies the filter
-         * @return true if the contour is allows, false otherwise
-         */
-        boolean test() {
-            return filter.test(offset - index, signedArea, minX, minY, maxX, maxY);
         }
 
         Contour build() {

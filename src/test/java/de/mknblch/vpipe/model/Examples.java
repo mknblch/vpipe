@@ -28,13 +28,13 @@ public class Examples {
 
     public static void main(String[] args) throws IOException {
 
-        testContours2();
+//        testContours();
 //        drawContoursBox();
 //        drawContoursChildren();
 //        drawContoursAll();
 //        contourOverlay();
 //        splitRGB();
-//        imageOverlay();
+        imageOverlay();
     }
 
     public static void testContours() throws IOException {
