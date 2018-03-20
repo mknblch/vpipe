@@ -156,7 +156,6 @@ public class Examples {
 
         final Source<BufferedImage> bufferedImageSource = SarxosWebcamSource.choose()
                 .connectTo(split(left, mid, right))
-//                .connectTo(merge((rc, gc, bc) -> Images.add(rc, bc)))
                 .connectTo(merge((rc, gc, bc) -> Images.add(rc, Images.add(gc, bc))))
                 .connectTo(toBufferedImage());
 

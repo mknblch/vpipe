@@ -6,6 +6,8 @@ import static de.mknblch.vpipe.Image.*;
 import static de.mknblch.vpipe.Image.BLUE;
 
 /**
+ * Image functions
+ *
  * @author mknblch
  */
 public class Images {
