@@ -1,14 +1,10 @@
 package de.mknblch.vpipe.functions.contours;
 
-import de.mknblch.vpipe.Functions;
 import de.mknblch.vpipe.Image;
-import de.mknblch.vpipe.functions.Tuple;
 
 import java.awt.*;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 
 import static de.mknblch.vpipe.Image.clip;
@@ -61,7 +57,7 @@ public abstract class Renderer<I> implements Function<I, BufferedImage> {
         void render(List<Contour> contours, Graphics2D graphics) {
             clear();
             contours.forEach(c -> {
-                final int d = c.getLevel();
+                final int d = c.level();
                 setColor(d * 20, d * 40, d * 90);
                 c.forEach((x, y) -> {
                     graphics.drawRect(x, y, 1, 1);
@@ -90,10 +86,10 @@ public abstract class Renderer<I> implements Function<I, BufferedImage> {
                 c.forEach((x, y) -> {
                     graphics.drawLine(x, y, x, y);
                 });
-                if (c.getMaxLevel() < 2) {
+                if (c.maxLevel() < 2) {
                     return;
                 }
-                final double angle = c.getAngle();
+                final double angle = c.angle();
                 int tx = (int) (Math.cos(angle) * 50 + c.cx());
                 int ty = (int) (Math.sin(angle) * 50 + c.cy());
                 graphics.drawLine(c.cx(), c.cy(), tx, ty);
@@ -111,7 +107,7 @@ public abstract class Renderer<I> implements Function<I, BufferedImage> {
         void render(List<Contour> in, Graphics2D graphics) {
             clear();
             in.forEach(c -> {
-                final int d = c.getLevel();
+                final int d = c.level();
                 setColor(d * 20, d * 40, d * 90);
                 graphics.drawRect(c.minX, c.minY, c.width(), c.height());
             });
@@ -130,7 +126,7 @@ public abstract class Renderer<I> implements Function<I, BufferedImage> {
             setColor(255, 255, 255);
             in.forEach(c -> {
                 c.forEachChild(child -> graphics.drawLine(c.cx(), c.cy(), child.cx(), child.cy()));
-                if (c.getDepth() == 2) {
+                if (c.depth() == 2) {
                     graphics.drawString(String.valueOf(c.hash()), c.x, c.y - 10);
                 }
                 if (!c.isLeaf()) {

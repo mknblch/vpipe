@@ -50,7 +50,7 @@ public class OverlayRenderer extends Renderer<Tuple.Two<Image.Color, List<Contou
             final int w = (int) (dx * overlay.width) / 2;
             final int h = (int) (dy * overlay.height) / 2;
             affineTransform.translate(contour.cx() - w, contour.cy() - h);
-            affineTransform.rotate(contour.getAngle() + overlay.angle, w, h);
+            affineTransform.rotate(contour.angle() + overlay.angle, w, h);
             affineTransform.scale(dx, dy);
             graphics.drawImage(overlay.image, affineTransform, null);
         }

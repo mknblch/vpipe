@@ -28,13 +28,22 @@ public class Examples {
 
     public static void main(String[] args) throws IOException {
 
+        luminosity();
 //        testContours();
 //        drawContoursBox();
 //        drawContoursChildren();
 //        drawContoursAll();
 //        contourOverlay();
 //        splitRGB();
-        imageOverlay();
+//        imageOverlay();
+    }
+
+
+    public static void luminosity() {
+        final Source<BufferedImage> bufferedImageSource = SarxosWebcamSource.choose()
+                .connectTo(grayLuminosity())
+                .connectTo(toBufferedImage());
+        Viewer.start(bufferedImageSource);
     }
 
     public static void testContours() throws IOException {

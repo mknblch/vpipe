@@ -18,10 +18,15 @@ public class Contour {
         }
     }
 
-//    private final Contour[] contours;
     private final byte[] data;
     private final int offset;
     private final int length;
+
+    final List<Contour> children = new ArrayList<>();
+    int dx, dy;
+    Contour parent;
+    int level;
+    int hash;
 
     public final int x;
     public final int y;
@@ -31,14 +36,8 @@ public class Contour {
     public final int maxY;
     public final int signedArea;
 
-    public final List<Contour> children = new ArrayList<>();
 
-    int dx, dy;
-    Contour parent;
-    int level;
-
-
-    Contour(byte[] data,
+    private Contour(byte[] data,
             int offset,
             int length,
             int x,
@@ -60,46 +59,73 @@ public class Contour {
         this.signedArea = signedArea;
     }
 
-    public Contour getParent() {
+    /**
+     *
+     * @return
+     */
+    public Contour parent() {
         return parent;
     }
 
-    public List<Contour> getChildren() {
+    /**
+     * @return list of child contours (contours enclosed by this one)
+     */
+    public List<Contour> children() {
         return children;
     }
 
+    /**
+     * center of the bounding box
+     * @return x ordinate of the center of the bounding box
+     */
     public int cx() {
         return minX + width() / 2;
     }
 
+    /**
+     * center of the bounding box
+     * @return y ordinate of the center of the bounding box
+     */
     public int cy() {
         return minY + height() / 2;
     }
 
-    public double getAngle() {
+    /**
+     * angle of the contour based on it children
+     * @return angle in radians
+     */
+    public double angle() {
         if (children.isEmpty()) {
             return .0;
         }
         return Math.atan2(dy, dx);
     }
 
-    public int getArea() {
+    /**
+     * area of the contour  (including the area of its children)
+     * @return unsigned area
+     */
+    public int area() {
         return Math.abs(signedArea);
     }
 
+    /**
+     * @return width of the minimal enclosing bounding box
+     */
     public int width() {
         return maxX - minX;
     }
 
+    /**
+     * @return height of the minimal enclosing bounding box
+     */
     public int height() {
         return maxY - minY;
     }
 
     /**
      * perimeter of the contour
-     * actually the count of cracks + 1 since the first
-     * crack is always SOUTH
-     * @return
+     * @return contour perimeter
      */
     public int perimeter() {
         return data.length + 1;
@@ -107,36 +133,48 @@ public class Contour {
 
     /**
      * depth of the node in the tree
-     * @return depth
+     * @return distance from root node
      */
-    public int getLevel() {
+    public int level() {
         return level;
     }
 
-    public int getMaxLevel() {
+    /**
+     *
+     * @return
+     */
+    public int maxLevel() {
         if (children.isEmpty()) {
             return 0;
         }
         int d = 0;
         for (Contour child : children) {
-            d = Math.max(d, child.getMaxLevel());
+            d = Math.max(d, child.maxLevel());
         }
         return d + 1;
     }
 
+    /**
+     * transform contour into a {@link Polygon}
+     * @return a polygon
+     */
     public Polygon toPolygon() {
         final Polygon polygon = new Polygon();
         forEach(polygon::addPoint);
         return polygon;
     }
 
-    public int getDepth() {
+    public int depth() {
         if (null == parent) {
             return 0;
         }
-        return parent.getDepth() + 1;
+        return parent.depth() + 1;
     }
 
+    /**
+     *
+     * @return
+     */
     public int hash() {
         if (isLeaf()) {
             return P;
@@ -184,6 +222,13 @@ public class Contour {
         children.forEach(consumer);
     }
 
+    /**
+     * iterate the contour.
+     *
+     * point data is only valid in the during the computation
+     * of the actual frame.
+     * @param consumer consumer impl
+     */
     public void forEach(PointConsumer consumer) {
         int tx = x, ty = y + 1;
         consumer.consume(tx, ty);
@@ -209,9 +254,10 @@ public class Contour {
     }
 
     /**
-     * get copy of the crack data
+     * get copy of the crack data. only valid during
+     * computation of the actual frame.
      */
-    public byte[] getData() {
+    public byte[] data() {
         return Arrays.copyOfRange(data, offset, offset + length);
     }
 
@@ -230,7 +276,7 @@ public class Contour {
         /**
          * test if the contour should be added to the result list or nor
          * @param perimeter perimeter of the contour
-         * @param signedArea signed area (if <0 it an inner contour, outer contour otherwise)
+         * @param signedArea signed area (inner contour if area < 0, outer contour otherwise)
          * @param x0 top left x ordinate
          * @param y0 top left y ordinate
          * @param x1 bottom right x ordinate
@@ -244,7 +290,7 @@ public class Contour {
      * The builder instantiates and grows the data array where all cracks are saved.
      * It also evaluates some properties like the bounding box or area of the blob.
      */
-    public static class Builder {
+    static class Builder {
 
         private byte[] data;
         private int offset;
@@ -307,6 +353,10 @@ public class Contour {
             ly = y;
         }
 
+        /**
+         * build and finalize the current contour
+         * @return a Contour
+         */
         Contour build() {
             return new Contour(
                             data,

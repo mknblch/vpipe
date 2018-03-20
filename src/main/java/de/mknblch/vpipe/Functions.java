@@ -73,16 +73,29 @@ public class Functions {
         };
     }
 
-    public static Function<List<Contour>, List<Contour>> info(Consumer<List<Contour>> consumer) {
-        return contours -> {
-            consumer.accept(contours);
-            return contours;
+    /**
+     * call consumer for each element passing the pipe
+     * @param consumer consumer implementation
+     * @return a peek function
+     */
+    public static <T> Function<T, T> peek(Consumer<T> consumer) {
+        return i -> {
+            consumer.accept(i);
+            return i;
         };
     }
 
+    /**
+     * print info about number of contours and its perimeter
+     * @return
+     */
     public static Function<List<Contour>, List<Contour>> info() {
-        return info(l -> {
-            System.out.printf("%d contours with perimeter %d%n", l.size(), l.stream().mapToInt(Contour::perimeter).sum());
+        return peek(contours -> {
+            System.out.printf("%d contours with perimeter %d and area %d%n",
+                    contours.size(),
+                    contours.stream().mapToInt(Contour::perimeter).sum(),
+                    contours.stream().mapToInt(Contour::area).sum()
+                    );
         });
     }
 
@@ -120,14 +133,14 @@ public class Functions {
      * Mean RGB
      */
     public static Function<Image.Color, Image.Gray> grayscale() {
-        return new PixelProcessor.Color2Gray((r, g, b) -> (r + g + b) / 3);
+        return grayscale(1. / 3, 1. / 3, 1. / 3);
     }
 
     /**
      * Mean RGB
      */
-    public static Function<Image.Color, Image.Gray> grayscale(double rf, double gf, double bf) {
-        return new PixelProcessor.Color2Gray((r, g, b) -> clip((r * rf) + (g * gf) + (b * bf)) / 3);
+    public static Function<Image.Color, Image.Gray> grayscale(double fRed, double fGreen, double fBlue) {
+        return new PixelProcessor.Color2Gray((r, g, b) -> clip(r * fRed + g * fGreen + b * fBlue));
     }
 
     /**
