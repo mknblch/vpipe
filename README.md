@@ -34,20 +34,46 @@ it with these functions.
 - threshold based contour extraction
 - some visualizers
 
+## Usage
+
+Yep - Im using github as [poor-mans-repo](https://stackoverflow.com/questions/14013644/hosting-a-maven-repository-on-github) ;)
+
+``` 
+<repositories>
+    <repository>
+        <id>vpipe-mvn-repo</id>
+        <url>https://raw.github.com/mknblch/vpipe/mvn-repo/</url>
+        <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>always</updatePolicy>
+        </snapshots>
+    </repository>
+</repositories>
+
+<dependencies>
+    <dependency>
+        <groupId>de.mknblch.vpipe</groupId>
+        <artifactId>vpipe</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </dependency>
+</dependencies>
+```
 ## Examples
 
 contours with different properties
 
-![contours](https://mknblch.github.io/videopipe/fiducial2.png)
----
+![contours](https://mknblch.github.io/vpipe/fiducial2.png)
 
 colorization by depth in the contour tree
 
-![contours](https://mknblch.github.io/videopipe/fiducial.png)
+![contours](https://mknblch.github.io/vpipe/fiducial.png)
 
-![contours](https://mknblch.github.io/videopipe/fiducial4.png)
----
+drawing bounding boxes instead of contours gives you this
 
-contour bounding boxes
+![contours](https://mknblch.github.io/vpipe/fiducial4.png)
 
-![contours](https://mknblch.github.io/videopipe/fiducial3.png)
+using a more complex pipe which splits the image into
+its 3 colors and computes the contours on each of them separately
+leads to this view
+
+![contours](https://mknblch.github.io/vpipe/acid.png)

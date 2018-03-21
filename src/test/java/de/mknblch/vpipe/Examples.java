@@ -1,9 +1,6 @@
-package de.mknblch.vpipe.model;
+package de.mknblch.vpipe;
 
-import de.mknblch.vpipe.Image;
-import de.mknblch.vpipe.functions.Convolution;
 import de.mknblch.vpipe.functions.Images;
-import de.mknblch.vpipe.Source;
 import de.mknblch.vpipe.functions.Kernels;
 import de.mknblch.vpipe.functions.contours.Contour;
 import de.mknblch.vpipe.functions.contours.OverlayRenderer;
@@ -28,14 +25,14 @@ public class Examples {
 
     public static void main(String[] args) throws IOException {
 
-        imageConvolution();
+//        imageConvolution();
 //        luminosity();
 //        testContours();
 //        drawContoursBox();
 //        drawContoursChildren();
 //        drawContoursAll();
 //        contourOverlay();
-//        splitRGB();
+        splitRGB();
 //        imageOverlay();
     }
 
