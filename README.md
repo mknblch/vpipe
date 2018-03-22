@@ -88,8 +88,8 @@ leads to this view
 
 ![contours](https://mknblch.github.io/vpipe/acid.png)
 
-despite all the sexy looking images the software can also do some
-useful stuff like adding gifs to your webcam image in realtime ;)
+besides all the sexy looking images the software can also do some
+useful stuff like adding gifs to your webcam image in real time ;)
 
 ![contours](https://mknblch.github.io/vpipe/overlay.png)
 
