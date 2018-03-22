@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class Contour {
+
+    public static final double PI2 = Math.pow(Math.PI, 2);
+
     public enum Direction {
         E(0), S(1), W(2), N(3);
         public final byte v;
@@ -168,6 +171,11 @@ public class Contour {
         return parent.depth() + 1;
     }
 
+    public double circularity() {
+        final double optArea = width() / 2 * PI2;
+        return (area() / optArea) / Math.PI;
+    }
+
     /**
      *
      * @return
@@ -220,9 +228,22 @@ public class Contour {
      * @param consumer consumer impl
      */
     public void forEach(PointConsumer consumer) {
+        forEach(consumer, 1);
+    }
+
+    /**
+     * iterate the contour.
+     *
+     * point data is only valid in the during the computation
+     * of the actual frame.
+     * @param consumer consumer impl
+     * @param stepSize
+     */
+    public void forEach(PointConsumer consumer, int stepSize) {
         int tx = x, ty = y + 1;
         consumer.consume(tx, ty);
-        for (int i = 0; i < length; i++) {
+        int i = 0;
+        for (; i < length; i++) {
             switch (data[i + offset]) {
                 case 0:
                     tx++;
@@ -239,7 +260,9 @@ public class Contour {
                 default:
                     break;
             }
-            consumer.consume(tx, ty);
+            if (i % stepSize == 0) {
+                consumer.consume(tx, ty);
+            }
         }
     }
 

@@ -7,9 +7,9 @@ import static java.util.Objects.requireNonNull;
 /**
  * @author Jiří Kraml (jkraml@avantgarde-labs.de)
  */
-public final class Splitter {
+public final class Split {
 
-    private Splitter() {}
+    private Split() {}
 
     /**
      * split computation by evaluating the input

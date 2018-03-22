@@ -114,6 +114,26 @@ public abstract class Renderer<I> implements Function<I, BufferedImage> {
         }
     }
 
+    public static class Circularity extends Renderer<List<Contour>> {
+
+        public Circularity(int width, int height) {
+            super(width, height);
+        }
+
+        @Override
+        void render(List<Contour> in, Graphics2D graphics) {
+            clear();
+            in.forEach(c -> {
+                if (c.circularity() > 2) {
+                    return;
+                }
+                setColor(255, 255, 255);
+                c.forEach((x, y) -> graphics.drawLine(x, y, x, y));
+//                graphics.drawString("C: " + c.circularity(), c.minX, c.minY - 10);
+            });
+        }
+    }
+
     public static class Children extends Renderer<List<Contour>> {
 
         public Children(int width, int height) {

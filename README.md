@@ -1,40 +1,43 @@
 # Image processing & contour extraction
 
 This is my [AVGL](https://www.avantgarde-labs.de) Hackathon 2018 Project - an image processing pipeline using J8 functional patterns.
-It contains some basic processing units for image transformation. Just enough to enhance the image to a
-point where contours can be extracted flawlessly. Though it is not limited to image data in any way. 
 
-## Usage
+## Overview
 
-A processing unit is nothing more then a `java.util.function.Function<I, O>` which itself can be composed
-to a full processing pipeline using its built-in methods `compose(..)` and `andThen(..)`.
-Additionally a `Source<T>` interface exists which is just a `Supplier<T>` with some helper methods to chain 
-it with these functions. 
+The framework utilizes the power and simplicity of j8's functional patterns
+to get its work done. They provide everything needed to build an image
+processing pipeline. In fact, the part of the code I would call the _framework_
+consists of only a few classes like `Source`, `Split` and `Merge`.
+Im using Sarxos's great [Webcam Capture Library](https://github.com/sarxos/webcam-capture)
+to access data stream from my webcam. Everything else is implemented as 
+separate processing unit. 
+
+Processing units are nothing more then a `java.util.function.Function<I, O>` which
+itself can be composed to a full processing pipeline using its built-in methods 
+`compose(..)` and `andThen(..)`. Additionally the `Source<T>` interface exists 
+which is just an extended `Supplier<T>` with some helper methods to chain it 
+with processing units.
+
+These units are defined in `de.mknblch.vpipe.Functions.*` and implement some
+basic image processing functions like Color/Intensity-to-Color/Intensity image 
+transformation, spatial convolution, contour extraction and some visualization 
+units to transform the image back into a `BufferedImage`.
+
+A common pipe is shown below:
 
 ```
     import static de.mknblch.vpipe.Functions.*;
 
     final Source<BufferedImage> pipe = SarxosWebcamSource.choose()
             .connectTo(grayscale())
-            .connectTo(gamma(20))
             .connectTo(contrast(2))
             .connectTo(contours(128))
-            .connectTo(renderAll(640, 480))
-            .connectTo(toBufferedImage());
+            .connectTo(renderAll(640, 480));
 
     Viewer.start(pipe);
 ```
 
-**(incomplete) list of built-in functions**:
-
-- Convolution
-- signal split into parallel processing chains (by [jkraml](https://github.com/jkraml)) 
-- Delation / Erosion
-- pixel based enhancement like grayscale, gamma & contrast
-- threshold based contour extraction
-- some visualizers
-
-## Usage
+####  Maven
 
 Yep - Im using github as [poor-mans-repo](https://stackoverflow.com/questions/14013644/hosting-a-maven-repository-on-github) ;)
 
@@ -58,9 +61,16 @@ Yep - Im using github as [poor-mans-repo](https://stackoverflow.com/questions/14
     </dependency>
 </dependencies>
 ```
+## ToDo's
+
+- add a HSV converter to select specific colors
+- add multithreading in `de.mknblch.vpipe.functions.Splitter` using a predefined
+thread pool
+- pattern recognition (fourier descriptors)
+
 ## Examples
 
-contours with different properties
+contours 
 
 ![contours](https://mknblch.github.io/vpipe/fiducial2.png)
 
@@ -77,3 +87,10 @@ its 3 colors and computes the contours on each of them separately
 leads to this view
 
 ![contours](https://mknblch.github.io/vpipe/acid.png)
+
+despite all the sexy looking images the software can also do some
+useful stuff like adding gifs to your webcam image in realtime ;)
+
+![contours](https://mknblch.github.io/vpipe/overlay.png)
+
+

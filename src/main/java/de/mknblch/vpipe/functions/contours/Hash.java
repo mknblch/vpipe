@@ -12,11 +12,13 @@ import java.util.function.Function;
  *
  * @author mknblch
  */
-public class Hashing implements Function<List<Contour>, List<Contour>> {
+public class Hash implements Function<List<Contour>, List<Contour>> {
+
+    private static final double CIRCULARITY_THRESHOLD = 0.005;
 
     private final int p;
 
-    public Hashing(int p) {
+    public Hash(int p) {
         this.p = p;
     }
 
@@ -31,6 +33,9 @@ public class Hashing implements Function<List<Contour>, List<Contour>> {
             return;
         }
         if (contour.isLeaf()) {
+//            if (contour.circularity() > CIRCULARITY_THRESHOLD) {
+//                return;
+//            }
             contour.hash = p;
             return;
         }

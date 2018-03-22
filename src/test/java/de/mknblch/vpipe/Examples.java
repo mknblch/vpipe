@@ -25,6 +25,7 @@ public class Examples {
 
     public static void main(String[] args) throws IOException {
 
+        webcam();
 //        imageConvolution();
 //        luminosity();
 //        testContours();
@@ -32,7 +33,7 @@ public class Examples {
 //        drawContoursChildren();
 //        drawContoursAll();
 //        contourOverlay();
-        splitRGB();
+//        splitRGB();
 //        imageOverlay();
     }
 
@@ -82,7 +83,11 @@ public class Examples {
 
     public static void webcam() {
         final Source<BufferedImage> bufferedImageSource = SarxosWebcamSource.choose()
-                .connectTo(toBufferedImage());
+                .connectTo(grayscale())
+                .connectTo(contours(64))
+//                .connectTo(new Renderer.All(640, 480));
+                .connectTo(new Renderer.Circularity(640, 480));
+
         Viewer.start(bufferedImageSource);
     }
 
@@ -126,8 +131,8 @@ public class Examples {
 //                        .andThen(new Convolution(Kernels.ADAPT))
 //                        .andThen(contrast(1.3))
                 grayscale(0.0299, 0.587, 0.114)
-                        .andThen(contours(128))
-                        .andThen(new Renderer.Colorize(640, 480, 0, 255, 100));
+                        .andThen(contours(90))
+                        .andThen(new Renderer.Colorize(640, 480, 255, 50, 0));
 
         final Source<BufferedImage> bufferedImageSource = SarxosWebcamSource.choose()
                 .connectTo(split(colorColorFunction, Function.identity()))
@@ -145,15 +150,20 @@ public class Examples {
         map.put(14399, new OverlayRenderer.Overlay(
                 Examples.class.getClassLoader().getResourceAsStream("14399.png")));
 
-        final Function<Image.Color, List<Contour>> contourFun = grayscale()
+        final Function<Image.Color, List<Contour>> contourFun = timer(grayscale()
+                .andThen(convolution(Kernels.ADAPT))
                 .andThen(contrast(1.5))
-                .andThen(contours(90));
+                .andThen(contours(60)));
 
         final Source<BufferedImage> bufferedImageSource = SarxosWebcamSource.choose()
                 .connectTo(split(Function.identity(), contourFun))
                 .connectTo(new OverlayRenderer(640, 480, map));
-
         Viewer.start(bufferedImageSource);
+
+//        Viewer.start(SarxosWebcamSource.choose()
+//                .connectTo(contourFun)
+//                .connectTo(renderAll(640, 480)));
+
     }
 
     public static void splitRGB() {

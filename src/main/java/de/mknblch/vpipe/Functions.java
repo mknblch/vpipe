@@ -23,7 +23,7 @@ public class Functions {
      * @author Jiří Kraml (jkraml@avantgarde-labs.de)
      */
     public static <I, L, R> Function<I, Tuple.Two<L, R>> split(Function<I, L> leftProcessor, Function<I, R> rightProcessor) {
-        return new Splitter.SplitTwo<>(leftProcessor, rightProcessor);
+        return new Split.SplitTwo<>(leftProcessor, rightProcessor);
     }
 
     /**
@@ -31,7 +31,7 @@ public class Functions {
      * @author Jiří Kraml (jkraml@avantgarde-labs.de)
      */
     public static <I, L, M, R> Function<I, Tuple.Three<L, M, R>> split(Function<I, L> leftProcessor, Function<I, M> middleProcessor, Function<I, R> rightProcessor) {
-        return new Splitter.SplitThree<>(leftProcessor, middleProcessor, rightProcessor);
+        return new Split.SplitThree<>(leftProcessor, middleProcessor, rightProcessor);
     }
 
     /**
@@ -56,7 +56,7 @@ public class Functions {
      * @return contour processor
      */
     public static Function<Image.Gray, List<Contour>> contours(int threshold) {
-        return contours(threshold, (perimeter, area, x0, y0, x1, y1) -> Math.abs(area) > 5);
+        return contours(threshold, (perimeter, area, x0, y0, x1, y1) -> Math.abs(area) > 10);
     }
 
     /**
@@ -67,7 +67,7 @@ public class Functions {
      * @return a contour processort
      */
     public static Function<Image.Gray, List<Contour>> contours(int threshold, Contour.Filter filter) {
-        return new Chain4(threshold, filter).andThen(new Grouping()).andThen(new Hashing(11));
+        return new Chain4(threshold, filter).andThen(new Group()).andThen(new Hash(11));
     }
 
     public static Function<List<Contour>, List<Contour>> removeIf(Predicate<Contour> predicate) {

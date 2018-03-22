@@ -14,7 +14,7 @@ import java.util.function.Function;
  *
  * @author mknblch
  */
-public class Grouping implements Function<List<Contour>, List<Contour>> {
+public class Group implements Function<List<Contour>, List<Contour>> {
 
     private final boolean includeChildren;
     private final List<Contour> out;
@@ -23,7 +23,7 @@ public class Grouping implements Function<List<Contour>, List<Contour>> {
     /**
      * Use exact grouping and includes all child contours
      */
-    public Grouping() {
+    public Group() {
         this(true, false);
     }
 
@@ -33,7 +33,7 @@ public class Grouping implements Function<List<Contour>, List<Contour>> {
      * @param excludeChildren true if child contours should be excluded from the result list,
      *                        false otherwise
      */
-    public Grouping(boolean exactGrouping, boolean excludeChildren) {
+    public Group(boolean exactGrouping, boolean excludeChildren) {
         this.includeChildren = !excludeChildren;
         this.out = new ArrayList<>();
         this.predicate = exactGrouping ?
