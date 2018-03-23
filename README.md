@@ -63,8 +63,7 @@ Yep - Im using github as [poor-mans-repo](https://stackoverflow.com/questions/14
 ```
 ## ToDo's
 
-- add a HSV converter to select specific colors
-- add multithreading in `de.mknblch.vpipe.functions.Splitter` using a predefined
+- add multithreading in `de.mknblch.vpipe.functions.Split` using a predefined
 thread pool
 - pattern recognition (fourier descriptors)
 

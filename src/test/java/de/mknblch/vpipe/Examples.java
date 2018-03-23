@@ -2,6 +2,8 @@ package de.mknblch.vpipe;
 
 import de.mknblch.vpipe.functions.Images;
 import de.mknblch.vpipe.functions.Kernels;
+import de.mknblch.vpipe.functions.PixelProcessor;
+import de.mknblch.vpipe.functions.WhiteFilterFunction;
 import de.mknblch.vpipe.functions.contours.Contour;
 import de.mknblch.vpipe.functions.contours.OverlayRenderer;
 import de.mknblch.vpipe.functions.contours.Renderer;
@@ -82,11 +84,9 @@ public class Examples {
     }
 
     public static void webcam() {
-        final Source<BufferedImage> bufferedImageSource = SarxosWebcamSource.choose()
-                .connectTo(grayscale())
-                .connectTo(contours(64))
-//                .connectTo(new Renderer.All(640, 480));
-                .connectTo(new Renderer.Circularity(640, 480));
+        final Source<BufferedImage> bufferedImageSource = SarxosWebcamSource.choose("PC")
+                .connectTo(new PixelProcessor.Color2Gray(WhiteFilterFunction.mean(10)))
+                .connectTo(toBufferedImage());
 
         Viewer.start(bufferedImageSource);
     }

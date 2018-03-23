@@ -4,6 +4,7 @@ import de.mknblch.vpipe.functions.*;
 import de.mknblch.vpipe.functions.contours.*;
 import de.mknblch.vpipe.functions.ExecutionTimer;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -129,6 +130,11 @@ public class Functions {
     public static Function<Image.Color, Image.Gray> binarization_rgb(int threshold) {
         return new PixelProcessor.Color2Gray((r, g, b) -> (r + g + b) / 3 >= threshold ? 255 : 0);
     }
+
+    public static Function<Image.Color, Image.Color> colorFilter(Color color, double threshold) {
+        return ColorPassFilterBuilder.build(color, threshold);
+    }
+
     /**
      * Gray binarization
      * @param threshold
@@ -161,7 +167,7 @@ public class Functions {
     /**
      * red
      */
-    public static Function<Image.Gray, Image.Color> color(PixelProcessor.ColorPixelFunction function) {
+    public static Function<Image.Gray, Image.Color> colorFilter(PixelProcessor.ColorIntensityFunction function) {
         return new PixelProcessor.Gray2Color(function);
     }
     /**

@@ -13,7 +13,7 @@ import static de.mknblch.vpipe.Image.I;
 public class PixelProcessor {
 
     @FunctionalInterface
-    public interface ColorPixelFunction {
+    public interface ColorIntensityFunction {
         int apply(int r, int g, int b);
     }
 
@@ -43,14 +43,14 @@ public class PixelProcessor {
     }
 
     /**
-     * pixel value based color to color image transformer
+     * pixel value based color to colorFilter image transformer
      */
     public static class Color2Color implements Function<Image.Color, Image.Color> {
 
         private Image.Color out = null;
-        private final ColorPixelFunction function;
+        private final ColorIntensityFunction function;
 
-        public Color2Color(ColorPixelFunction function) {
+        public Color2Color(ColorIntensityFunction function) {
             this.function = function;
         }
 
@@ -63,9 +63,9 @@ public class PixelProcessor {
                         I(in, i + Image.Color.RED),
                         I(in, i + Image.Color.GREEN),
                         I(in, i + Image.Color.BLUE));
-                out.setColor(i, Image.Color.RED, Image.Color.red(v));
-                out.setColor(i, Image.Color.GREEN, Image.Color.green(v));
-                out.setColor(i, Image.Color.BLUE, Image.Color.blue(v));
+                out.setValue(i + Image.Color.RED, Image.Color.red(v));
+                out.setValue(i + Image.Color.GREEN, Image.Color.green(v));
+                out.setValue(i + Image.Color.BLUE, Image.Color.blue(v));
             }
             return out;
         }
@@ -78,9 +78,9 @@ public class PixelProcessor {
     public static class Color2Gray implements Function<Image.Color, Image.Gray> {
 
         private Image.Gray out = null;
-        private final ColorPixelFunction function;
+        private final ColorIntensityFunction function;
 
-        public Color2Gray(ColorPixelFunction function) {
+        public Color2Gray(ColorIntensityFunction function) {
             this.function = function;
         }
 
@@ -91,9 +91,9 @@ public class PixelProcessor {
             final int pixels = in.data.length;
             for (int i = 0; i < pixels; i += 3) {
                 final int v = function.apply(
-                        I(in, i + Image.Color.RED),
-                        I(in, i + Image.Color.GREEN),
-                        I(in, i + Image.Color.BLUE));
+                        I(in, i),
+                        I(in, i + 1),
+                        I(in, i + 2));
                 out.setValue(i / 3, v);
             }
             return out;
@@ -107,9 +107,9 @@ public class PixelProcessor {
     public static class Gray2Color implements Function<Image.Gray, Image.Color> {
 
         private Image.Color out = null;
-        private final ColorPixelFunction function;
+        private final ColorIntensityFunction function;
 
-        public Gray2Color(ColorPixelFunction function) {
+        public Gray2Color(ColorIntensityFunction function) {
             this.function = function;
         }
 
