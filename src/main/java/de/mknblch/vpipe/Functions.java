@@ -135,6 +135,10 @@ public class Functions {
         return ColorPassFilterBuilder.build(color, threshold);
     }
 
+    public static Function<Image.Color, Image.Gray> whiteFilter(int threshold) {
+        return new PixelProcessor.Color2Gray(WhiteFilterFunction.mean(threshold));
+    }
+
     /**
      * Gray binarization
      * @param threshold

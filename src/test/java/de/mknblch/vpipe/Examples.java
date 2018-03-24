@@ -27,12 +27,12 @@ public class Examples {
 
     public static void main(String[] args) throws IOException {
 
-        webcam();
+//        webcam();
 //        imageConvolution();
 //        luminosity();
 //        testContours();
 //        drawContoursBox();
-//        drawContoursChildren();
+        drawContoursChildren();
 //        drawContoursAll();
 //        contourOverlay();
 //        splitRGB();
@@ -85,7 +85,7 @@ public class Examples {
 
     public static void webcam() {
         final Source<BufferedImage> bufferedImageSource = SarxosWebcamSource.choose("PC")
-                .connectTo(new PixelProcessor.Color2Gray(WhiteFilterFunction.mean(10)))
+                .connectTo(whiteFilter(128))
                 .connectTo(toBufferedImage());
 
         Viewer.start(bufferedImageSource);
@@ -93,7 +93,7 @@ public class Examples {
 
     public static void drawContoursBox() {
         final Source<BufferedImage> bufferedImageSource = SarxosWebcamSource.choose()
-                .connectTo(grayLuminosity())
+                .connectTo(whiteFilter(10))
                 .connectTo(contours(128))
                 .connectTo(new Renderer.BoundingBox(640, 480));
         Viewer.start(bufferedImageSource);
@@ -101,8 +101,8 @@ public class Examples {
 
     public static void drawContoursChildren() {
         final Source<BufferedImage> bufferedImageSource = SarxosWebcamSource.choose()
-                .connectTo(grayLuminosity())
-                .connectTo(contours(90))
+                .connectTo(whiteFilter(80))
+                .connectTo(contours(128))
                 .connectTo(new Renderer.Children(640, 480));
         Viewer.start(bufferedImageSource);
     }
@@ -151,9 +151,9 @@ public class Examples {
                 Examples.class.getClassLoader().getResourceAsStream("14399.png")));
 
         final Function<Image.Color, List<Contour>> contourFun = timer(grayscale()
-                .andThen(convolution(Kernels.ADAPT))
-                .andThen(contrast(1.5))
-                .andThen(contours(60)));
+//                .andThen(convolution(Kernels.ADAPT))
+//                .andThen(contrast(1.5))
+                .andThen(contours(90)));
 
         final Source<BufferedImage> bufferedImageSource = SarxosWebcamSource.choose()
                 .connectTo(split(Function.identity(), contourFun))
