@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata>
-  <groupId>de.mknblch.contours</groupId>
-  <artifactId>contours</artifactId>
+  <groupId>de.mknblch.vpipe</groupId>
+  <artifactId>vpipe</artifactId>
   <versioning>
     <versions>
       <version>1.0-SNAPSHOT</version>
     </versions>
-    <lastUpdated>20180321180305</lastUpdated>
+    <lastUpdated>20180324125755</lastUpdated>
   </versioning>
 </metadata>

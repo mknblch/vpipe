@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata modelVersion="1.1.0">
-  <groupId>de.mknblch.contours</groupId>
-  <artifactId>contours</artifactId>
+  <groupId>de.mknblch.vpipe</groupId>
+  <artifactId>vpipe</artifactId>
   <version>1.0-SNAPSHOT</version>
   <versioning>
     <snapshot>
-      <timestamp>20180321.180305</timestamp>
+      <timestamp>20180324.125755</timestamp>
       <buildNumber>1</buildNumber>
     </snapshot>
-    <lastUpdated>20180321180305</lastUpdated>
+    <lastUpdated>20180324125755</lastUpdated>
     <snapshotVersions>
       <snapshotVersion>
         <extension>jar</extension>
-        <value>1.0-20180321.180305-1</value>
-        <updated>20180321180305</updated>
+        <value>1.0-20180324.125755-1</value>
+        <updated>20180324125755</updated>
       </snapshotVersion>
       <snapshotVersion>
         <extension>pom</extension>
-        <value>1.0-20180321.180305-1</value>
-        <updated>20180321180305</updated>
+        <value>1.0-20180324.125755-1</value>
+        <updated>20180324125755</updated>
       </snapshotVersion>
     </snapshotVersions>
   </versioning>
