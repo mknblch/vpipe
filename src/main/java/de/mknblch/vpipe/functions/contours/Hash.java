@@ -14,8 +14,6 @@ import java.util.function.Function;
  */
 public class Hash implements Function<List<Contour>, List<Contour>> {
 
-    private static final double CIRCULARITY_THRESHOLD = 0.005;
-
     private final int p;
 
     public Hash(int p) {
@@ -33,9 +31,6 @@ public class Hash implements Function<List<Contour>, List<Contour>> {
             return;
         }
         if (contour.isLeaf()) {
-//            if (contour.circularity() > CIRCULARITY_THRESHOLD) {
-//                return;
-//            }
             contour.hash = p;
             return;
         }

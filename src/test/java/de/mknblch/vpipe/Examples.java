@@ -2,8 +2,7 @@ package de.mknblch.vpipe;
 
 import de.mknblch.vpipe.functions.Images;
 import de.mknblch.vpipe.functions.Kernels;
-import de.mknblch.vpipe.functions.PixelProcessor;
-import de.mknblch.vpipe.functions.WhiteFilterFunction;
+import de.mknblch.vpipe.functions.WhiteFilter;
 import de.mknblch.vpipe.functions.contours.Contour;
 import de.mknblch.vpipe.functions.contours.OverlayRenderer;
 import de.mknblch.vpipe.functions.contours.Renderer;
@@ -32,11 +31,11 @@ public class Examples {
 //        luminosity();
 //        testContours();
 //        drawContoursBox();
-        drawContoursChildren();
+//        drawContoursChildren();
 //        drawContoursAll();
 //        contourOverlay();
 //        splitRGB();
-//        imageOverlay();
+        imageOverlay();
     }
 
 
@@ -150,10 +149,9 @@ public class Examples {
         map.put(14399, new OverlayRenderer.Overlay(
                 Examples.class.getClassLoader().getResourceAsStream("14399.png")));
 
-        final Function<Image.Color, List<Contour>> contourFun = timer(grayscale()
-//                .andThen(convolution(Kernels.ADAPT))
-//                .andThen(contrast(1.5))
-                .andThen(contours(90)));
+        final Function<Image.Color, List<Contour>> contourFun =
+                whiteFilter(60, WhiteFilter.Mode.SIMPLE)
+                        .andThen(contours(128));
 
         final Source<BufferedImage> bufferedImageSource = SarxosWebcamSource.choose()
                 .connectTo(split(Function.identity(), contourFun))

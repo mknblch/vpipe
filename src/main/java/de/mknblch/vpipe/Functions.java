@@ -19,6 +19,8 @@ import static de.mknblch.vpipe.Image.clip;
  */
 public class Functions {
 
+    private Functions() {}
+
     /**
      * Split computation into 2 pipes
      * @author Jiří Kraml (jkraml@avantgarde-labs.de)
@@ -136,7 +138,11 @@ public class Functions {
     }
 
     public static Function<Image.Color, Image.Gray> whiteFilter(int threshold) {
-        return new PixelProcessor.Color2Gray(WhiteFilterFunction.mean(threshold));
+        return whiteFilter(threshold, WhiteFilter.Mode.SIMPLE);
+    }
+
+    public static Function<Image.Color, Image.Gray> whiteFilter(int threshold, WhiteFilter.Mode mode) {
+        return new WhiteFilter(mode, threshold);
     }
 
     /**

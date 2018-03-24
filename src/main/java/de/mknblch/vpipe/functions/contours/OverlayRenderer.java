@@ -41,6 +41,9 @@ public class OverlayRenderer extends Renderer<Tuple.Two<Image.Color, List<Contou
         graphics.drawImage(converter.apply(in.getLeft()), 0, 0, null);
         for (Contour contour : in.getRight()) {
             final Overlay overlay = hashImageMap.get(contour.hash());
+            final Polygon polygon = contour.toPolygon();
+            graphics.setColor(Color.RED);
+            graphics.drawPolygon(polygon);
             if (null == overlay) {
                 continue;
             }
