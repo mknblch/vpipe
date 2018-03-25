@@ -22,10 +22,16 @@ public class OverlayRenderer extends Renderer<Tuple.Two<Image.Color, List<Contou
 
     private final Map<Integer, Overlay> hashImageMap;
     private final Function<Image, BufferedImage> converter;
+    private final boolean debug;
 
     public OverlayRenderer(int width, int height, Map<Integer, Overlay> hashImageMap) {
+        this(width, height, hashImageMap, false);
+    }
+
+    public OverlayRenderer(int width, int height, Map<Integer, Overlay> hashImageMap, boolean debug) {
         super(width, height);
         this.hashImageMap = hashImageMap;
+        this.debug = debug;
         converter = Functions.toBufferedImage();
     }
 
@@ -41,9 +47,11 @@ public class OverlayRenderer extends Renderer<Tuple.Two<Image.Color, List<Contou
         graphics.drawImage(converter.apply(in.getLeft()), 0, 0, null);
         for (Contour contour : in.getRight()) {
             final Overlay overlay = hashImageMap.get(contour.hash());
-            final Polygon polygon = contour.toPolygon();
-            graphics.setColor(Color.RED);
-            graphics.drawPolygon(polygon);
+            if (debug) {
+                final Polygon polygon = contour.toPolygon();
+                graphics.setColor(Color.RED);
+                graphics.drawPolygon(polygon);
+            }
             if (null == overlay) {
                 continue;
             }

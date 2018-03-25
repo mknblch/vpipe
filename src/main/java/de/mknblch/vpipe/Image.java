@@ -1,6 +1,7 @@
 package de.mknblch.vpipe;
 
 import java.util.Arrays;
+import java.util.function.Function;
 
 import static java.util.Objects.requireNonNull;
 
@@ -84,7 +85,6 @@ public abstract class Image {
         return a.width == b.width &&
                 a.height == b.height;
     }
-
     /**
      * adapt the current image to the type and dimensions of the template
      * @return current or a new image if the size differs
@@ -158,6 +158,10 @@ public abstract class Image {
             return this;
         }
 
+        public <T> T map(Function<Image.Color, T> mapper) {
+            return mapper.apply(this);
+        }
+
         public static Color adaptTo(Color current, Image template) {
             if (null == current || current.width != template.width || current.height != template.height) {
                 return new Color(template);
@@ -220,6 +224,10 @@ public abstract class Image {
         public Gray setValue(int x, int y, byte value) {
             data[y * width + x] = value;
             return this;
+        }
+
+        public <T> T map(Function<Image.Gray, T> mapper) {
+            return mapper.apply(this);
         }
 
         public static Gray adaptTo(Gray current, Image template) {

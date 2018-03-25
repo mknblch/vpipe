@@ -67,7 +67,22 @@ public class SarxosWebcamSource implements Source<Image.Color>, AutoCloseable {
             System.exit(0);
         }
 
+        printViewSizes(webcam);
+
         return new SarxosWebcamSource(webcam, 640, 480);
+    }
+
+    private static void printViewSizes(Webcam webcam) {
+        final Dimension[] viewSizes = webcam.getViewSizes();
+        final StringBuilder builder = new StringBuilder();
+        for (Dimension viewSize : viewSizes) {
+            if (builder.length() != 0) {
+                builder.append(", ");
+            }
+            builder.append(String.format("[%d, %d]", viewSize.width, viewSize.height));
+        }
+        builder.insert(0, "webcam.getViewSizes() = ");
+        System.out.println(builder.toString());
     }
 
     private static Webcam find(List<Webcam> webcams, String name) {

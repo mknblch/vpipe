@@ -53,4 +53,12 @@ public class ImageSource implements Source<Image.Color> {
     public Image.Color get() {
         return colorImage;
     }
+
+    public static Image.Color load(Path path) throws IOException {
+        return new ImageSource(path).get();
+    }
+
+    public static Image.Color load(InputStream inputStream) throws IOException {
+        return new ImageSource(inputStream).get();
+    }
 }

@@ -209,6 +209,10 @@ public class Functions {
         return new PixelProcessor.Gray2Gray(b -> b + a);
     }
 
+    public static Function<Image.Color, Image.Color> mask(Image.Gray mask) {
+        return in -> Images.mul(in, mask);
+    }
+
     /**
      * contrast
      * @param f contrast factor

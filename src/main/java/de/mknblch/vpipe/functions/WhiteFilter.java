@@ -26,7 +26,8 @@ public class WhiteFilter extends PixelProcessor.Color2Gray {
     }
 
     public static PixelProcessor.ColorIntensityFunction simpleFunction(int threshold) {
-        return (r, g, b) -> (765 - r - g - b) / 3 > threshold ? 0 : (r + g + b) / 3;
+        final int t = threshold * 3;
+        return (r, g, b) -> (765 - r - g - b) > t ? 0 : (r + g + b) / 3;
     }
 
     public static PixelProcessor.ColorIntensityFunction meanFunction(int threshold) {
