@@ -25,38 +25,41 @@ import static de.mknblch.vpipe.Functions.split;
 public class Examples {
 
     public static void main(String[] args) throws IOException {
+        final SarxosWebcamSource source = SarxosWebcamSource.choose();
 
-        webcam();
-//        maskImage();
-//        imageConvolution();
-//        luminosity();
-//        testContours();
-//        drawContoursBox();
-//        drawContoursChildren();
-//        drawContoursAll();
-//        contourOverlay();
-//        splitRGB();
-//        imageOverlay();
+//        webcam(source);
+//        maskImage(source);
+//        imageConvolution(source);
+//        luminosity(source);
+//        testContours(source);
+        drawContoursBox(source);
+//        drawContoursChildren(source);
+//        drawContoursAll(source);
+//        contourOverlay(source);
+//        splitRGB(source);
+//        imageOverlay(source);
     }
 
 
-    public static void luminosity() {
-        final Source<BufferedImage> bufferedImageSource = SarxosWebcamSource.choose()
+    public static void luminosity(Source<Image.Color> source) {
+        final Source<BufferedImage> bufferedImageSource = source
                 .connectTo(grayLuminosity())
                 .connectTo(contrast(2))
                 .connectTo(toBufferedImage());
         Viewer.start(bufferedImageSource);
     }
 
-    public static void imageConvolution() {
-        final Source<BufferedImage> bufferedImageSource = SarxosWebcamSource.choose()
+    public static void imageConvolution(Source<Image.Color> source) {
+        final Source<BufferedImage> bufferedImageSource = SarxosWebcamSource.choose("PC")
                 .connectTo(grayLuminosity())
-                .connectTo(convolution(Kernels.HIGHPASS))
+                .connectTo(split(Function.identity(), convolution(Kernels.SMOOTH_3x3)))
+                .connectTo(merge((a, b) -> Images.sub(a, b)))
+                .connectTo(binarization(30))
                 .connectTo(toBufferedImage());
         Viewer.start(bufferedImageSource);
     }
 
-    public static void testContours() throws IOException {
+    public static void testContours(Source<Image.Color> source) throws IOException {
         final Source<BufferedImage> bufferedImageSource =
                 new ImageSource(Examples.class.getClassLoader().getResourceAsStream("test.png"))
                         .connectTo(grayscale())
@@ -65,73 +68,63 @@ public class Examples {
         Viewer.start(bufferedImageSource);
     }
 
-    public static void testContours2() throws IOException {
-        final Source<BufferedImage> bufferedImageSource =
-                new ImageSource(Examples.class.getClassLoader().getResourceAsStream("sub.png"))
-                        .connectTo(grayscale())
-                        .connectTo(contours(128))
-                        .connectTo(new Renderer.All(640, 480));
-        Viewer.start(bufferedImageSource);
-    }
-
-    public static void testImage() throws IOException {
+    public static void testImage(Source<Image.Color> source) throws IOException {
         final Source<BufferedImage> bufferedImageSource =
                 new ImageSource(Examples.class.getClassLoader().getResourceAsStream("test.png"))
                 .connectTo(toBufferedImage());
         Viewer.start(bufferedImageSource);
     }
 
-    public static void webcam() throws IOException {
+    public static void webcam(Source<Image.Color> source) throws IOException {
 
         final Image.Gray mask = ImageSource.load(Examples.class.getClassLoader().getResourceAsStream("test.png"))
                 .map(grayscale());
 
         final Source<BufferedImage> bufferedImageSource = SarxosWebcamSource.choose("PC")
-                .connectTo(grayscale())
-                .connectTo(convolution(Kernels.SOBEL_LR))
+                .connectTo(whiteFilter(40, WhiteFilter.Mode.MEAN))
                 .connectTo(toBufferedImage());
 
         Viewer.start(bufferedImageSource);
     }
 
-    public static void maskImage() throws IOException {
+    public static void maskImage(Source<Image.Color> source) throws IOException {
 
         final Image.Gray mask = ImageSource.load(Examples.class.getClassLoader().getResourceAsStream("mask.png"))
                 .map(grayscale());
 
-        final Source<BufferedImage> bufferedImageSource = SarxosWebcamSource.choose("PC")
+        final Source<BufferedImage> bufferedImageSource = source
                 .connectTo(mask(mask))
                 .connectTo(toBufferedImage());
 
         Viewer.start(bufferedImageSource);
     }
 
-    public static void drawContoursBox() {
-        final Source<BufferedImage> bufferedImageSource = SarxosWebcamSource.choose()
+    public static void drawContoursBox(Source<Image.Color> source) {
+        final Source<BufferedImage> bufferedImageSource = source
                 .connectTo(whiteFilter(10))
-                .connectTo(contours(128))
+                .connectTo(contours(30))
                 .connectTo(new Renderer.BoundingBox(640, 480));
         Viewer.start(bufferedImageSource);
     }
 
-    public static void drawContoursChildren() {
-        final Source<BufferedImage> bufferedImageSource = SarxosWebcamSource.choose()
-                .connectTo(whiteFilter(80))
+    public static void drawContoursChildren(Source<Image.Color> source) {
+        final Source<BufferedImage> bufferedImageSource = source
+                .connectTo(grayscale())
                 .connectTo(contours(128))
                 .connectTo(new Renderer.Children(640, 480));
         Viewer.start(bufferedImageSource);
     }
 
-    public static void drawContoursAll() {
-        final Source<BufferedImage> bufferedImageSource = SarxosWebcamSource.choose()
+    public static void drawContoursAll(Source<Image.Color> source) {
+        final Source<BufferedImage> bufferedImageSource = source
                 .connectTo(grayLuminosity())
                 .connectTo(contours(128))
                 .connectTo(new Renderer.All(640, 480));
         Viewer.start(bufferedImageSource);
     }
 
-    public static void drawContoursColorize() {
-        final Source<BufferedImage> bufferedImageSource = SarxosWebcamSource.choose()
+    public static void drawContoursColorize(Source<Image.Color> source) {
+        final Source<BufferedImage> bufferedImageSource = source
                 .connectTo(grayLuminosity())
                 .connectTo(contours(128))
                 .connectTo(new Renderer.Colorize(640, 480, 0, 255, 0))
@@ -139,7 +132,7 @@ public class Examples {
         Viewer.start(bufferedImageSource);
     }
 
-    public static void contourOverlay() {
+    public static void contourOverlay(Source<Image.Color> source) {
 
         final Function<Image.Color, Image.Color> colorColorFunction =
 //                grayscale()
@@ -149,7 +142,7 @@ public class Examples {
                         .andThen(contours(90))
                         .andThen(new Renderer.Colorize(640, 480, 255, 50, 0));
 
-        final Source<BufferedImage> bufferedImageSource = SarxosWebcamSource.choose()
+        final Source<BufferedImage> bufferedImageSource = source
                 .connectTo(split(colorColorFunction, Function.identity()))
                 .connectTo(merge((a, b) -> Images.add(a, b)))
                 .connectTo(toBufferedImage());
@@ -157,7 +150,7 @@ public class Examples {
         Viewer.start(bufferedImageSource);
     }
 
-    public static void imageOverlay() throws IOException {
+    public static void imageOverlay(Source<Image.Color> source) throws IOException {
 
         final HashMap<Integer, OverlayRenderer.Overlay> map = new HashMap<>();
         map.put(19239, new OverlayRenderer.Overlay(
@@ -170,19 +163,19 @@ public class Examples {
                 grayLuminosity();
 //                whiteFilter(10, WhiteFilter.Mode.MEAN);
 
-        Viewer.start(SarxosWebcamSource.choose()
+        Viewer.start(source
                 .connectTo(split(
                         Function.identity(),
                         preprocessor.andThen(contours(90))))
                 .connectTo(new OverlayRenderer(640, 480, map, false)));
 
-//        Viewer.start(SarxosWebcamSource.choose()
+//        Viewer.start(source
 //                .connectTo(preprocessor)
 //                .connectTo(toBufferedImage()));
 
     }
 
-    public static void splitRGB() {
+    public static void splitRGB(Source<Image.Color> source) {
 
         final int threshold = 128;
 
@@ -198,7 +191,7 @@ public class Examples {
                 .andThen(contours(threshold))
                 .andThen(new Renderer.Colorize(640, 480, 0, 0, 255));
 
-        final Source<BufferedImage> bufferedImageSource = SarxosWebcamSource.choose()
+        final Source<BufferedImage> bufferedImageSource = source
                 .connectTo(split(left, mid, right))
                 .connectTo(merge((rc, gc, bc) -> Images.add(rc, Images.add(gc, bc))))
                 .connectTo(toBufferedImage());
