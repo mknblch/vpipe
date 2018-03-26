@@ -1,9 +1,9 @@
 package de.mknblch.vpipe.functions;
 
-import de.mknblch.vpipe.Image;
+import de.mknblch.vpipe.core.Image;
 
-import static de.mknblch.vpipe.Image.*;
-import static de.mknblch.vpipe.Image.BLUE;
+import static de.mknblch.vpipe.core.Image.*;
+import static de.mknblch.vpipe.core.Image.BLUE;
 
 /**
  * Image functions

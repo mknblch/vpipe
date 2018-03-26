@@ -1,8 +1,8 @@
 package de.mknblch.vpipe.functions.contours;
 
 import de.mknblch.vpipe.Functions;
-import de.mknblch.vpipe.Image;
-import de.mknblch.vpipe.functions.Tuple;
+import de.mknblch.vpipe.core.Image;
+import de.mknblch.vpipe.core.Tuple;
 
 import javax.imageio.ImageIO;
 import java.awt.*;

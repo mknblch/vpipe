@@ -1,11 +1,11 @@
 package de.mknblch.vpipe.functions;
 
-import de.mknblch.vpipe.Image;
+import de.mknblch.vpipe.core.Image;
 
 import java.util.function.Function;
 import java.util.function.IntUnaryOperator;
 
-import static de.mknblch.vpipe.Image.I;
+import static de.mknblch.vpipe.core.Image.I;
 
 /**
  * @author mknblch

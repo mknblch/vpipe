@@ -1,16 +1,12 @@
 package de.mknblch.vpipe.helper;
 
 import com.github.sarxos.webcam.Webcam;
-import com.github.sarxos.webcam.WebcamDevice;
-import de.mknblch.vpipe.Image;
-import de.mknblch.vpipe.Source;
+import de.mknblch.vpipe.core.Image;
+import de.mknblch.vpipe.core.Source;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.DataBufferByte;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author mknblch

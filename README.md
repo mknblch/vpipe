@@ -63,7 +63,7 @@ Yep - Im using github as [poor-mans-repo](https://stackoverflow.com/questions/14
 ```
 ## ToDo's
 
-- add multithreading in `de.mknblch.vpipe.functions.Split` using a predefined
+- add multithreading in `de.mknblch.vpipe.core.Split` using a predefined
 thread pool
 - pattern recognition (fourier descriptors)
 

@@ -1,4 +1,4 @@
-package de.mknblch.vpipe.functions;
+package de.mknblch.vpipe.core;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;

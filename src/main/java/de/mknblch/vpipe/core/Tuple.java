@@ -1,4 +1,4 @@
-package de.mknblch.vpipe.functions;
+package de.mknblch.vpipe.core;
 
 /**
  * @author Jiří Kraml (jkraml@avantgarde-labs.de)

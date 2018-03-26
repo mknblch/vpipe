@@ -1,5 +1,7 @@
 package de.mknblch.vpipe;
 
+import de.mknblch.vpipe.core.*;
+import de.mknblch.vpipe.core.Image;
 import de.mknblch.vpipe.functions.*;
 import de.mknblch.vpipe.functions.contours.*;
 import de.mknblch.vpipe.functions.ExecutionTimer;
@@ -10,9 +12,8 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
-import static de.mknblch.vpipe.Image.clip;
+import static de.mknblch.vpipe.core.Image.clip;
 
 /**
  * @author mknblch
@@ -67,29 +68,19 @@ public class Functions {
      * groups contours and assigns a (maybe) unique hash
      *
      * @param threshold a threshold between 0 and 255
-     * @return a contour processort
+     * @return a contour processor
      */
     public static Function<Image.Gray, List<Contour>> contours(int threshold, Contour.Filter filter) {
         return new Chain4(threshold, filter).andThen(new Group()).andThen(new Hash(11));
     }
 
-    public static Function<List<Contour>, List<Contour>> removeIf(Predicate<Contour> predicate) {
-        return contours -> {
-            contours.removeIf(predicate);
-            return contours;
-        };
-    }
-
     /**
      * call consumer for each element passing the pipe
      * @param consumer consumer implementation
-     * @return a peek function
+     * @return a {@link TPipe} using the supplied consumer
      */
     public static <T> Function<T, T> peek(Consumer<T> consumer) {
-        return i -> {
-            consumer.accept(i);
-            return i;
-        };
+        return new TPipe<>(consumer);
     }
 
     /**
@@ -101,8 +92,7 @@ public class Functions {
             System.out.printf("%d contours with perimeter %d and area %d%n",
                     contours.size(),
                     contours.stream().mapToInt(Contour::perimeter).sum(),
-                    contours.stream().mapToInt(Contour::area).sum()
-                    );
+                    contours.stream().mapToInt(Contour::area).sum());
         });
     }
 

@@ -1,4 +1,4 @@
-package de.mknblch.vpipe;
+package de.mknblch.vpipe.core;
 
 import java.util.Arrays;
 import java.util.function.Function;

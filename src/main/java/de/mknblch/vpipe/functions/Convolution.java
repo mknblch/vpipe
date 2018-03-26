@@ -1,6 +1,6 @@
 package de.mknblch.vpipe.functions;
 
-import de.mknblch.vpipe.Image;
+import de.mknblch.vpipe.core.Image;
 
 import java.util.function.Function;
 

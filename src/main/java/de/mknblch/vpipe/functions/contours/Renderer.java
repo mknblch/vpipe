@@ -1,13 +1,13 @@
 package de.mknblch.vpipe.functions.contours;
 
-import de.mknblch.vpipe.Image;
+import de.mknblch.vpipe.core.Image;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.function.Function;
 
-import static de.mknblch.vpipe.Image.clip;
+import static de.mknblch.vpipe.core.Image.clip;
 
 /**
  * @author mknblch

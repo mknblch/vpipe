@@ -1,13 +1,13 @@
 package de.mknblch.vpipe.functions.contours;
 
-import de.mknblch.vpipe.Image;
+import de.mknblch.vpipe.core.Image;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
-import static de.mknblch.vpipe.Image.I;
+import static de.mknblch.vpipe.core.Image.I;
 import static de.mknblch.vpipe.functions.contours.Contour.Direction.E;
 import static de.mknblch.vpipe.functions.contours.Contour.Direction.S;
 import static de.mknblch.vpipe.functions.contours.Contour.Direction.N;

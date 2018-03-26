@@ -1,13 +1,11 @@
 package de.mknblch.vpipe.helper;
 
-import de.mknblch.vpipe.Image;
-import de.mknblch.vpipe.Source;
+import de.mknblch.vpipe.core.Image;
+import de.mknblch.vpipe.core.Source;
 
 import javax.imageio.ImageIO;
-import javax.imageio.stream.FileImageInputStream;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;

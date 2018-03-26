@@ -1,9 +1,10 @@
 package de.mknblch.vpipe;
 
+import de.mknblch.vpipe.core.Image;
+import de.mknblch.vpipe.core.Source;
 import de.mknblch.vpipe.functions.Images;
 import de.mknblch.vpipe.functions.Kernels;
 import de.mknblch.vpipe.functions.WhiteFilter;
-import de.mknblch.vpipe.functions.contours.Contour;
 import de.mknblch.vpipe.functions.contours.OverlayRenderer;
 import de.mknblch.vpipe.functions.contours.Renderer;
 import de.mknblch.vpipe.helper.ImageSource;
@@ -13,7 +14,6 @@ import de.mknblch.vpipe.helper.Viewer;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.function.Function;
 
 import static de.mknblch.vpipe.Functions.*;
