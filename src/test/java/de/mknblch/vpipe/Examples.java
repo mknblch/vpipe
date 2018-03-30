@@ -25,18 +25,18 @@ import static de.mknblch.vpipe.Functions.split;
 public class Examples {
 
     public static void main(String[] args) throws IOException {
-        final SarxosWebcamSource source = SarxosWebcamSource.choose();
+        final SarxosWebcamSource source = SarxosWebcamSource.choose("PC");
 
 //        webcam(source);
 //        maskImage(source);
 //        imageConvolution(source);
 //        luminosity(source);
 //        testContours(source);
-        drawContoursBox(source);
+//        drawContoursBox(source);
 //        drawContoursChildren(source);
 //        drawContoursAll(source);
 //        contourOverlay(source);
-//        splitRGB(source);
+        splitRGB(source);
 //        imageOverlay(source);
     }
 
@@ -50,7 +50,7 @@ public class Examples {
     }
 
     public static void imageConvolution(Source<Image.Color> source) {
-        final Source<BufferedImage> bufferedImageSource = SarxosWebcamSource.choose("PC")
+        final Source<BufferedImage> bufferedImageSource = source
                 .connectTo(grayLuminosity())
                 .connectTo(split(Function.identity(), convolution(Kernels.SMOOTH_3x3)))
                 .connectTo(merge((a, b) -> Images.sub(a, b)))
@@ -80,7 +80,7 @@ public class Examples {
         final Image.Gray mask = ImageSource.load(Examples.class.getClassLoader().getResourceAsStream("test.png"))
                 .map(grayscale());
 
-        final Source<BufferedImage> bufferedImageSource = SarxosWebcamSource.choose("PC")
+        final Source<BufferedImage> bufferedImageSource = source
                 .connectTo(whiteFilter(40, WhiteFilter.Mode.MEAN))
                 .connectTo(toBufferedImage());
 
@@ -167,7 +167,7 @@ public class Examples {
                 .connectTo(split(
                         Function.identity(),
                         preprocessor.andThen(contours(90))))
-                .connectTo(new OverlayRenderer(640, 480, map, false)));
+                .connectTo(new OverlayRenderer(640, 480, map, true)));
 
 //        Viewer.start(source
 //                .connectTo(preprocessor)
