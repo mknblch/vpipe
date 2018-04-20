@@ -1,6 +1,6 @@
 # Image processing & contour extraction
 
-This is my [AVGL](https://www.avantgarde-labs.de) Hackathon 2018 Project - an image processing pipeline using J8 functional patterns.
+This is my [Avantgarde Labs](https://www.avantgarde-labs.de) Hackathon 2018 Project - an image processing pipeline using J8 functional patterns.
 
 ## Overview
 
