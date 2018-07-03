@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata>
-  <groupId>de.mknblch.vpipe</groupId>
-  <artifactId>vpipe</artifactId>
+  <groupId>de.mknblch.params</groupId>
+  <artifactId>params</artifactId>
   <versioning>
     <versions>
       <version>1.0-SNAPSHOT</version>
     </versions>
-    <lastUpdated>20180330184108</lastUpdated>
+    <lastUpdated>20180703161820</lastUpdated>
   </versioning>
 </metadata>
